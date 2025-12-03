@@ -6,14 +6,30 @@ export const runtime = 'nodejs'
 export const revalidate = 0
 export const fetchCache = 'force-no-store'
 
+// Prevent Next.js from trying to collect page data during build
+export const dynamicParams = true
+
 export async function GET(request: NextRequest) {
-  // Early return during build - don't even try to import anything
-  if (!process.env.DATABASE_URL || process.env.NEXT_PHASE === 'phase-production-build') {
-    return NextResponse.json({ stats: [], totals: { totalRsvps: 0, totalPlusOnes: 0 } })
+  // CRITICAL: Early return during build - must happen before ANY imports
+  // Vercel sets VERCEL=1 during build, so check for its absence
+  const isBuildTime = 
+    !process.env.DATABASE_URL || 
+    process.env.NEXT_PHASE === 'phase-production-build' ||
+    (process.env.NODE_ENV === 'production' && !process.env.VERCEL)
+  
+  if (isBuildTime) {
+    // Return immediately without any imports
+    return new NextResponse(
+      JSON.stringify({ stats: [], totals: { totalRsvps: 0, totalPlusOnes: 0 } }),
+      { 
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    )
   }
 
   try {
-    // Lazy load to prevent import during build analysis
+    // Only import after build-time check passes
     const { verifyAdminSession } = await import('@/lib/auth')
     const { prisma } = await import('@/lib/prisma')
     
@@ -72,6 +88,13 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
+    // During build, catch any errors and return empty data
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json({ 
+        stats: [], 
+        totals: { totalRsvps: 0, totalPlusOnes: 0 } 
+      })
+    }
     console.error('Error fetching dashboard stats:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
@@ -79,4 +102,3 @@ export async function GET(request: NextRequest) {
     )
   }
 }
-
