@@ -135,7 +135,7 @@ function HomeContent() {
             <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0 flex-1">
               {/* Subtitle */}
               <p className="font-body text-xs sm:text-sm md:text-base lg:text-lg text-charcoal/50 tracking-[0.2em] uppercase mb-4">
-                The Wedding of
+                Together with our families
               </p>
               
               {/* Main Names - Large Impactful Typography */}
@@ -153,7 +153,7 @@ function HomeContent() {
               
               {/* Invitation Line */}
               <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 mt-4 md:mt-8">
-                We can't wait to celebrate with you.
+                Invite you to celebrate with us
               </p>
               
               {/* Date */}
