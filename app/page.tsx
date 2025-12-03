@@ -79,12 +79,12 @@ function HomeContent() {
             maxWidth: '100%',
             position: 'relative'
           }}>
-            {/* SVG to create the exact arch shape from invitation - curved top, straight sides and bottom */}
+            {/* SVG to create the exact arch shape from invitation - smooth elegant curve matching invitation */}
             <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }} viewBox="0 0 400 600" preserveAspectRatio="none">
               <defs>
                 <clipPath id="invitationArchClip">
-                  {/* Smooth arch matching invitation - elegantly curved top, straight bottom */}
-                  <path d="M 0,40 Q 0,10 200,10 Q 400,10 400,40 L 400,600 L 0,600 Z" />
+                  {/* Smooth elegant arch matching invitation - using arc for perfect curve, straight sides and bottom */}
+                  <path d="M 0,48 A 200,30 0 0,1 400,48 L 400,600 L 0,600 Z" />
                 </clipPath>
               </defs>
               <rect width="400" height="600" fill="#FAF8F3" clipPath="url(#invitationArchClip)" />
@@ -92,26 +92,26 @@ function HomeContent() {
             
             {/* Elegant border frame using SVG - matching invitation exactly */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }} viewBox="0 0 400 600" preserveAspectRatio="none">
-              {/* Outer perimeter border - elegant curved top matching invitation arch, straight bottom */}
+              {/* Outer perimeter border - smooth elegant curved top matching invitation arch, straight bottom */}
               <path 
-                d="M 16,40 Q 16,10 200,10 Q 384,10 384,40 L 384,600 L 16,600 Z" 
+                d="M 16,48 A 184,28 0 0,1 384,48 L 384,600 L 16,600 Z" 
                 fill="none" 
                 stroke="rgba(45, 45, 45, 0.2)" 
                 strokeWidth="1.5"
               />
               {/* Inner border line */}
               <path 
-                d="M 20,40 Q 20,14 200,14 Q 380,14 380,40 L 380,596 L 20,596 Z" 
+                d="M 20,48 A 180,26 0 0,1 380,48 L 380,596 L 20,596 Z" 
                 fill="none" 
                 stroke="rgba(45, 45, 45, 0.15)" 
                 strokeWidth="1"
               />
               {/* Vertical double lines on left side */}
-              <line x1="32" y1="40" x2="32" y2="600" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
-              <line x1="36" y1="40" x2="36" y2="600" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="0.5" />
+              <line x1="32" y1="48" x2="32" y2="600" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
+              <line x1="36" y1="48" x2="36" y2="600" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="0.5" />
               {/* Vertical double lines on right side */}
-              <line x1="368" y1="40" x2="368" y2="600" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
-              <line x1="364" y1="40" x2="364" y2="600" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="0.5" />
+              <line x1="368" y1="48" x2="368" y2="600" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
+              <line x1="364" y1="48" x2="364" y2="600" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="0.5" />
             </svg>
             
             {/* Content area with proper spacing - accounting for hashtag */}
