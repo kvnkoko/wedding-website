@@ -243,10 +243,21 @@ export default function AdminInviteLinksPage() {
             </div>
             <div className="bg-beige p-4 rounded-sm">
               <p className="font-sans text-xs text-charcoal/70 mb-1">RSVP URL:</p>
-              <p className="font-mono text-sm text-sage break-all">
+              <p className="font-mono text-sm text-sage break-all mb-2">
                 {typeof window !== 'undefined' &&
-                  `${window.location.origin}/rsvp/${config.slug}`}
+                  (() => {
+                    // Use production URL if available, otherwise use current origin
+                    const origin = window.location.origin
+                    // Remove preview deployment hash if present (e.g., wedding-website-faz2o1kdc-kevin-kokos-projects.vercel.app -> wedding-website.vercel.app)
+                    const productionUrl = origin.replace(/-[a-z0-9]+-kevin-kokos-projects\.vercel\.app$/, '.vercel.app')
+                    return `${productionUrl}/rsvp/${config.slug}`
+                  })()}
               </p>
+              {typeof window !== 'undefined' && window.location.hostname.includes('-kevin-kokos-projects.vercel.app') && (
+                <p className="font-sans text-xs text-charcoal/50 italic">
+                  ⚠️ Preview URLs require Vercel login. Use production URL above for sharing.
+                </p>
+              )}
             </div>
           </div>
         ))}
