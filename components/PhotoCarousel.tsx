@@ -178,7 +178,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
             style={{
               transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}%))`,
               transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              width: `${(sortedPhotos.length / photosToShow) * 100}%`,
+              width: `${sortedPhotos.length * (100 / photosToShow)}%`,
               willChange: 'transform',
             }}
           >
@@ -196,8 +196,8 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 position = sortedPhotos.length - currentIndex + index
               }
 
-              // Container width - each photo takes up 1/photosToShow of the viewport
-              const containerWidth = `calc(${100 / photosToShow}% - ${photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16}px / ${photosToShow})`
+              // Container width - each photo takes up 1/photosToShow of the viewport width
+              const containerWidth = `${100 / photosToShow}%`
 
               return (
                 <div
