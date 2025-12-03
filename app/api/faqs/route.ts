@@ -110,14 +110,30 @@ export async function POST(request: NextRequest) {
       // Continue with order 0 if there's an error
     }
 
-    console.log('Creating FAQ with order:', newOrder, 'colorHexCodesJson:', colorHexCodesJson)
+    // Validate inviteLinkConfigId if provided
+    let finalInviteLinkConfigId: string | null = null
+    if (inviteLinkConfigId) {
+      // Check if the invite link config exists
+      const inviteLinkConfig = await prisma.inviteLinkConfig.findUnique({
+        where: { id: inviteLinkConfigId },
+      })
+      if (!inviteLinkConfig) {
+        return NextResponse.json(
+          { error: 'Invalid invite link configuration ID', details: `Invite link with ID ${inviteLinkConfigId} not found` },
+          { status: 400 }
+        )
+      }
+      finalInviteLinkConfigId = inviteLinkConfigId
+    }
+
+    console.log('Creating FAQ with order:', newOrder, 'colorHexCodesJson:', colorHexCodesJson, 'inviteLinkConfigId:', finalInviteLinkConfigId)
 
     const faq = await prisma.fAQ.create({
       data: {
         question,
         answer,
         colorHexCodes: colorHexCodesJson,
-        inviteLinkConfigId: inviteLinkConfigId || null,
+        inviteLinkConfigId: finalInviteLinkConfigId,
         order: newOrder,
       },
       include: {
@@ -153,6 +169,13 @@ export async function POST(request: NextRequest) {
       )
     }
     
+    if (error.code === 'P2003') {
+      return NextResponse.json(
+        { error: 'Invalid invite link configuration. The selected event/invite link does not exist.', details: error.message },
+        { status: 400 }
+      )
+    }
+    
     if (error.message?.includes('Unknown arg') || error.message?.includes('colorHexCodes')) {
       return NextResponse.json(
         { error: 'Database schema error. Please run: npx prisma db push', details: error.message },
@@ -161,7 +184,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message, code: error.code },
+      { error: 'Internal server error', details: error.message || String(error), code: error.code, name: error.name },
       { status: 500 }
     )
   }
