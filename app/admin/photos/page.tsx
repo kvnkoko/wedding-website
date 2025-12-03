@@ -17,6 +17,10 @@ export default function AdminPhotosPage() {
   const [newPhotoUrl, setNewPhotoUrl] = useState('')
   const [newPhotoAlt, setNewPhotoAlt] = useState('')
   const [showAddForm, setShowAddForm] = useState(false)
+  const [uploadMethod, setUploadMethod] = useState<'upload' | 'url'>('upload')
+  const [uploading, setUploading] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPhotos()
@@ -89,35 +93,90 @@ export default function AdminPhotosPage() {
     }
   }
 
-  const handleAddPhoto = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!newPhotoUrl.trim()) {
-      alert('Please enter a photo URL')
-      return
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file')
+        return
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File size must be less than 10MB')
+        return
+      }
+      setSelectedFile(file)
+      const url = URL.createObjectURL(file)
+      setPreviewUrl(url)
     }
+  }
+
+  const handleUploadPhoto = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setUploading(true)
 
     try {
+      let photoUrl = ''
+
+      if (uploadMethod === 'upload') {
+        if (!selectedFile) {
+          alert('Please select a file to upload')
+          setUploading(false)
+          return
+        }
+
+        // Upload file
+        const formData = new FormData()
+        formData.append('file', selectedFile)
+
+        const uploadRes = await fetch('/api/photos/upload', {
+          method: 'POST',
+          body: formData,
+        })
+
+        if (!uploadRes.ok) {
+          const error = await uploadRes.json()
+          throw new Error(error.error || 'Failed to upload file')
+        }
+
+        const uploadData = await uploadRes.json()
+        photoUrl = uploadData.url
+      } else {
+        if (!newPhotoUrl.trim()) {
+          alert('Please enter a photo URL')
+          setUploading(false)
+          return
+        }
+        photoUrl = newPhotoUrl.trim()
+      }
+
+      // Add photo to database
       const res = await fetch('/api/photos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          url: newPhotoUrl.trim(),
+          url: photoUrl,
           alt: newPhotoAlt.trim() || null,
         }),
       })
 
       if (res.ok) {
+        // Reset form
         setNewPhotoUrl('')
         setNewPhotoAlt('')
+        setSelectedFile(null)
+        setPreviewUrl(null)
         setShowAddForm(false)
+        setUploadMethod('upload')
         await fetchPhotos()
       } else {
         const error = await res.json()
         alert(error.error || 'Error adding photo')
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding photo:', error)
-      alert('Error adding photo. Please try again.')
+      alert(error.message || 'Error adding photo. Please try again.')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -165,23 +224,133 @@ export default function AdminPhotosPage() {
       {showAddForm && (
         <div className="bg-white p-6 rounded-sm shadow-sm mb-6">
           <h2 className="font-serif text-2xl text-charcoal mb-4">Add New Photo</h2>
-          <form onSubmit={handleAddPhoto} className="space-y-4">
-            <div>
-              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                Photo URL <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="url"
-                value={newPhotoUrl}
-                onChange={(e) => setNewPhotoUrl(e.target.value)}
-                placeholder="https://example.com/photo.jpg"
-                required
-                className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
-              />
-              <p className="mt-1 font-sans text-xs text-charcoal/60">
-                Enter the full URL of the image (e.g., from Imgur, Cloudinary, etc.)
-              </p>
-            </div>
+          
+          {/* Upload Method Toggle */}
+          <div className="flex gap-4 mb-6 border-b border-taupe/30 pb-4">
+            <button
+              type="button"
+              onClick={() => {
+                setUploadMethod('upload')
+                setNewPhotoUrl('')
+                setSelectedFile(null)
+                setPreviewUrl(null)
+              }}
+              className={`px-4 py-2 rounded-sm font-sans text-sm transition-all ${
+                uploadMethod === 'upload'
+                  ? 'bg-sage text-white'
+                  : 'bg-taupe/20 text-charcoal hover:bg-taupe/30'
+              }`}
+            >
+              Upload File
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setUploadMethod('url')
+                setSelectedFile(null)
+                setPreviewUrl(null)
+              }}
+              className={`px-4 py-2 rounded-sm font-sans text-sm transition-all ${
+                uploadMethod === 'url'
+                  ? 'bg-sage text-white'
+                  : 'bg-taupe/20 text-charcoal hover:bg-taupe/30'
+              }`}
+            >
+              Enter URL
+            </button>
+          </div>
+
+          <form onSubmit={handleUploadPhoto} className="space-y-4">
+            {uploadMethod === 'upload' ? (
+              <div>
+                <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                  Select Photo <span className="text-red-500">*</span>
+                </label>
+                <div className="border-2 border-dashed border-taupe/30 rounded-sm p-6 text-center hover:border-sage/50 transition-colors">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    id="file-upload"
+                    required={uploadMethod === 'upload'}
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className="cursor-pointer block"
+                  >
+                    {previewUrl ? (
+                      <div className="space-y-2">
+                        <div className="relative w-full max-w-xs mx-auto h-48 rounded-sm overflow-hidden bg-taupe/20">
+                          <Image
+                            src={previewUrl}
+                            alt="Preview"
+                            fill
+                            className="object-contain"
+                            sizes="400px"
+                          />
+                        </div>
+                        <p className="font-sans text-sm text-charcoal/70">
+                          {selectedFile?.name}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedFile(null)
+                            setPreviewUrl(null)
+                            const input = document.getElementById('file-upload') as HTMLInputElement
+                            if (input) input.value = ''
+                          }}
+                          className="text-sm text-charcoal/60 hover:text-charcoal"
+                        >
+                          Change photo
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <svg
+                          className="mx-auto h-12 w-12 text-charcoal/40"
+                          stroke="currentColor"
+                          fill="none"
+                          viewBox="0 0 48 48"
+                        >
+                          <path
+                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                            strokeWidth={2}
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        <p className="font-sans text-sm text-charcoal/70">
+                          Click to upload or drag and drop
+                        </p>
+                        <p className="font-sans text-xs text-charcoal/50">
+                          PNG, JPG, GIF up to 10MB
+                        </p>
+                      </div>
+                    )}
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                  Photo URL <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="url"
+                  value={newPhotoUrl}
+                  onChange={(e) => setNewPhotoUrl(e.target.value)}
+                  placeholder="https://example.com/photo.jpg"
+                  required={uploadMethod === 'url'}
+                  className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                />
+                <p className="mt-1 font-sans text-xs text-charcoal/60">
+                  Enter the full URL of the image
+                </p>
+              </div>
+            )}
+
             <div>
               <label className="block font-sans text-sm font-medium text-charcoal mb-2">
                 Alt Text (Optional)
@@ -196,9 +365,10 @@ export default function AdminPhotosPage() {
             </div>
             <button
               type="submit"
-              className="bg-charcoal text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 transition-all"
+              disabled={uploading}
+              className="bg-charcoal text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Add Photo
+              {uploading ? 'Uploading...' : 'Add Photo'}
             </button>
           </form>
         </div>
