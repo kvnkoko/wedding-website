@@ -21,6 +21,8 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   const [touchEnd, setTouchEnd] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map())
+  const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   // Safely sort photos
@@ -217,41 +219,75 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 >
                   <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg flex items-center justify-center bg-cream">
                     {photo.url && (
-                      <img
-                        src={photo.url}
-                        alt={photo.alt || `Photo ${index + 1}`}
-                        className={`${
-                          imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3 && isVisible
-                            ? 'pan-zoom-horizontal'
-                            : ''
-                        }`}
-                        style={{
-                          height: '100%',
-                          width: 'auto',
-                          maxWidth: '100%',
-                          objectFit: 'contain',
-                          objectPosition: 'center',
-                        }}
-                        onError={(e) => {
-                          console.error('Error loading image:', photo.url)
-                          const target = e.target as HTMLImageElement
-                          if (target) {
-                            target.style.display = 'none'
-                          }
-                        }}
-                        onLoad={(e) => {
-                          // Calculate and store aspect ratio
-                          const img = e.target as HTMLImageElement
-                          if (img.naturalWidth && img.naturalHeight) {
-                            const aspectRatio = img.naturalWidth / img.naturalHeight
-                            setImageAspectRatios(prev => {
-                              const newMap = new Map(prev)
-                              newMap.set(photo.id, aspectRatio)
-                              return newMap
-                            })
-                          }
-                        }}
-                      />
+                      <>
+                        {/* Low-quality blurred placeholder - shows immediately while loading */}
+                        {!loadedImages.has(photo.id) && !imageErrors.has(photo.id) && (
+                          <img
+                            src={photo.url}
+                            alt=""
+                            aria-hidden="true"
+                            className="absolute inset-0"
+                            style={{
+                              height: '100%',
+                              width: 'auto',
+                              maxWidth: '100%',
+                              objectFit: 'contain',
+                              objectPosition: 'center',
+                              filter: 'blur(20px)',
+                              transform: 'scale(1.05)',
+                              opacity: 0.6,
+                            }}
+                            loading="eager"
+                          />
+                        )}
+                        {/* Full-quality image with fade-in */}
+                        <img
+                          src={photo.url}
+                          alt={photo.alt || `Photo ${index + 1}`}
+                          className={`relative transition-opacity duration-700 ease-in-out ${
+                            loadedImages.has(photo.id)
+                              ? 'opacity-100'
+                              : 'opacity-0'
+                          } ${
+                            imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3 && isVisible
+                              ? 'pan-zoom-horizontal'
+                              : ''
+                          }`}
+                          style={{
+                            height: '100%',
+                            width: 'auto',
+                            maxWidth: '100%',
+                            objectFit: 'contain',
+                            objectPosition: 'center',
+                          }}
+                          loading={isVisible && position === 0 ? 'eager' : 'lazy'}
+                          fetchPriority={isVisible && position === 0 ? 'high' : isVisible ? 'auto' : 'low'}
+                          decoding={isVisible && position === 0 ? 'sync' : 'async'}
+                          onError={(e) => {
+                            console.error('Error loading image:', photo.url)
+                            setImageErrors(prev => new Set(prev).add(photo.id))
+                            const target = e.target as HTMLImageElement
+                            if (target) {
+                              target.style.display = 'none'
+                            }
+                          }}
+                          onLoad={(e) => {
+                            // Mark as loaded
+                            setLoadedImages(prev => new Set(prev).add(photo.id))
+                            
+                            // Calculate and store aspect ratio
+                            const img = e.target as HTMLImageElement
+                            if (img.naturalWidth && img.naturalHeight) {
+                              const aspectRatio = img.naturalWidth / img.naturalHeight
+                              setImageAspectRatios(prev => {
+                                const newMap = new Map(prev)
+                                newMap.set(photo.id, aspectRatio)
+                                return newMap
+                              })
+                            }
+                          }}
+                        />
+                      </>
                     )}
                   </div>
                 </div>
