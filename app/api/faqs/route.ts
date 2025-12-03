@@ -7,9 +7,25 @@ export const dynamic = 'force-dynamic'
 // GET - Fetch FAQs (public endpoint, filtered by invite link if provided)
 export async function GET(request: NextRequest) {
   try {
-    // Test database connection first
+    // Test database connection and table existence
     try {
       await prisma.$queryRaw`SELECT 1`
+      // Check if faqs table exists
+      const tableCheck = await prisma.$queryRaw`
+        SELECT EXISTS (
+          SELECT FROM information_schema.tables 
+          WHERE table_schema = 'public' 
+          AND table_name = 'faqs'
+        ) as exists
+      `
+      const tableExists = (tableCheck as any[])[0]?.exists
+      if (!tableExists) {
+        console.error('FAQs table does not exist in database')
+        return NextResponse.json(
+          { error: 'FAQs table not found. Please run: npx prisma db push', details: 'Table faqs does not exist' },
+          { status: 500 }
+        )
+      }
     } catch (dbError: any) {
       console.error('Database connection test failed:', dbError)
       return NextResponse.json(
