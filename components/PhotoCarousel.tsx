@@ -228,8 +228,8 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                         }`}
                         style={{
                           objectFit: 'contain',
-                          width: 'auto',
                           height: '100%',
+                          width: 'auto',
                           maxWidth: '100%',
                         }}
                         priority={isVisible && (position === 0 || (position === 1 && photosToShow > 1))}
