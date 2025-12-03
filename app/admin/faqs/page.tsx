@@ -36,6 +36,7 @@ export default function AdminFAQsPage() {
     inviteLinkConfigId: '',
   })
   const [newColorHex, setNewColorHex] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -131,6 +132,16 @@ export default function AdminFAQsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
+    if (submitting) return
+    
+    // Validate required fields
+    if (!formData.question.trim() || !formData.answer.trim()) {
+      alert('Please fill in both question and answer fields.')
+      return
+    }
+    
+    setSubmitting(true)
+    
     try {
       const payload = {
         question: formData.question.trim(),
@@ -139,39 +150,51 @@ export default function AdminFAQsPage() {
         inviteLinkConfigId: formData.inviteLinkConfigId || null,
       }
 
+      console.log('Submitting FAQ:', payload)
+
+      let res: Response
       if (editingFAQ) {
         // Update existing FAQ
-        const res = await fetch(`/api/faqs/${editingFAQ.id}`, {
+        res = await fetch(`/api/faqs/${editingFAQ.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         })
-
-        if (!res.ok) {
-          throw new Error('Failed to update FAQ')
-        }
       } else {
         // Create new FAQ
-        const res = await fetch('/api/faqs', {
+        res = await fetch('/api/faqs', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         })
-
-        if (!res.ok) {
-          throw new Error('Failed to create FAQ')
-        }
       }
 
+      console.log('Response status:', res.status, res.statusText)
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('API Error:', errorData)
+        throw new Error(errorData.error || errorData.details || `Failed to ${editingFAQ ? 'update' : 'create'} FAQ`)
+      }
+
+      const result = await res.json()
+      console.log('Success:', result)
+      
       // Reset form
       setFormData({ question: '', answer: '', colorHexCodes: [], inviteLinkConfigId: '' })
       setNewColorHex('')
       setShowAddForm(false)
       setEditingFAQ(null)
       await fetchFAQs()
-    } catch (error) {
+      
+      // Show success message
+      alert(`FAQ ${editingFAQ ? 'updated' : 'created'} successfully!`)
+    } catch (error: any) {
       console.error('Error saving FAQ:', error)
-      alert('Error saving FAQ. Please try again.')
+      const errorMessage = error?.message || 'Error saving FAQ. Please check the browser console for details.'
+      alert(errorMessage)
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -375,14 +398,16 @@ export default function AdminFAQsPage() {
             <div className="flex gap-4">
               <button
                 type="submit"
-                className="bg-charcoal text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 transition-all"
+                disabled={submitting}
+                className="bg-charcoal text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {editingFAQ ? 'Update FAQ' : 'Add FAQ'}
+                {submitting ? 'Saving...' : editingFAQ ? 'Update FAQ' : 'Add FAQ'}
               </button>
               <button
                 type="button"
                 onClick={handleCancel}
-                className="bg-taupe/20 text-charcoal px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/30 transition-all"
+                disabled={submitting}
+                className="bg-taupe/20 text-charcoal px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
