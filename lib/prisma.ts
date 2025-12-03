@@ -4,13 +4,10 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-// Check if we're in build mode
+// Check if we're in build mode (only during actual build, not runtime)
 const isBuildTime = () => {
-  return (
-    !process.env.DATABASE_URL || 
-    process.env.NEXT_PHASE === 'phase-production-build' ||
-    (process.env.NODE_ENV === 'production' && !process.env.VERCEL && !process.env.DATABASE_URL)
-  )
+  // Only return true during actual Next.js build phase, not during runtime
+  return process.env.NEXT_PHASE === 'phase-production-build'
 }
 
 // Lazy getter for Prisma client - only creates it when accessed
