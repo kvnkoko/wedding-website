@@ -19,6 +19,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   // Safely sort photos
@@ -40,13 +41,48 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     return () => window.removeEventListener('resize', updatePhotosToShow)
   }, [])
 
+  // Preload upcoming photos
   useEffect(() => {
-    if (isAutoPlaying && sortedPhotos.length > photosToShow) {
+    const preloadImages = () => {
+      const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
+      const nextIndex = currentIndex >= maxIndex ? 0 : currentIndex + 1
+      const prevIndex = currentIndex <= 0 ? maxIndex : currentIndex - 1
+
+      // Preload next set of photos
+      for (let i = 0; i < photosToShow; i++) {
+        const nextPhotoIndex = (nextIndex + i) % sortedPhotos.length
+        if (sortedPhotos[nextPhotoIndex]?.url) {
+          const img = new window.Image()
+          img.src = sortedPhotos[nextPhotoIndex].url
+        }
+      }
+
+      // Preload previous set of photos
+      for (let i = 0; i < photosToShow; i++) {
+        const prevPhotoIndex = prevIndex - i >= 0 ? prevIndex - i : sortedPhotos.length + (prevIndex - i)
+        if (sortedPhotos[prevPhotoIndex]?.url) {
+          const img = new window.Image()
+          img.src = sortedPhotos[prevPhotoIndex].url
+        }
+      }
+    }
+
+    if (sortedPhotos.length > 0) {
+      preloadImages()
+    }
+  }, [currentIndex, sortedPhotos, photosToShow])
+
+  useEffect(() => {
+    if (isAutoPlaying && sortedPhotos.length > photosToShow && !isTransitioning) {
       intervalRef.current = setInterval(() => {
-        setCurrentIndex((prev) => {
-          const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
-          return prev >= maxIndex ? 0 : prev + 1
-        })
+        setIsTransitioning(true)
+        setTimeout(() => {
+          setCurrentIndex((prev) => {
+            const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
+            return prev >= maxIndex ? 0 : prev + 1
+          })
+          setTimeout(() => setIsTransitioning(false), 100)
+        }, 300)
       }, 5000) // Change photos every 5 seconds
     }
 
@@ -55,7 +91,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
         clearInterval(intervalRef.current)
       }
     }
-  }, [isAutoPlaying, sortedPhotos.length, photosToShow])
+  }, [isAutoPlaying, sortedPhotos.length, photosToShow, isTransitioning])
 
   // Reset index if photos change
   useEffect(() => {
@@ -66,10 +102,29 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }, [sortedPhotos.length, currentIndex, photosToShow])
 
   const goToSlide = (index: number) => {
-    const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
-    setCurrentIndex(Math.min(index, maxIndex))
+    setIsTransitioning(true)
+    setTimeout(() => {
+      const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
+      setCurrentIndex(Math.min(index, maxIndex))
+      setTimeout(() => setIsTransitioning(false), 50)
+    }, 300)
     setIsAutoPlaying(false)
     setTimeout(() => setIsAutoPlaying(true), 10000) // Resume auto-play after 10 seconds
+  }
+
+  const navigatePhotos = (direction: 'next' | 'prev') => {
+    setIsTransitioning(true)
+    setTimeout(() => {
+      const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
+      if (direction === 'next') {
+        setCurrentIndex((prev) => prev >= maxIndex ? 0 : prev + 1)
+      } else {
+        setCurrentIndex((prev) => prev <= 0 ? maxIndex : prev - 1)
+      }
+      setTimeout(() => setIsTransitioning(false), 50)
+    }, 300)
+    setIsAutoPlaying(false)
+    setTimeout(() => setIsAutoPlaying(true), 10000)
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -89,24 +144,16 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
 
     if (isLeftSwipe && sortedPhotos.length > photosToShow) {
-      setCurrentIndex((prev) => prev >= maxIndex ? 0 : prev + 1)
+      navigatePhotos('next')
     }
     if (isRightSwipe && sortedPhotos.length > photosToShow) {
-      setCurrentIndex((prev) => prev <= 0 ? maxIndex : prev - 1)
+      navigatePhotos('prev')
     }
   }
 
   if (sortedPhotos.length === 0) {
     return null
   }
-
-  // Get visible photos
-  const visiblePhotos = sortedPhotos.slice(currentIndex, currentIndex + photosToShow)
-  // If we're near the end and need to wrap, show some from the beginning
-  const needsWrap = currentIndex + photosToShow > sortedPhotos.length
-  const wrappedPhotos = needsWrap 
-    ? [...visiblePhotos, ...sortedPhotos.slice(0, photosToShow - visiblePhotos.length)]
-    : visiblePhotos
 
   return (
     <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-charcoal/5">
@@ -117,50 +164,74 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Photo Slides - Multiple Visible */}
-        <div className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8">
-          {wrappedPhotos.map((photo, displayIndex) => {
-            const actualIndex = currentIndex + displayIndex >= sortedPhotos.length
-              ? displayIndex - (sortedPhotos.length - currentIndex)
-              : currentIndex + displayIndex
-            const isVisible = displayIndex < photosToShow
+        {/* Photo Slides - Multiple Visible with Smooth Transitions */}
+        <div 
+          className="relative w-full h-full flex items-center justify-center"
+          style={{
+            transition: 'transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
+          }}
+        >
+          <div className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8 px-4 md:px-8">
+            {sortedPhotos.map((photo, index) => {
+              // Calculate if this photo should be visible
+              const isInRange = index >= currentIndex && index < currentIndex + photosToShow
+              const isWrapped = currentIndex + photosToShow > sortedPhotos.length && 
+                               index < (currentIndex + photosToShow - sortedPhotos.length)
+              const isVisible = isInRange || isWrapped
+              
+              // Calculate position relative to current index
+              let position = index - currentIndex
+              if (position < 0 && currentIndex + photosToShow > sortedPhotos.length) {
+                // Handle wrapping
+                position = sortedPhotos.length - currentIndex + index
+              }
 
-            return (
-              <div
-                key={photo.id}
-                className={`relative transition-all duration-700 ease-in-out ${
-                  isVisible
-                    ? 'opacity-100 scale-100'
-                    : 'opacity-0 scale-95'
-                }`}
-                style={{
-                  width: photosToShow === 1 ? '100%' : photosToShow === 2 ? 'calc(50% - 12px)' : 'calc(33.333% - 16px)',
-                  height: '100%',
-                  maxWidth: photosToShow === 1 ? '100%' : photosToShow === 2 ? '600px' : '500px',
-                }}
-              >
-                <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg bg-taupe/20">
-                  {photo.url && (
-                    <Image
-                      src={photo.url}
-                      alt={photo.alt || `Photo ${actualIndex + 1}`}
-                      fill
-                      className="object-contain"
-                      priority={displayIndex === 0}
-                      sizes={photosToShow === 1 ? "100vw" : photosToShow === 2 ? "50vw" : "33vw"}
-                      onError={(e) => {
-                        console.error('Error loading image:', photo.url)
-                        const target = e.target as HTMLImageElement
-                        if (target) {
-                          target.style.display = 'none'
-                        }
-                      }}
-                    />
-                  )}
+              return (
+                <div
+                  key={photo.id}
+                  className={`relative transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                    isVisible
+                      ? 'opacity-100 scale-100 z-10'
+                      : 'opacity-0 scale-95 z-0 pointer-events-none'
+                  }`}
+                  style={{
+                    width: photosToShow === 1 ? '100%' : photosToShow === 2 ? 'calc(50% - 12px)' : 'calc(33.333% - 16px)',
+                    height: '100%',
+                    maxWidth: photosToShow === 1 ? '100%' : photosToShow === 2 ? '600px' : '500px',
+                    transform: isVisible 
+                      ? `translateX(0) scale(1)` 
+                      : position < 0 
+                      ? `translateX(-20px) scale(0.95)`
+                      : `translateX(20px) scale(0.95)`,
+                    transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1), transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
+                  }}
+                >
+                  <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg bg-taupe/20">
+                    {photo.url && (
+                      <Image
+                        src={photo.url}
+                        alt={photo.alt || `Photo ${index + 1}`}
+                        fill
+                        className="object-contain"
+                        priority={isVisible && (position === 0 || (position === 1 && photosToShow > 1))}
+                        sizes={photosToShow === 1 ? "100vw" : photosToShow === 2 ? "50vw" : "33vw"}
+                        onError={(e) => {
+                          console.error('Error loading image:', photo.url)
+                          const target = e.target as HTMLImageElement
+                          if (target) {
+                            target.style.display = 'none'
+                          }
+                        }}
+                        onLoad={() => {
+                          // Image loaded successfully
+                        }}
+                      />
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
         </div>
 
         {/* Navigation Dots */}
@@ -185,13 +256,8 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
         {sortedPhotos.length > photosToShow && (
           <>
             <button
-              onClick={() => {
-                const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
-                setCurrentIndex((prev) => prev <= 0 ? maxIndex : prev - 1)
-                setIsAutoPlaying(false)
-                setTimeout(() => setIsAutoPlaying(true), 10000)
-              }}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-charcoal p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg backdrop-blur-sm"
+              onClick={() => navigatePhotos('prev')}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white text-charcoal p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg backdrop-blur-sm"
               aria-label="Previous photos"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -199,13 +265,8 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
               </svg>
             </button>
             <button
-              onClick={() => {
-                const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
-                setCurrentIndex((prev) => prev >= maxIndex ? 0 : prev + 1)
-                setIsAutoPlaying(false)
-                setTimeout(() => setIsAutoPlaying(true), 10000)
-              }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-charcoal p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg backdrop-blur-sm"
+              onClick={() => navigatePhotos('next')}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white text-charcoal p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg backdrop-blur-sm"
               aria-label="Next photos"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
