@@ -6,6 +6,10 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+export const dynamicParams = true
+
 interface Event {
   id: string
   name: string
