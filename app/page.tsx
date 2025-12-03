@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import RSVPEditForm from '@/components/RSVPEditForm'
 import PhotoCarousel from '@/components/PhotoCarousel'
 
@@ -117,14 +116,18 @@ function HomeContent() {
           <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 xl:gap-16">
             {/* Left Tulip - Hidden on mobile, visible on desktop */}
             <div className="hidden lg:block lg:flex-shrink-0 lg:w-48 xl:w-64 relative opacity-60">
-              <Image
+              <img
                 src="/tulips.png"
                 alt=""
-                width={256}
-                height={400}
-                className="object-contain"
+                className="object-contain w-full h-auto"
                 style={{ filter: 'invert(1) opacity(0.15)' }}
-                priority
+                onError={(e) => {
+                  // Hide if image fails to load
+                  const target = e.target as HTMLImageElement
+                  if (target) {
+                    target.style.display = 'none'
+                  }
+                }}
               />
             </div>
 
@@ -176,14 +179,18 @@ function HomeContent() {
 
             {/* Right Tulip - Hidden on mobile, visible on desktop */}
             <div className="hidden lg:block lg:flex-shrink-0 lg:w-48 xl:w-64 relative opacity-60">
-              <Image
+              <img
                 src="/tulips.png"
                 alt=""
-                width={256}
-                height={400}
-                className="object-contain"
+                className="object-contain w-full h-auto"
                 style={{ filter: 'invert(1) opacity(0.15)', transform: 'scaleX(-1)' }}
-                priority
+                onError={(e) => {
+                  // Hide if image fails to load
+                  const target = e.target as HTMLImageElement
+                  if (target) {
+                    target.style.display = 'none'
+                  }
+                }}
               />
             </div>
           </div>
