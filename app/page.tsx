@@ -70,48 +70,54 @@ function HomeContent() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center bg-cream overflow-hidden">
-        {/* Elegant border frame */}
-        <div className="absolute inset-8 border-2 border-charcoal/20 rounded-t-[50%] rounded-b-none"></div>
-        <div className="absolute inset-12 border border-charcoal/10 rounded-t-[50%] rounded-b-none"></div>
-        
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-          {/* Curved top text */}
-          <p className="font-body text-xs md:text-sm text-charcoal/60 mb-8 tracking-[0.2em] uppercase">
-            A Formal Celebration Between
-          </p>
+      <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden py-8 px-4">
+        {/* Elegant invitation card with arched borders - matching the elegant invitation design */}
+        <div className="relative w-full max-w-md mx-auto">
+          {/* Multiple elegant border lines creating the arched frame effect */}
+          <div className="absolute inset-0 border-2 border-charcoal/20 rounded-[60px] md:rounded-[80px]"></div>
+          <div className="absolute inset-[3px] border border-charcoal/15 rounded-[57px] md:rounded-[77px]"></div>
+          <div className="absolute inset-[6px] border border-charcoal/10 rounded-[54px] md:rounded-[74px]"></div>
+          <div className="absolute inset-[9px] border border-charcoal/5 rounded-[51px] md:rounded-[71px]"></div>
           
-          {/* Main Names */}
-          <div className="mb-6 flex flex-col items-center">
-            <h1 className="font-title text-5xl md:text-7xl lg:text-8xl text-charcoal mb-0">
-              Kevin Koko
-            </h1>
-            <p className="font-script text-3xl md:text-4xl text-charcoal/90 mt-6 mb-1">And</p>
-            <h1 className="font-title text-5xl md:text-7xl lg:text-8xl text-charcoal mt-0">
-              Tiffany Min
-            </h1>
-          </div>
-          
-          {/* Invitation line */}
-          <p className="font-script text-2xl md:text-3xl text-charcoal/80 mb-12">
-            invite you to celebrate with us
-          </p>
-          
-          {/* Date */}
-          <p className="font-title text-xl md:text-2xl text-charcoal/70 mb-8">
-            {dateRange}
-          </p>
-          
-          <Link
-            href={`${rsvpLink}?form=true`}
-            className="inline-block bg-charcoal text-white px-10 py-4 rounded-sm font-sans text-sm tracking-[0.2em] uppercase hover:bg-charcoal/90 transition-all"
-          >
-            RSVP
-          </Link>
-          
-          {/* Hashtag */}
-          <div className="absolute bottom-8 left-8 transform -rotate-90 origin-left">
-            <p className="font-script text-lg text-charcoal/60">#tiffandko</p>
+          {/* Inner content area with proper padding */}
+          <div className="relative z-10 text-center px-6 md:px-8 py-12 md:py-16">
+            {/* Curved top text - following the arch */}
+            <p className="font-body text-[10px] md:text-xs text-charcoal/60 mb-6 md:mb-8 tracking-[0.15em] uppercase leading-tight">
+              A Formal Celebration Between
+            </p>
+            
+            {/* Main Names */}
+            <div className="mb-4 md:mb-6 flex flex-col items-center">
+              <h1 className="font-title text-3xl md:text-5xl lg:text-6xl text-charcoal mb-0 leading-tight">
+                Kevin Koko
+              </h1>
+              <p className="font-script text-xl md:text-2xl text-charcoal/90 mt-3 md:mt-4 mb-1">And</p>
+              <h1 className="font-title text-3xl md:text-5xl lg:text-6xl text-charcoal mt-0 leading-tight">
+                Tiffany Min
+              </h1>
+            </div>
+            
+            {/* Invitation line */}
+            <p className="font-script text-lg md:text-xl text-charcoal/80 mb-8 md:mb-10">
+              invite you to celebrate with us
+            </p>
+            
+            {/* Date */}
+            <p className="font-title text-base md:text-lg text-charcoal/70 mb-6 md:mb-8">
+              {dateRange}
+            </p>
+            
+            <Link
+              href={`${rsvpLink}?form=true`}
+              className="inline-block bg-charcoal text-white px-8 md:px-10 py-3 md:py-4 rounded-sm font-sans text-xs md:text-sm tracking-[0.15em] uppercase hover:bg-charcoal/90 transition-all"
+            >
+              RSVP
+            </Link>
+            
+            {/* Hashtag - positioned on left side */}
+            <div className="absolute bottom-4 md:bottom-6 left-4 md:left-6 transform -rotate-90 origin-left">
+              <p className="font-script text-sm md:text-base text-charcoal/60">#tiffandko</p>
+            </div>
           </div>
         </div>
       </section>
