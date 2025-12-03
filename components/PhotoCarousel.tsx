@@ -177,9 +177,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           <div 
             className="relative h-full flex items-stretch"
             style={{
-              transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}%))`,
+              transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}vw - ${currentIndex * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px))`,
               transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              width: `calc(${sortedPhotos.length * (100 / photosToShow)}% + ${sortedPhotos.length * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px)`,
+              width: `calc(${sortedPhotos.length * (100 / photosToShow)}vw + ${sortedPhotos.length * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px)`,
               willChange: 'transform',
             }}
           >
@@ -197,9 +197,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 position = sortedPhotos.length - currentIndex + index
               }
 
-              // Container width - each photo takes up 1/photosToShow of the viewport, accounting for gaps
+              // Container width - each photo takes up 1/photosToShow of the viewport width
               const gapSize = photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16
-              const containerWidth = `calc(${100 / photosToShow}% - ${gapSize * (photosToShow - 1) / photosToShow}px)`
+              const containerWidth = `calc(${100 / photosToShow}vw - ${gapSize * (photosToShow - 1) / photosToShow}px)`
 
               return (
                 <div
