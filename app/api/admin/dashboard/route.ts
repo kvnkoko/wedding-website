@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { verifyAdminSession } from '@/lib/auth'
 
+// Force dynamic rendering and prevent static analysis
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'
 
 export async function GET(request: NextRequest) {
-  // Prevent execution during build time
-  if (process.env.NEXT_PHASE === 'phase-production-build') {
-    return NextResponse.json({ error: 'Service unavailable during build' }, { status: 503 })
-  }
-
   try {
+    // Return empty data during build to prevent database access
+    if (!process.env.DATABASE_URL) {
+      return NextResponse.json({ stats: [], totals: { totalRsvps: 0, totalPlusOnes: 0 } })
+    }
+
+    // Lazy load to prevent import during build analysis
+    const { verifyAdminSession } = await import('@/lib/auth')
+    const { prisma } = await import('@/lib/prisma')
+    
     const admin = await verifyAdminSession(request)
     if (!admin) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
