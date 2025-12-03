@@ -11,20 +11,22 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Skip auth check for login page
+    if (pathname === '/admin/login') {
+      setLoading(false)
+      return
+    }
+
     async function checkAuth() {
       try {
         const res = await fetch('/api/admin/dashboard')
         if (res.ok) {
           setAuthenticated(true)
         } else {
-          if (pathname !== '/admin/login') {
-            router.push('/admin/login')
-          }
-        }
-      } catch {
-        if (pathname !== '/admin/login') {
           router.push('/admin/login')
         }
+      } catch {
+        router.push('/admin/login')
       } finally {
         setLoading(false)
       }
