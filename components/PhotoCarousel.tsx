@@ -75,8 +75,10 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     }
   }, [currentIndex, sortedPhotos, photosToShow])
 
+  // Continuous smooth scrolling animation
   useEffect(() => {
     if (isAutoPlaying && sortedPhotos.length > photosToShow && !isTransitioning) {
+      // Smooth scroll every 4 seconds
       intervalRef.current = setInterval(() => {
         setIsTransitioning(true)
         setTimeout(() => {
@@ -86,7 +88,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           })
           setTimeout(() => setIsTransitioning(false), 100)
         }, 300)
-      }, 5000) // Change photos every 5 seconds
+      }, 4000) // Change photos every 4 seconds for smoother experience
     }
 
     return () => {
@@ -169,12 +171,17 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
       >
         {/* Photo Slides - Multiple Visible with Smooth Transitions */}
         <div 
-          className="relative w-full h-full flex items-stretch justify-center"
-          style={{
-            transition: 'transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
-          }}
+          className="relative w-full h-full overflow-hidden"
         >
-          <div className="relative w-full h-full flex items-stretch justify-center gap-4 md:gap-6 lg:gap-8 px-4 md:px-8" style={{ width: '100%', maxWidth: '100%' }}>
+          <div 
+            className="relative h-full flex items-stretch gap-4 md:gap-6 lg:gap-8 px-4 md:px-8"
+            style={{
+              transform: `translateX(-${currentIndex * (100 / photosToShow)}%)`,
+              transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              width: `${(sortedPhotos.length / photosToShow) * 100}%`,
+              willChange: 'transform',
+            }}
+          >
             {sortedPhotos.map((photo, index) => {
               // Calculate if this photo should be visible
               const isInRange = index >= currentIndex && index < currentIndex + photosToShow
@@ -200,21 +207,12 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
               return (
                 <div
                   key={photo.id}
-                  className={`relative transition-all duration-1000 ease-[cubic-bezier(0.4,0,0.2,1)] ${
-                    isVisible
-                      ? 'opacity-100 scale-100 z-10'
-                      : 'opacity-0 scale-95 z-0 pointer-events-none'
-                  }`}
+                  className="relative"
                   style={{
                     width: containerWidth,
                     height: '100%',
                     flexShrink: 0,
-                    transform: isVisible 
-                      ? `translateX(0) scale(1)` 
-                      : position < 0 
-                      ? `translateX(-20px) scale(0.95)`
-                      : `translateX(20px) scale(0.95)`,
-                    transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1), transform 1000ms cubic-bezier(0.4, 0, 0.2, 1), width 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
+                    minWidth: containerWidth,
                   }}
                 >
                   <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg flex items-center justify-center bg-cream">
