@@ -5,6 +5,15 @@ import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if DATABASE_URL is set
+    if (!process.env.DATABASE_URL) {
+      console.error('DATABASE_URL is not set')
+      return NextResponse.json(
+        { error: 'Database not configured' },
+        { status: 500 }
+      )
+    }
+
     const body = await request.json()
     const { email, password } = body
 
@@ -15,46 +24,62 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const admin = await prisma.adminUser.findUnique({
-      where: { email },
-    })
+    // Test database connection first
+    try {
+      const admin = await prisma.adminUser.findUnique({
+        where: { email },
+      })
 
-    if (!admin) {
+      if (!admin) {
+        return NextResponse.json(
+          { error: 'Invalid credentials' },
+          { status: 401 }
+        )
+      }
+
+      const isValid = await verifyPassword(password, admin.passwordHash)
+
+      if (!isValid) {
+        return NextResponse.json(
+          { error: 'Invalid credentials' },
+          { status: 401 }
+        )
+      }
+
+      // Set session cookie (simplified - in production use proper session management)
+      const cookieStore = await cookies()
+      cookieStore.set('admin_session', admin.id, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7, // 7 days
+      })
+
+      return NextResponse.json({
+        success: true,
+        admin: {
+          id: admin.id,
+          email: admin.email,
+        },
+      })
+    } catch (dbError: any) {
+      console.error('Database error:', dbError)
       return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
+        { 
+          error: 'Database connection failed',
+          details: process.env.NODE_ENV === 'development' ? dbError?.message : undefined
+        },
+        { status: 500 }
       )
     }
-
-    const isValid = await verifyPassword(password, admin.passwordHash)
-
-    if (!isValid) {
-      return NextResponse.json(
-        { error: 'Invalid credentials' },
-        { status: 401 }
-      )
-    }
-
-    // Set session cookie (simplified - in production use proper session management)
-    const cookieStore = await cookies()
-    cookieStore.set('admin_session', admin.id, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    })
-
-    return NextResponse.json({
-      success: true,
-      admin: {
-        id: admin.id,
-        email: admin.email,
-      },
-    })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error logging in:', error)
+    // Return more detailed error in development, generic in production
+    const errorMessage = process.env.NODE_ENV === 'development' 
+      ? error?.message || 'Unknown error'
+      : 'Internal server error'
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: errorMessage, details: process.env.NODE_ENV === 'development' ? String(error) : undefined },
       { status: 500 }
     )
   }
