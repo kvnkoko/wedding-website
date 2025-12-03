@@ -71,7 +71,61 @@ function HomeContent() {
     <div className="min-h-screen">
       {/* Hero Section - Clean Minimal Design Without Arch */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto w-full">
+        {/* Elegant Tulip Illustrations - Left Side */}
+        <div className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-32 lg:w-48 xl:w-64 opacity-10 lg:opacity-15 pointer-events-none" style={{ zIndex: 0 }}>
+          <svg viewBox="0 0 200 400" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+            {/* Tulip Flower */}
+            <path d="M 100,40 Q 90,20 80,30 Q 70,40 75,55 Q 80,70 90,75 Q 100,80 110,75 Q 120,70 125,55 Q 130,40 120,30 Q 110,20 100,40 Z" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M 100,40 Q 95,50 100,60 Q 105,50 100,40" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.25)" strokeWidth="1"/>
+            {/* Stem */}
+            <path d="M 100,80 Q 95,120 90,180 Q 85,240 80,300 Q 75,360 70,380" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="2" strokeLinecap="round"/>
+            {/* Large Leaf 1 */}
+            <path d="M 70,200 Q 40,220 30,250 Q 25,280 35,300 Q 50,310 65,300 Q 75,290 80,270 Q 85,250 80,230 Q 75,210 70,200" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M 50,250 Q 45,260 50,270" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.2)" strokeWidth="1"/>
+            {/* Large Leaf 2 */}
+            <path d="M 130,220 Q 160,240 170,270 Q 175,300 165,320 Q 150,330 135,320 Q 125,310 120,290 Q 115,270 120,250 Q 125,230 130,220" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M 150,270 Q 155,280 150,290" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.2)" strokeWidth="1"/>
+            {/* Decorative Elements */}
+            <circle cx="60" cy="150" r="2" fill="rgba(44, 44, 44, 0.2)"/>
+            <circle cx="140" cy="180" r="1.5" fill="rgba(44, 44, 44, 0.15)"/>
+          </svg>
+        </div>
+
+        {/* Elegant Tulip Illustrations - Right Side */}
+        <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-32 lg:w-48 xl:w-64 opacity-10 lg:opacity-15 pointer-events-none" style={{ zIndex: 0 }}>
+          <svg viewBox="0 0 200 400" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+            {/* Tulip Flower */}
+            <path d="M 100,40 Q 110,20 120,30 Q 130,40 125,55 Q 120,70 110,75 Q 100,80 90,75 Q 80,70 75,55 Q 70,40 80,30 Q 90,20 100,40 Z" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M 100,40 Q 105,50 100,60 Q 95,50 100,40" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.25)" strokeWidth="1"/>
+            {/* Stem */}
+            <path d="M 100,80 Q 105,120 110,180 Q 115,240 120,300 Q 125,360 130,380" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="2" strokeLinecap="round"/>
+            {/* Large Leaf 1 */}
+            <path d="M 130,200 Q 160,220 170,250 Q 175,280 165,300 Q 150,310 135,300 Q 125,290 120,270 Q 115,250 120,230 Q 125,210 130,200" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M 150,250 Q 155,260 150,270" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.2)" strokeWidth="1"/>
+            {/* Large Leaf 2 */}
+            <path d="M 70,220 Q 40,240 30,270 Q 25,300 35,320 Q 50,330 65,320 Q 75,310 80,290 Q 85,270 80,250 Q 75,230 70,220" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.25)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M 50,270 Q 45,280 50,290" 
+                  fill="none" stroke="rgba(44, 44, 44, 0.2)" strokeWidth="1"/>
+            {/* Decorative Elements */}
+            <circle cx="140" cy="150" r="2" fill="rgba(44, 44, 44, 0.2)"/>
+            <circle cx="60" cy="180" r="1.5" fill="rgba(44, 44, 44, 0.15)"/>
+          </svg>
+        </div>
+
+        <div className="max-w-5xl mx-auto w-full relative z-10">
           <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0">
             {/* Subtitle */}
             <p className="font-body text-xs sm:text-sm md:text-base lg:text-lg text-charcoal/50 tracking-[0.2em] uppercase mb-4">
