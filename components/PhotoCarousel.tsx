@@ -26,10 +26,19 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     ? [...photos].sort((a, b) => (a.order || 0) - (b.order || 0))
     : []
 
-  // Show 3 photos on desktop, 2 on tablet, 1 on mobile
-  const photosToShow = typeof window !== 'undefined' 
-    ? window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1
-    : 3
+  const [photosToShow, setPhotosToShow] = useState(3)
+
+  useEffect(() => {
+    const updatePhotosToShow = () => {
+      if (typeof window !== 'undefined') {
+        setPhotosToShow(window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1)
+      }
+    }
+    
+    updatePhotosToShow()
+    window.addEventListener('resize', updatePhotosToShow)
+    return () => window.removeEventListener('resize', updatePhotosToShow)
+  }, [])
 
   useEffect(() => {
     if (isAutoPlaying && sortedPhotos.length > photosToShow) {
