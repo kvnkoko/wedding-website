@@ -1,35 +1,32 @@
 # Update Production Database for Photos
 
-The Photo table needs to be created in your production database. Here's how:
+The Photo table needs to be created in your production database. The error you're seeing is because the table doesn't exist yet.
 
-## Option 1: Using Vercel CLI (Recommended)
+## Quick Fix (Easiest)
 
-1. Install Vercel CLI (if not already installed):
+1. Get your production DATABASE_URL from Vercel:
+   - Go to Vercel Dashboard → Your Project → Settings → Environment Variables
+   - Copy the `DATABASE_URL` value (the one for Production)
+
+2. Run this command (replace with your actual URL):
    ```bash
-   npm i -g vercel
+   DATABASE_URL="your-production-neon-url-here" npx prisma db push
    ```
 
-2. Link to your project:
+## Or Use the Script
+
+1. Get your production DATABASE_URL from Vercel
+2. Run:
    ```bash
-   vercel link
+   export DATABASE_URL="your-production-neon-url-here"
+   ./update-production-db.sh
    ```
 
-3. Pull production environment variables:
-   ```bash
-   vercel env pull .env.production
-   ```
+## Or Use Neon SQL Editor
 
-4. Run the migration:
-   ```bash
-   DATABASE_URL=$(grep DATABASE_URL .env.production | cut -d '=' -f2) npx prisma db push
-   ```
-
-## Option 2: Using Neon Dashboard
-
-1. Go to your Neon dashboard: https://console.neon.tech
-2. Select your project
-3. Go to "SQL Editor"
-4. Run this SQL:
+1. Go to https://console.neon.tech
+2. Select your project → SQL Editor
+3. Run this SQL:
 
 ```sql
 CREATE TABLE IF NOT EXISTS "photos" (
@@ -43,17 +40,5 @@ CREATE TABLE IF NOT EXISTS "photos" (
 );
 ```
 
-## Option 3: Using Prisma Studio (Local with Production DB)
-
-1. Set your production DATABASE_URL:
-   ```bash
-   export DATABASE_URL="your-production-neon-url"
-   ```
-
-2. Run:
-   ```bash
-   npx prisma db push
-   ```
-
-After running any of these, your photos should save successfully!
+After running any of these, try uploading photos again - they should save successfully! 🎉
 
