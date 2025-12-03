@@ -4,7 +4,6 @@ import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import RSVPEditForm from '@/components/RSVPEditForm'
-import TulipIllustration from '@/components/TulipIllustration'
 
 function HomeContent() {
   const searchParams = useSearchParams()
@@ -72,9 +71,6 @@ function HomeContent() {
     <div className="min-h-screen">
       {/* Hero Section - Clean Minimal Design Without Arch */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
-        {/* Beautiful Detailed Tulip Illustrations */}
-        <TulipIllustration side="left" />
-        <TulipIllustration side="right" />
 
         <div className="max-w-5xl mx-auto w-full relative z-10">
           <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0">
