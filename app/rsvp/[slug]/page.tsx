@@ -154,7 +154,7 @@ export default function RSVPFormPage() {
           <div className="bg-white p-12 rounded-sm shadow-sm">
             <h1 className="font-serif text-5xl text-charcoal mb-8 text-center">Thank You!</h1>
             <p className="font-sans text-lg text-charcoal/70 mb-8 text-center">
-              Your RSVP has been received. We're looking forward to celebrating with you!
+              Your RSVP has been received. We&apos;re looking forward to celebrating with you!
             </p>
 
             <div className="space-y-6 mb-8">
