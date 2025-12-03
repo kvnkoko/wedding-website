@@ -1,0 +1,103 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  dateTime  DateTime
+  venueName String
+  city      String
+  capacity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  inviteLinkConfigs InviteLinkConfigEvent[]
+  rsvpResponses     RsvpEventResponse[]
+
+  @@map("events")
+}
+
+model InviteLinkConfig {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  label     String
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events InviteLinkConfigEvent[]
+  rsvps  Rsvp[]
+
+  @@map("invite_link_configs")
+}
+
+model InviteLinkConfigEvent {
+  id                 String   @id @default(cuid())
+  inviteLinkConfigId String
+  eventId            String
+  createdAt          DateTime @default(now())
+
+  inviteLinkConfig InviteLinkConfig @relation(fields: [inviteLinkConfigId], references: [id], onDelete: Cascade)
+  event            Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([inviteLinkConfigId, eventId])
+  @@map("invite_link_config_events")
+}
+
+model Rsvp {
+  id                 String   @id @default(cuid())
+  inviteLinkConfigId String
+  name               String
+  phone              String
+  email              String?
+  side               String   // "Bride", "Groom", "Both", "Other"
+  plusOne            Boolean  @default(false)
+  plusOneName        String?
+  plusOneRelation    String?
+  dietaryRequirements String?
+  notes              String?
+  editToken          String   @unique
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  inviteLinkConfig InviteLinkConfig @relation(fields: [inviteLinkConfigId], references: [id])
+  eventResponses   RsvpEventResponse[]
+
+  @@map("rsvps")
+}
+
+model RsvpEventResponse {
+  id        String   @id @default(cuid())
+  rsvpId    String
+  eventId   String
+  status    String   // "YES", "NO", "MAYBE"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rsvp  Rsvp  @relation(fields: [rsvpId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([rsvpId, eventId])
+  @@map("rsvp_event_responses")
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@map("admin_users")
+}
+

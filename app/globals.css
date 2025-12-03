@@ -1,0 +1,24 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: var(--font-artica);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-elgraine);
+  }
+  
+  .font-script {
+    font-family: var(--font-script);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
