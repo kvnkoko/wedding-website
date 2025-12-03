@@ -50,32 +50,44 @@ async function main() {
 
   // Create Invite Link Configs
   const signingOnly = await prisma.inviteLinkConfig.upsert({
-    where: { slug: 'signing-only' },
-    update: {},
+    where: { slug: 'civil-signing' },
+    update: {
+      slug: 'civil-signing',
+      label: 'Civil Signing',
+      notes: 'Invitation for civil signing ceremony',
+    },
     create: {
-      slug: 'signing-only',
-      label: 'Civil Signing Only',
-      notes: 'Invitation for civil signing ceremony only',
+      slug: 'civil-signing',
+      label: 'Civil Signing',
+      notes: 'Invitation for civil signing ceremony',
     },
   })
 
   const mandalayOnly = await prisma.inviteLinkConfig.upsert({
-    where: { slug: 'mandalay-only' },
-    update: {},
+    where: { slug: 'mandalay-celebration' },
+    update: {
+      slug: 'mandalay-celebration',
+      label: 'Mandalay Celebration',
+      notes: 'Invitation for Mandalay celebration',
+    },
     create: {
-      slug: 'mandalay-only',
-      label: 'Mandalay Celebration Only',
-      notes: 'Invitation for Mandalay celebration only',
+      slug: 'mandalay-celebration',
+      label: 'Mandalay Celebration',
+      notes: 'Invitation for Mandalay celebration',
     },
   })
 
   const yangonReceptionOnly = await prisma.inviteLinkConfig.upsert({
-    where: { slug: 'yangon-reception-only' },
-    update: {},
+    where: { slug: 'yangon-reception' },
+    update: {
+      slug: 'yangon-reception',
+      label: 'Yangon Reception',
+      notes: 'Invitation for Yangon reception',
+    },
     create: {
-      slug: 'yangon-reception-only',
-      label: 'Yangon Reception Only',
-      notes: 'Invitation for Yangon reception only',
+      slug: 'yangon-reception',
+      label: 'Yangon Reception',
+      notes: 'Invitation for Yangon reception',
     },
   })
 

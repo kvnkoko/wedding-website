@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
+import Link from 'next/link'
 import { formatDate } from '@/lib/utils'
 
 interface Event {
@@ -36,6 +37,7 @@ interface FormData {
 export default function RSVPFormPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const slug = params.slug as string
   const [config, setConfig] = useState<InviteLinkConfig | null>(null)
   const [loading, setLoading] = useState(true)
@@ -58,7 +60,25 @@ export default function RSVPFormPage() {
 
   const plusOne = watch('plusOne')
 
+  // Redirect to home page and store slug (only if not showing form)
   useEffect(() => {
+    const showForm = searchParams.get('form') === 'true'
+    if (slug && typeof window !== 'undefined' && !showForm) {
+      // Store the slug in localStorage
+      localStorage.setItem('rsvpSlug', `/rsvp/${slug}`)
+      // Redirect to home page
+      router.push('/')
+      return
+    }
+  }, [slug, router, searchParams])
+
+  useEffect(() => {
+    // Only fetch config if we're showing the form (not redirecting)
+    const showForm = searchParams.get('form') === 'true'
+    if (!showForm) {
+      return
+    }
+
     async function fetchConfig() {
       try {
         const res = await fetch(`/api/rsvp/config/${slug}`)
@@ -75,7 +95,7 @@ export default function RSVPFormPage() {
       }
     }
     fetchConfig()
-  }, [slug, router])
+  }, [slug, router, searchParams])
 
   const onSubmit = async (data: FormData) => {
     setSubmitting(true)
@@ -101,6 +121,12 @@ export default function RSVPFormPage() {
     }
   }
 
+  // If redirecting (no form param), show nothing while redirecting
+  const showForm = searchParams.get('form') === 'true'
+  if (!showForm) {
+    return null
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen py-20 px-4 bg-cream flex items-center justify-center">
@@ -124,7 +150,7 @@ export default function RSVPFormPage() {
   if (submitted && submissionData) {
     return (
       <div className="min-h-screen py-20 px-4 bg-cream">
-        <div className="max-w-3xl mx-auto py-20">
+        <div className="max-w-3xl mx-auto">
           <div className="bg-white p-12 rounded-sm shadow-sm">
             <h1 className="font-serif text-5xl text-charcoal mb-8 text-center">Thank You!</h1>
             <p className="font-sans text-lg text-charcoal/70 mb-8 text-center">
@@ -164,16 +190,9 @@ export default function RSVPFormPage() {
                 </div>
               </div>
 
-              {submissionData.dietaryRequirements && (
-                <div>
-                  <h2 className="font-serif text-2xl text-charcoal mb-4">Dietary Requirements</h2>
-                  <p className="font-sans text-base text-charcoal/70">{submissionData.dietaryRequirements}</p>
-                </div>
-              )}
-
               {submissionData.notes && (
                 <div>
-                  <h2 className="font-serif text-2xl text-charcoal mb-4">Notes</h2>
+                  <h2 className="font-serif text-2xl text-charcoal mb-4">Note for the Bride & Groom</h2>
                   <p className="font-sans text-base text-charcoal/70">{submissionData.notes}</p>
                 </div>
               )}
@@ -198,6 +217,11 @@ export default function RSVPFormPage() {
       <div className="max-w-3xl mx-auto">
         <div className="bg-white p-12 rounded-sm shadow-sm">
           <h1 className="font-serif text-5xl text-charcoal mb-4">RSVP</h1>
+          {config.label && (
+            <p className="font-sans text-sm text-charcoal/60 mb-4 uppercase tracking-wider">
+              Invitation: {config.label.replace(/\s+Only\s*$/i, '')}
+            </p>
+          )}
           <p className="font-sans text-base text-charcoal/70 mb-8">
             Please fill out the form below to RSVP for your invited events.
           </p>
@@ -265,6 +289,7 @@ export default function RSVPFormPage() {
             {/* Event Responses */}
             <section>
               <h2 className="font-serif text-2xl text-charcoal mb-6">Event Responses</h2>
+              {config && config.events && config.events.length > 0 ? (
               <div className="space-y-6">
                 {config.events.map((event) => (
                   <div key={event.id} className="border border-taupe/30 p-6 rounded-sm">
@@ -291,19 +316,17 @@ export default function RSVPFormPage() {
                         />
                         <span className="font-sans text-sm text-charcoal">No</span>
                       </label>
-                      <label className="flex items-center">
-                        <input
-                          type="radio"
-                          {...register(`eventResponses.${event.id}`)}
-                          value="MAYBE"
-                          className="mr-2"
-                        />
-                        <span className="font-sans text-sm text-charcoal">Maybe</span>
-                      </label>
                     </div>
                   </div>
                 ))}
               </div>
+              ) : (
+                <div className="border border-taupe/30 p-6 rounded-sm">
+                  <p className="font-sans text-sm text-charcoal/70">
+                    No events found for this invitation. Please contact the administrator.
+                  </p>
+                </div>
+              )}
             </section>
 
             {/* Plus One */}
@@ -351,19 +374,7 @@ export default function RSVPFormPage() {
               <div className="space-y-4">
                 <div>
                   <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                    Dietary Requirements
-                  </label>
-                  <textarea
-                    {...register('dietaryRequirements')}
-                    rows={4}
-                    placeholder="Please let us know about any dietary restrictions or allergies..."
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                    Notes
+                    Leave a note for the Bride & Groom!
                   </label>
                   <textarea
                     {...register('notes')}

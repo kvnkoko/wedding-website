@@ -113,7 +113,7 @@ export default function AdminInviteLinksPage() {
       </div>
 
       {showForm && (
-        <div className="bg-white p-8 rounded-sm shadow-sm mb-8">
+        <div className="bg-white p-8 rounded-sm shadow-sm mb-8" key={editing?.id || 'new'}>
           <h2 className="font-serif text-2xl text-charcoal mb-6">
             {editing ? 'Edit Invite Link' : 'Create Invite Link'}
           </h2>
@@ -126,6 +126,7 @@ export default function AdminInviteLinksPage() {
                 <input
                   type="text"
                   name="slug"
+                  key={`slug-${editing?.id || 'new'}`}
                   defaultValue={editing?.slug || ''}
                   required
                   className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
@@ -141,6 +142,7 @@ export default function AdminInviteLinksPage() {
                 <input
                   type="text"
                   name="label"
+                  key={`label-${editing?.id || 'new'}`}
                   defaultValue={editing?.label || ''}
                   required
                   className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
@@ -153,6 +155,7 @@ export default function AdminInviteLinksPage() {
               </label>
               <textarea
                 name="notes"
+                key={`notes-${editing?.id || 'new'}`}
                 defaultValue={editing?.notes || ''}
                 rows={3}
                 className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
@@ -169,6 +172,7 @@ export default function AdminInviteLinksPage() {
                       type="checkbox"
                       name="events"
                       value={event.id}
+                      key={`event-${event.id}-${editing?.id || 'new'}`}
                       defaultChecked={
                         editing?.events.some((e) => e.event.id === event.id) || false
                       }
@@ -206,12 +210,12 @@ export default function AdminInviteLinksPage() {
           <div key={config.id} className="bg-white p-6 rounded-sm shadow-sm">
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="font-serif text-2xl text-charcoal mb-2">{config.label}</h3>
+                <h3 className="font-serif text-2xl text-charcoal mb-2">{config.label.replace(/\s+Only\s*$/i, '')}</h3>
                 <p className="font-sans text-sm text-charcoal/70 mb-2">
                   Slug: <span className="font-mono text-sage">{config.slug}</span>
                 </p>
                 {config.notes && (
-                  <p className="font-sans text-sm text-charcoal/60">{config.notes}</p>
+                  <p className="font-sans text-sm text-charcoal/60">{config.notes.replace(/\s+only\s*$/i, '')}</p>
                 )}
               </div>
               <button

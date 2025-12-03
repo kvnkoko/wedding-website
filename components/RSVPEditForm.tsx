@@ -74,7 +74,6 @@ export default function RSVPEditForm({ editToken }: { editToken: string }) {
         setValue('plusOne', data.rsvp.plusOne)
         setValue('plusOneName', data.rsvp.plusOneName || '')
         setValue('plusOneRelation', data.rsvp.plusOneRelation || '')
-        setValue('dietaryRequirements', data.rsvp.dietaryRequirements || '')
         setValue('notes', data.rsvp.notes || '')
 
         // Set event responses
@@ -292,15 +291,6 @@ export default function RSVPEditForm({ editToken }: { editToken: string }) {
                         />
                         <span className="font-sans text-sm text-charcoal">No</span>
                       </label>
-                      <label className="flex items-center">
-                        <input
-                          type="radio"
-                          {...register(`eventResponses.${event.id}`)}
-                          value="MAYBE"
-                          className="mr-2"
-                        />
-                        <span className="font-sans text-sm text-charcoal">Maybe</span>
-                      </label>
                     </div>
                   </div>
                 ))}
@@ -352,19 +342,7 @@ export default function RSVPEditForm({ editToken }: { editToken: string }) {
               <div className="space-y-4">
                 <div>
                   <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                    Dietary Requirements
-                  </label>
-                  <textarea
-                    {...register('dietaryRequirements')}
-                    rows={4}
-                    placeholder="Please let us know about any dietary restrictions or allergies..."
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                    Notes
+                    Leave a note for the Bride & Groom!
                   </label>
                   <textarea
                     {...register('notes')}

@@ -105,9 +105,9 @@ The seed script creates:
   - Yangon Reception (Mar 22, 2025) - Lotte Hotel Yangon
 
 - **5 Invite Link Configs**:
-  - `signing-only` - Civil Signing only
-  - `mandalay-only` - Mandalay Celebration only
-  - `yangon-reception-only` - Yangon Reception only
+  - `civil-signing` - Civil Signing
+  - `mandalay-celebration` - Mandalay Celebration
+  - `yangon-reception` - Yangon Reception
   - `signing-and-yangon` - Civil Signing + Yangon Reception
   - `mandalay-and-yangon` - Mandalay + Yangon Reception
 
@@ -127,7 +127,7 @@ https://yourdomain.com/rsvp/[slug]
 ```
 
 Example:
-- `https://yourdomain.com/rsvp/signing-only`
+- `https://yourdomain.com/rsvp/civil-signing`
 - `https://yourdomain.com/rsvp/mandalay-and-yangon`
 
 Each link only shows the events that guest is invited to.
