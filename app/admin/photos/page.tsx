@@ -191,28 +191,42 @@ export default function AdminPhotosPage() {
         })
 
         const urls = await Promise.all(uploadPromises)
+        console.log(`Successfully uploaded ${urls.length} files, now saving to database...`)
 
-        // Add all photos to database
+        // Add all photos to database - use Promise.allSettled to continue even if some fail
         const addPromises = urls.map(async (url) => {
-          const res = await fetch('/api/photos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              url,
-              alt: newPhotoAlt.trim() || null,
-            }),
-          })
+          try {
+            const res = await fetch('/api/photos', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                url,
+                alt: newPhotoAlt.trim() || null,
+              }),
+            })
 
-          if (!res.ok) {
-            const error = await res.json()
-            throw new Error(error.error || `Failed to save photo: ${url}`)
+            if (!res.ok) {
+              const error = await res.json()
+              throw new Error(error.error || `Failed to save photo: ${url}`)
+            }
+
+            return { success: true, data: await res.json() }
+          } catch (error: any) {
+            console.error(`Error saving photo ${url}:`, error)
+            return { success: false, error: error.message, url }
           }
-
-          return res.json()
         })
 
-        const results = await Promise.all(addPromises)
-        console.log(`Successfully added ${results.length} photos to database`)
+        const results = await Promise.allSettled(addPromises)
+        const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length
+        const failed = results.length - successful
+
+        if (failed > 0) {
+          console.warn(`${failed} photos failed to save to database`)
+          alert(`Uploaded ${urls.length} photos, but ${failed} failed to save. Check console for details.`)
+        } else {
+          console.log(`Successfully added ${successful} photos to database`)
+        }
       } else {
         if (!newPhotoUrl.trim()) {
           alert('Please enter a photo URL')
