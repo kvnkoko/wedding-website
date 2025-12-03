@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import RSVPEditForm from '@/components/RSVPEditForm'
+import TulipIllustration from '@/components/TulipIllustration'
 
 function HomeContent() {
   const searchParams = useSearchParams()
@@ -71,83 +72,9 @@ function HomeContent() {
     <div className="min-h-screen">
       {/* Hero Section - Clean Minimal Design Without Arch */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
-        {/* Elegant Tulip Illustrations - Left Side (Vintage Botanical Style) */}
-        <div className="hidden md:block absolute left-0 top-1/2 -translate-y-1/2 w-40 lg:w-56 xl:w-72 opacity-8 lg:opacity-12 pointer-events-none" style={{ zIndex: 0 }}>
-          <svg viewBox="0 0 180 500" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
-            {/* Detailed Tulip Flower - Vintage Botanical Style */}
-            <g opacity="0.4">
-              {/* Outer Petals */}
-              <path d="M 90,35 Q 75,15 60,28 Q 50,40 55,60 Q 60,75 70,82 Q 80,88 90,85 Q 100,88 110,82 Q 120,75 125,60 Q 130,40 120,28 Q 105,15 90,35" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.4)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              {/* Inner Petal Details */}
-              <path d="M 90,35 Q 85,50 90,65 Q 95,50 90,35" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.35)" strokeWidth="1.2"/>
-              <path d="M 75,50 Q 80,55 85,50" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="0.8"/>
-              <path d="M 105,50 Q 100,55 95,50" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="0.8"/>
-              {/* Stem with natural curve */}
-              <path d="M 90,88 Q 88,130 85,200 Q 82,270 78,340 Q 75,400 72,450" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.35)" strokeWidth="2.2" strokeLinecap="round"/>
-              {/* Large Wrapping Leaf 1 - Detailed Veins */}
-              <path d="M 75,220 Q 40,240 25,280 Q 18,320 30,350 Q 50,365 70,360 Q 85,355 95,340 Q 100,320 95,300 Q 88,280 80,260 Q 77,240 75,220" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M 50,280 Q 45,295 50,310" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.25)" strokeWidth="1"/>
-              <path d="M 60,300 Q 55,310 60,320" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.2)" strokeWidth="0.8"/>
-              {/* Large Wrapping Leaf 2 */}
-              <path d="M 105,240 Q 140,260 155,300 Q 162,340 150,370 Q 130,385 110,380 Q 95,375 85,360 Q 80,340 85,320 Q 92,300 100,280 Q 103,260 105,240" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M 130,300 Q 135,315 130,330" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.25)" strokeWidth="1"/>
-              <path d="M 120,320 Q 125,330 120,340" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.2)" strokeWidth="0.8"/>
-              {/* Small Decorative Elements */}
-              <circle cx="55" cy="160" r="1.5" fill="rgba(44, 44, 44, 0.2)"/>
-              <circle cx="125" cy="190" r="1.2" fill="rgba(44, 44, 44, 0.18)"/>
-            </g>
-          </svg>
-        </div>
-
-        {/* Elegant Tulip Illustrations - Right Side (Vintage Botanical Style) */}
-        <div className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 w-40 lg:w-56 xl:w-72 opacity-8 lg:opacity-12 pointer-events-none" style={{ zIndex: 0 }}>
-          <svg viewBox="0 0 180 500" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
-            {/* Detailed Tulip Flower - Vintage Botanical Style */}
-            <g opacity="0.4">
-              {/* Outer Petals */}
-              <path d="M 90,35 Q 105,15 120,28 Q 130,40 125,60 Q 120,75 110,82 Q 100,88 90,85 Q 80,88 70,82 Q 60,75 55,60 Q 50,40 60,28 Q 75,15 90,35" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.4)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              {/* Inner Petal Details */}
-              <path d="M 90,35 Q 95,50 90,65 Q 85,50 90,35" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.35)" strokeWidth="1.2"/>
-              <path d="M 105,50 Q 100,55 95,50" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="0.8"/>
-              <path d="M 75,50 Q 80,55 85,50" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="0.8"/>
-              {/* Stem with natural curve */}
-              <path d="M 90,88 Q 92,130 95,200 Q 98,270 102,340 Q 105,400 108,450" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.35)" strokeWidth="2.2" strokeLinecap="round"/>
-              {/* Large Wrapping Leaf 1 */}
-              <path d="M 105,220 Q 140,240 155,280 Q 162,320 150,350 Q 130,365 110,360 Q 95,355 85,340 Q 80,320 85,300 Q 92,280 100,260 Q 103,240 105,220" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M 130,280 Q 135,295 130,310" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.25)" strokeWidth="1"/>
-              <path d="M 120,300 Q 125,310 120,320" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.2)" strokeWidth="0.8"/>
-              {/* Large Wrapping Leaf 2 */}
-              <path d="M 75,240 Q 40,260 25,300 Q 18,340 30,370 Q 50,385 70,380 Q 85,375 95,360 Q 100,340 95,320 Q 88,300 80,280 Q 77,260 75,240" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.3)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              <path d="M 50,300 Q 45,315 50,330" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.25)" strokeWidth="1"/>
-              <path d="M 60,320 Q 55,330 60,340" 
-                    fill="none" stroke="rgba(44, 44, 44, 0.2)" strokeWidth="0.8"/>
-              {/* Small Decorative Elements */}
-              <circle cx="125" cy="160" r="1.5" fill="rgba(44, 44, 44, 0.2)"/>
-              <circle cx="55" cy="190" r="1.2" fill="rgba(44, 44, 44, 0.18)"/>
-            </g>
-          </svg>
-        </div>
+        {/* Beautiful Detailed Tulip Illustrations */}
+        <TulipIllustration side="left" />
+        <TulipIllustration side="right" />
 
         <div className="max-w-5xl mx-auto w-full relative z-10">
           <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0">
