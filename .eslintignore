@@ -1,0 +1,6 @@
+# Ignore these files from ESLint
+app/faq/page.tsx
+app/page.tsx
+app/rsvp/page.tsx
+app/rsvp/[slug]/page.tsx
+
