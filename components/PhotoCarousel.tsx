@@ -20,6 +20,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [imageAspectRatios, setImageAspectRatios] = useState<Map<string, number>>(new Map())
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
   // Safely sort photos
@@ -171,7 +172,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
             transition: 'transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
-          <div className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8 px-4 md:px-8">
+          <div className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8 px-4 md:px-8" style={{ width: '100%', maxWidth: '100%' }}>
             {sortedPhotos.map((photo, index) => {
               // Calculate if this photo should be visible
               const isInRange = index >= currentIndex && index < currentIndex + photosToShow
@@ -197,7 +198,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                   style={{
                     width: photosToShow === 1 ? '100%' : photosToShow === 2 ? 'calc(50% - 12px)' : 'calc(33.333% - 16px)',
                     height: '100%',
-                    maxWidth: photosToShow === 1 ? '100%' : photosToShow === 2 ? '600px' : '500px',
+                    flex: photosToShow === 1 ? '1 1 100%' : photosToShow === 2 ? '1 1 calc(50% - 12px)' : '1 1 calc(33.333% - 16px)',
+                    maxWidth: '100%',
+                    minWidth: photosToShow === 1 ? '100%' : photosToShow === 2 ? '300px' : '250px',
                     transform: isVisible 
                       ? `translateX(0) scale(1)` 
                       : position < 0 
@@ -208,24 +211,39 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 >
                   <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg bg-taupe/20">
                     {photo.url && (
-                      <Image
-                        src={photo.url}
-                        alt={photo.alt || `Photo ${index + 1}`}
-                        fill
-                        className="object-contain"
-                        priority={isVisible && (position === 0 || (position === 1 && photosToShow > 1))}
-                        sizes={photosToShow === 1 ? "100vw" : photosToShow === 2 ? "50vw" : "33vw"}
-                        onError={(e) => {
-                          console.error('Error loading image:', photo.url)
-                          const target = e.target as HTMLImageElement
-                          if (target) {
-                            target.style.display = 'none'
-                          }
-                        }}
-                        onLoad={() => {
-                          // Image loaded successfully
-                        }}
-                      />
+                      <>
+                        <Image
+                          src={photo.url}
+                          alt={photo.alt || `Photo ${index + 1}`}
+                          fill
+                          className={`${
+                            imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3
+                              ? 'object-cover pan-zoom-horizontal'
+                              : 'object-contain'
+                          }`}
+                          priority={isVisible && (position === 0 || (position === 1 && photosToShow > 1))}
+                          sizes={photosToShow === 1 ? "100vw" : photosToShow === 2 ? "50vw" : "33vw"}
+                          onError={(e) => {
+                            console.error('Error loading image:', photo.url)
+                            const target = e.target as HTMLImageElement
+                            if (target) {
+                              target.style.display = 'none'
+                            }
+                          }}
+                          onLoad={(e) => {
+                            // Calculate and store aspect ratio
+                            const img = e.target as HTMLImageElement
+                            if (img.naturalWidth && img.naturalHeight) {
+                              const aspectRatio = img.naturalWidth / img.naturalHeight
+                              setImageAspectRatios(prev => {
+                                const newMap = new Map(prev)
+                                newMap.set(photo.id, aspectRatio)
+                                return newMap
+                              })
+                            }
+                          }}
+                        />
+                      </>
                     )}
                   </div>
                 </div>
@@ -290,7 +308,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
         )}
       </div>
 
-      <style jsx>{`
+      <style jsx global>{`
         @keyframes progress {
           from {
             width: 0%;
@@ -298,6 +316,17 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           to {
             width: 100%;
           }
+        }
+        @keyframes panZoomHorizontal {
+          0%, 100% {
+            transform: scale(1.1) translateX(0%);
+          }
+          50% {
+            transform: scale(1.15) translateX(-5%);
+          }
+        }
+        .pan-zoom-horizontal {
+          animation: panZoomHorizontal 20s ease-in-out infinite;
         }
       `}</style>
     </section>
