@@ -3,6 +3,11 @@ import bcrypt from 'bcryptjs'
 import { prisma } from './prisma'
 
 export async function verifyAdminSession(request: NextRequest): Promise<{ id: string; email: string } | null> {
+  // During build time, return null to prevent database access
+  if (process.env.NEXT_PHASE === 'phase-production-build' || !process.env.DATABASE_URL) {
+    return null
+  }
+
   const sessionId = request.cookies.get('admin_session')?.value
   if (!sessionId) return null
 

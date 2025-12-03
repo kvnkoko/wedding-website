@@ -3,8 +3,14 @@ import { prisma } from '@/lib/prisma'
 import { verifyAdminSession } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
 
 export async function GET(request: NextRequest) {
+  // Prevent execution during build time
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.json({ error: 'Service unavailable during build' }, { status: 503 })
+  }
+
   try {
     const admin = await verifyAdminSession(request)
     if (!admin) {
@@ -26,6 +32,11 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Prevent execution during build time
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.json({ error: 'Service unavailable during build' }, { status: 503 })
+  }
+
   try {
     const admin = await verifyAdminSession(request)
     if (!admin) {
@@ -64,6 +75,11 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  // Prevent execution during build time
+  if (process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.json({ error: 'Service unavailable during build' }, { status: 503 })
+  }
+
   try {
     const admin = await verifyAdminSession(request)
     if (!admin) {
