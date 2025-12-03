@@ -111,8 +111,8 @@ function HomeContent() {
               </Link>
             </div>
             
-            {/* Hashtag - Subtle bottom placement, sized to match RSVP button width */}
-            <p className="font-script text-xs md:text-xs lg:text-xs text-charcoal/50 mt-12 md:mt-16">
+            {/* Hashtag - Subtle bottom placement, balanced size */}
+            <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/50 mt-12 md:mt-16">
               #tiffandko
             </p>
           </div>
