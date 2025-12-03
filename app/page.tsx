@@ -72,7 +72,7 @@ function HomeContent() {
       {/* Hero Section - Clean Minimal Design Without Arch */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto w-full">
-          <div className="flex flex-col items-center justify-center text-center space-y-8 md:space-y-12 py-20 md:py-32">
+          <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-8 sm:py-12 md:py-20 lg:py-32">
             {/* Subtitle */}
             <p className="font-body text-xs md:text-sm text-charcoal/50 tracking-[0.2em] uppercase mb-4">
               A Formal Celebration Between
