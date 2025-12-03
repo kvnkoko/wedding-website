@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { put } from '@vercel/blob'
 import { verifyAdminSession } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
@@ -9,6 +8,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Check if Vercel Blob is configured
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json(
+        { 
+          error: 'File upload not configured. Please set up Vercel Blob Storage or use the URL method.',
+          needsBlobSetup: true
+        },
+        { status: 500 }
+      )
+    }
+
+    const { put } = await import('@vercel/blob')
     const formData = await request.formData()
     const file = formData.get('file') as File
 
@@ -42,10 +53,22 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json({ url: blob.url })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error uploading file:', error)
+    
+    // Provide more specific error messages
+    if (error.message?.includes('BLOB_READ_WRITE_TOKEN')) {
+      return NextResponse.json(
+        { 
+          error: 'File upload not configured. Please set up Vercel Blob Storage in your project settings.',
+          needsBlobSetup: true
+        },
+        { status: 500 }
+      )
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to upload file' },
+      { error: error.message || 'Failed to upload file. Please check your Vercel Blob Storage configuration.' },
       { status: 500 }
     )
   }

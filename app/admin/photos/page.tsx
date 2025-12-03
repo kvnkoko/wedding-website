@@ -19,8 +19,9 @@ export default function AdminPhotosPage() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [uploadMethod, setUploadMethod] = useState<'upload' | 'url'>('upload')
   const [uploading, setUploading] = useState(false)
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [previewUrls, setPreviewUrls] = useState<string[]>([])
+  const [isDragging, setIsDragging] = useState(false)
 
   useEffect(() => {
     fetchPhotos()
@@ -93,21 +94,61 @@ export default function AdminPhotosPage() {
     }
   }
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
+  const handleFileSelect = (files: FileList | null) => {
+    if (!files || files.length === 0) return
+
+    const validFiles: File[] = []
+    const urls: string[] = []
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file')
-        return
+        alert(`${file.name} is not an image file. Skipping.`)
+        continue
       }
       if (file.size > 10 * 1024 * 1024) {
-        alert('File size must be less than 10MB')
-        return
+        alert(`${file.name} is too large (max 10MB). Skipping.`)
+        continue
       }
-      setSelectedFile(file)
-      const url = URL.createObjectURL(file)
-      setPreviewUrl(url)
+      validFiles.push(file)
+      urls.push(URL.createObjectURL(file))
     }
+
+    if (validFiles.length > 0) {
+      setSelectedFiles(prev => [...prev, ...validFiles])
+      setPreviewUrls(prev => [...prev, ...urls])
+    }
+  }
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFileSelect(e.target.files)
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setIsDragging(false)
+    handleFileSelect(e.dataTransfer.files)
+  }
+
+  const removeFile = (index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index))
+    setPreviewUrls(prev => {
+      URL.revokeObjectURL(prev[index])
+      return prev.filter((_, i) => i !== index)
+    })
   }
 
   const handleUploadPhoto = async (e: React.FormEvent) => {
@@ -115,63 +156,80 @@ export default function AdminPhotosPage() {
     setUploading(true)
 
     try {
-      let photoUrl = ''
-
       if (uploadMethod === 'upload') {
-        if (!selectedFile) {
-          alert('Please select a file to upload')
+        if (selectedFiles.length === 0) {
+          alert('Please select at least one file to upload')
           setUploading(false)
           return
         }
 
-        // Upload file
-        const formData = new FormData()
-        formData.append('file', selectedFile)
+        // Upload all files
+        const uploadPromises = selectedFiles.map(async (file) => {
+          const formData = new FormData()
+          formData.append('file', file)
 
-        const uploadRes = await fetch('/api/photos/upload', {
-          method: 'POST',
-          body: formData,
+          const uploadRes = await fetch('/api/photos/upload', {
+            method: 'POST',
+            body: formData,
+          })
+
+          if (!uploadRes.ok) {
+            const error = await uploadRes.json()
+            if (error.needsBlobSetup) {
+              throw new Error('File upload requires Vercel Blob Storage setup. Please use the URL method or configure Blob Storage in Vercel.')
+            }
+            throw new Error(error.error || `Failed to upload ${file.name}`)
+          }
+
+          const uploadData = await uploadRes.json()
+          return uploadData.url
         })
 
-        if (!uploadRes.ok) {
-          const error = await uploadRes.json()
-          throw new Error(error.error || 'Failed to upload file')
-        }
+        const urls = await Promise.all(uploadPromises)
 
-        const uploadData = await uploadRes.json()
-        photoUrl = uploadData.url
+        // Add all photos to database
+        const addPromises = urls.map(url =>
+          fetch('/api/photos', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              url,
+              alt: newPhotoAlt.trim() || null,
+            }),
+          })
+        )
+
+        await Promise.all(addPromises)
       } else {
         if (!newPhotoUrl.trim()) {
           alert('Please enter a photo URL')
           setUploading(false)
           return
         }
-        photoUrl = newPhotoUrl.trim()
+
+        const res = await fetch('/api/photos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            url: newPhotoUrl.trim(),
+            alt: newPhotoAlt.trim() || null,
+          }),
+        })
+
+        if (!res.ok) {
+          const error = await res.json()
+          throw new Error(error.error || 'Error adding photo')
+        }
       }
 
-      // Add photo to database
-      const res = await fetch('/api/photos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: photoUrl,
-          alt: newPhotoAlt.trim() || null,
-        }),
-      })
-
-      if (res.ok) {
-        // Reset form
-        setNewPhotoUrl('')
-        setNewPhotoAlt('')
-        setSelectedFile(null)
-        setPreviewUrl(null)
-        setShowAddForm(false)
-        setUploadMethod('upload')
-        await fetchPhotos()
-      } else {
-        const error = await res.json()
-        alert(error.error || 'Error adding photo')
-      }
+      // Reset form
+      setNewPhotoUrl('')
+      setNewPhotoAlt('')
+      setSelectedFiles([])
+      setPreviewUrls([])
+      setShowAddForm(false)
+      setUploadMethod('upload')
+      await fetchPhotos()
     } catch (error: any) {
       console.error('Error adding photo:', error)
       alert(error.message || 'Error adding photo. Please try again.')
@@ -232,8 +290,8 @@ export default function AdminPhotosPage() {
               onClick={() => {
                 setUploadMethod('upload')
                 setNewPhotoUrl('')
-                setSelectedFile(null)
-                setPreviewUrl(null)
+                setSelectedFiles([])
+                setPreviewUrls([])
               }}
               className={`px-4 py-2 rounded-sm font-sans text-sm transition-all ${
                 uploadMethod === 'upload'
@@ -241,14 +299,14 @@ export default function AdminPhotosPage() {
                   : 'bg-taupe/20 text-charcoal hover:bg-taupe/30'
               }`}
             >
-              Upload File
+              Upload Files
             </button>
             <button
               type="button"
               onClick={() => {
                 setUploadMethod('url')
-                setSelectedFile(null)
-                setPreviewUrl(null)
+                setSelectedFiles([])
+                setPreviewUrls([])
               }}
               className={`px-4 py-2 rounded-sm font-sans text-sm transition-all ${
                 uploadMethod === 'url'
@@ -264,47 +322,80 @@ export default function AdminPhotosPage() {
             {uploadMethod === 'upload' ? (
               <div>
                 <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                  Select Photo <span className="text-red-500">*</span>
+                  Select Photos <span className="text-red-500">*</span>
                 </label>
-                <div className="border-2 border-dashed border-taupe/30 rounded-sm p-6 text-center hover:border-sage/50 transition-colors">
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`border-2 border-dashed rounded-sm p-6 text-center transition-colors ${
+                    isDragging
+                      ? 'border-sage bg-sage/10'
+                      : 'border-taupe/30 hover:border-sage/50'
+                  }`}
+                >
                   <input
                     type="file"
                     accept="image/*"
-                    onChange={handleFileSelect}
+                    multiple
+                    onChange={handleFileInputChange}
                     className="hidden"
                     id="file-upload"
-                    required={uploadMethod === 'upload'}
                   />
                   <label
                     htmlFor="file-upload"
                     className="cursor-pointer block"
                   >
-                    {previewUrl ? (
-                      <div className="space-y-2">
-                        <div className="relative w-full max-w-xs mx-auto h-48 rounded-sm overflow-hidden bg-taupe/20">
-                          <Image
-                            src={previewUrl}
-                            alt="Preview"
-                            fill
-                            className="object-contain"
-                            sizes="400px"
-                          />
+                    {selectedFiles.length > 0 ? (
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                          {selectedFiles.map((file, index) => (
+                            <div key={index} className="relative group">
+                              <div className="relative w-full aspect-square rounded-sm overflow-hidden bg-taupe/20">
+                                <Image
+                                  src={previewUrls[index]}
+                                  alt={file.name}
+                                  fill
+                                  className="object-cover"
+                                  sizes="200px"
+                                />
+                              </div>
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  removeFile(index)
+                                }}
+                                className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-xs"
+                              >
+                                ×
+                              </button>
+                              <p className="mt-1 font-sans text-xs text-charcoal/70 truncate">
+                                {file.name}
+                              </p>
+                            </div>
+                          ))}
                         </div>
-                        <p className="font-sans text-sm text-charcoal/70">
-                          {selectedFile?.name}
-                        </p>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedFile(null)
-                            setPreviewUrl(null)
-                            const input = document.getElementById('file-upload') as HTMLInputElement
-                            if (input) input.value = ''
-                          }}
-                          className="text-sm text-charcoal/60 hover:text-charcoal"
-                        >
-                          Change photo
-                        </button>
+                        <div className="flex gap-2 justify-center">
+                          <label
+                            htmlFor="file-upload"
+                            className="bg-sage text-white px-4 py-2 rounded-sm font-sans text-sm hover:bg-sage/90 transition-all cursor-pointer"
+                          >
+                            Add More Photos
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedFiles([])
+                              setPreviewUrls([])
+                              const input = document.getElementById('file-upload') as HTMLInputElement
+                              if (input) input.value = ''
+                            }}
+                            className="bg-taupe/20 text-charcoal px-4 py-2 rounded-sm font-sans text-sm hover:bg-taupe/30 transition-all"
+                          >
+                            Clear All
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -325,7 +416,7 @@ export default function AdminPhotosPage() {
                           Click to upload or drag and drop
                         </p>
                         <p className="font-sans text-xs text-charcoal/50">
-                          PNG, JPG, GIF up to 10MB
+                          PNG, JPG, GIF up to 10MB each (multiple files supported)
                         </p>
                       </div>
                     )}
@@ -365,10 +456,14 @@ export default function AdminPhotosPage() {
             </div>
             <button
               type="submit"
-              disabled={uploading}
+              disabled={uploading || (uploadMethod === 'upload' && selectedFiles.length === 0)}
               className="bg-charcoal text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {uploading ? 'Uploading...' : 'Add Photo'}
+              {uploading 
+                ? `Uploading ${selectedFiles.length > 0 ? `${selectedFiles.length} ` : ''}photo${selectedFiles.length > 1 ? 's' : ''}...` 
+                : uploadMethod === 'upload' 
+                  ? `Add ${selectedFiles.length > 0 ? `${selectedFiles.length} ` : ''}Photo${selectedFiles.length > 1 ? 's' : ''}`
+                  : 'Add Photo'}
             </button>
           </form>
         </div>
