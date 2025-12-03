@@ -58,6 +58,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/rsvps', label: 'RSVPs' },
     { href: '/admin/events', label: 'Events' },
     { href: '/admin/invite-links', label: 'Invite Links' },
+    { href: '/admin/faqs', label: 'FAQs' },
     { href: '/admin/photos', label: 'Photos' },
   ]
 

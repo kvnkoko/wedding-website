@@ -37,6 +37,7 @@ model InviteLinkConfig {
 
   events InviteLinkConfigEvent[]
   rsvps  Rsvp[]
+  faqs   FAQ[]
 
   @@map("invite_link_configs")
 }
@@ -110,5 +111,19 @@ model Photo {
   updatedAt DateTime @updatedAt
 
   @@map("photos")
+}
+
+model FAQ {
+  id                 String   @id @default(cuid())
+  question           String
+  answer             String
+  inviteLinkConfigId String?  // null = global FAQ, otherwise specific to invite link
+  order              Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  inviteLinkConfig InviteLinkConfig? @relation(fields: [inviteLinkConfigId], references: [id], onDelete: Cascade)
+
+  @@map("faqs")
 }
 
