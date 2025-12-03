@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { verifyAdminSession } from '@/lib/auth'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+export const runtime = 'nodejs'
+
 export async function GET(request: NextRequest) {
   try {
     const photos = await prisma.photo.findMany({
@@ -9,10 +13,18 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json(photos)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching photos:', error)
+    console.error('Error details:', {
+      message: error?.message,
+      code: error?.code,
+      name: error?.name,
+    })
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+      },
       { status: 500 }
     )
   }
@@ -36,10 +48,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the highest order number and add 1
-    const lastPhoto = await prisma.photo.findFirst({
-      orderBy: { order: 'desc' },
-    })
-    const newOrder = lastPhoto ? lastPhoto.order + 1 : 0
+    let newOrder = 0
+    try {
+      const lastPhoto = await prisma.photo.findFirst({
+        orderBy: { order: 'desc' },
+      })
+      newOrder = lastPhoto ? lastPhoto.order + 1 : 0
+    } catch (orderError: any) {
+      console.warn('Error getting last photo order, using 0:', orderError)
+      newOrder = 0
+    }
 
     const photo = await prisma.photo.create({
       data: {
@@ -50,10 +68,31 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(photo)
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating photo:', error)
+    console.error('Error details:', {
+      message: error?.message,
+      code: error?.code,
+      name: error?.name,
+      stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined,
+    })
+    
+    // Check if it's a Prisma schema issue
+    if (error?.message?.includes('Unknown model') || error?.code === 'P2001') {
+      return NextResponse.json(
+        { 
+          error: 'Photo model not found. Please run database migrations.',
+          needsMigration: true
+        },
+        { status: 500 }
+      )
+    }
+    
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+      },
       { status: 500 }
     )
   }
