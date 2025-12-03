@@ -160,6 +160,8 @@ export default function AdminPhotosPage() {
     e.preventDefault()
     setUploading(true)
 
+    let successful = 0
+
     try {
       if (uploadMethod === 'upload') {
         if (selectedFiles.length === 0) {
@@ -218,7 +220,7 @@ export default function AdminPhotosPage() {
         })
 
         const results = await Promise.allSettled(addPromises)
-        const successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length
+        successful = results.filter(r => r.status === 'fulfilled' && r.value.success).length
         const failed = results.length - successful
 
         if (failed > 0) {
@@ -247,6 +249,7 @@ export default function AdminPhotosPage() {
           const error = await res.json()
           throw new Error(error.error || 'Error adding photo')
         }
+        successful = 1
       }
 
       // Reset form
@@ -254,9 +257,21 @@ export default function AdminPhotosPage() {
       setNewPhotoAlt('')
       setSelectedFiles([])
       setPreviewUrls([])
+      
+      // Small delay to ensure database has committed
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // Refresh photos list
+      await fetchPhotos()
+      
+      // Close form after successful upload
       setShowAddForm(false)
       setUploadMethod('upload')
-      await fetchPhotos()
+      
+      // Show success message
+      if (successful > 0) {
+        alert(`Successfully added ${successful} photo${successful > 1 ? 's' : ''}!`)
+      }
     } catch (error: any) {
       console.error('Error adding photo:', error)
       alert(error.message || 'Error adding photo. Please try again.')
