@@ -157,7 +157,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }
 
   return (
-    <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-charcoal/5">
+    <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-cream">
       {/* Main Carousel Container */}
       <div 
         className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8 px-4 md:px-8 lg:px-12"
@@ -167,12 +167,12 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
       >
         {/* Photo Slides - Multiple Visible with Smooth Transitions */}
         <div 
-          className="relative w-full h-full flex items-center justify-center"
+          className="relative w-full h-full flex items-stretch justify-center"
           style={{
             transition: 'transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
-          <div className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8 px-4 md:px-8" style={{ width: '100%', maxWidth: '100%' }}>
+          <div className="relative w-full h-full flex items-stretch justify-center gap-4 md:gap-6 lg:gap-8 px-4 md:px-8" style={{ width: '100%', maxWidth: '100%' }}>
             {sortedPhotos.map((photo, index) => {
               // Calculate if this photo should be visible
               const isInRange = index >= currentIndex && index < currentIndex + photosToShow
@@ -207,7 +207,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1), transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg bg-taupe/20">
+                  <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg">
                     {photo.url && (
                       <Image
                         src={photo.url}
@@ -216,9 +216,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                         className={`${
                           imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3 && isVisible
                             ? 'object-cover pan-zoom-horizontal'
-                            : imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3
-                            ? 'object-cover'
-                            : 'object-contain'
+                            : 'object-cover'
                         }`}
                         priority={isVisible && (position === 0 || (position === 1 && photosToShow > 1))}
                         sizes={photosToShow === 1 ? "100vw" : photosToShow === 2 ? "50vw" : "33vw"}
