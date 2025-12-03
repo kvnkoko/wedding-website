@@ -112,7 +112,7 @@ function HomeContent() {
             </div>
             
             {/* Hashtag - Subtle bottom placement */}
-            <p className="font-script text-lg md:text-xl lg:text-2xl text-charcoal/50 mt-12 md:mt-16">
+            <p className="font-script text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-charcoal/50 mt-12 md:mt-16">
               #tiffandko
             </p>
           </div>
