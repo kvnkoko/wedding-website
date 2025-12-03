@@ -107,12 +107,12 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
         <div className="max-w-7xl mx-auto w-full relative z-10">
           <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 xl:gap-16">
             {/* Left Tulip - Hidden on mobile, visible on desktop */}
-            <div className="hidden lg:block lg:flex-shrink-0 lg:w-48 xl:w-64 relative opacity-60">
+            <div className="hidden lg:block lg:flex-shrink-0 lg:w-72 xl:w-96 relative" style={{ opacity: 0.08 }}>
               <img
                 src="/tulips.png"
                 alt=""
                 className="object-contain w-full h-auto"
-                style={{ filter: 'invert(1) opacity(0.15)' }}
+                style={{ filter: 'invert(1)' }}
                 onError={(e) => {
                   // Hide if image fails to load
                   const target = e.target as HTMLImageElement
@@ -130,13 +130,13 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
               </p>
               
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight">
+                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap">
                   Kevin Koko
                 </h1>
                 <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal/80 -mt-2 md:-mt-4">
                   &amp;
                 </p>
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight">
+                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap">
                   Tiffany Min
                 </h1>
               </div>
@@ -164,12 +164,12 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
             </div>
 
             {/* Right Tulip - Hidden on mobile, visible on desktop */}
-            <div className="hidden lg:block lg:flex-shrink-0 lg:w-48 xl:w-64 relative opacity-60">
+            <div className="hidden lg:block lg:flex-shrink-0 lg:w-72 xl:w-96 relative" style={{ opacity: 0.08 }}>
               <img
                 src="/tulips.png"
                 alt=""
                 className="object-contain w-full h-auto"
-                style={{ filter: 'invert(1) opacity(0.15)', transform: 'scaleX(-1)' }}
+                style={{ filter: 'invert(1)', transform: 'scaleX(-1)' }}
                 onError={(e) => {
                   // Hide if image fails to load
                   const target = e.target as HTMLImageElement
