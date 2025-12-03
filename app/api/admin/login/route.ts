@@ -64,10 +64,15 @@ export async function POST(request: NextRequest) {
       })
     } catch (dbError: any) {
       console.error('Database error:', dbError)
+      // Log more details for debugging
+      console.error('Error code:', dbError?.code)
+      console.error('Error message:', dbError?.message)
+      console.error('DATABASE_URL exists:', !!process.env.DATABASE_URL)
+      
       return NextResponse.json(
         { 
           error: 'Database connection failed',
-          details: process.env.NODE_ENV === 'development' ? dbError?.message : undefined
+          details: process.env.NODE_ENV === 'development' ? dbError?.message : dbError?.code || 'Unknown error'
         },
         { status: 500 }
       )
