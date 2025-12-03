@@ -126,7 +126,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
             {/* Center Content */}
             <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0 flex-1">
               <p className="font-body text-xs sm:text-sm md:text-base lg:text-lg text-charcoal/50 tracking-[0.2em] uppercase mb-4">
-                A Formal Celebration Between
+                The Wedding of
               </p>
               
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
@@ -134,7 +134,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                   Kevin Koko
                 </h1>
                 <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal/80 -mt-2 md:-mt-4">
-                  &amp;
+                  And
                 </p>
                 <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap">
                   Tiffany Min
@@ -142,7 +142,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
               </div>
               
               <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 mt-4 md:mt-8">
-                invite you to celebrate with us
+                We can't wait to celebrate with you.
               </p>
               
               <p className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide">
