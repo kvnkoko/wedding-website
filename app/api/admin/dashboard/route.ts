@@ -54,7 +54,6 @@ export async function GET(request: NextRequest) {
       const responses = event.rsvpResponses
       const yesCount = responses.filter((r) => r.status === 'YES').length
       const noCount = responses.filter((r) => r.status === 'NO').length
-      const maybeCount = responses.filter((r) => r.status === 'MAYBE').length
 
       // Count plus-ones for YES responses
       const yesRsvps = allRsvps.filter((rsvp) =>
@@ -71,7 +70,6 @@ export async function GET(request: NextRequest) {
         capacity: event.capacity,
         yes: yesCount,
         no: noCount,
-        maybe: maybeCount,
         totalAttendees,
         plusOnes,
       }

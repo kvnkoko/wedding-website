@@ -10,7 +10,6 @@ interface DashboardStats {
     capacity: number
     yes: number
     no: number
-    maybe: number
     totalAttendees: number
     plusOnes: number
   }>
@@ -79,7 +78,7 @@ export default function AdminDashboard() {
         {stats.stats.map((stat) => (
           <div key={stat.eventId} className="bg-white p-6 rounded-sm shadow-sm">
             <h3 className="font-serif text-2xl text-charcoal mb-4">{stat.eventName}</h3>
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <div className="grid md:grid-cols-3 gap-4 mb-4">
               <div>
                 <p className="font-sans text-sm text-charcoal/70 mb-1">Yes</p>
                 <p className="font-sans text-2xl text-green-600">{stat.yes}</p>
@@ -87,10 +86,6 @@ export default function AdminDashboard() {
               <div>
                 <p className="font-sans text-sm text-charcoal/70 mb-1">No</p>
                 <p className="font-sans text-2xl text-red-600">{stat.no}</p>
-              </div>
-              <div>
-                <p className="font-sans text-sm text-charcoal/70 mb-1">Maybe</p>
-                <p className="font-sans text-2xl text-yellow-600">{stat.maybe}</p>
               </div>
               <div>
                 <p className="font-sans text-sm text-charcoal/70 mb-1">Plus-Ones</p>
