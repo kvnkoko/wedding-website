@@ -174,12 +174,15 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           className="relative w-full h-full overflow-hidden"
         >
           <div 
-            className="relative h-full flex items-stretch gap-4 md:gap-6 lg:gap-8 px-4 md:px-8"
+            className="relative h-full flex items-stretch"
             style={{
-              transform: `translateX(-${currentIndex * (100 / photosToShow)}%)`,
+              transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}% - ${currentIndex * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px))`,
               transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              width: `${(sortedPhotos.length / photosToShow) * 100}%`,
+              width: `${sortedPhotos.length * (100 / photosToShow)}%`,
               willChange: 'transform',
+              gap: photosToShow === 1 ? '0' : photosToShow === 2 ? '12px' : '16px',
+              paddingLeft: '16px',
+              paddingRight: '16px',
             }}
           >
             {sortedPhotos.map((photo, index) => {
@@ -196,13 +199,8 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 position = sortedPhotos.length - currentIndex + index
               }
 
-              // Container width - use standard widths for now
-              // The image will use object-contain to show full photo and fill height
-              const containerWidth = photosToShow === 1 
-                ? '100%' 
-                : photosToShow === 2 
-                ? 'calc(50% - 12px)' 
-                : 'calc(33.333% - 16px)'
+              // Container width - each photo takes up 1/photosToShow of the container
+              const containerWidth = `${100 / photosToShow}%`
 
               return (
                 <div
