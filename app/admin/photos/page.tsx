@@ -32,7 +32,12 @@ export default function AdminPhotosPage() {
       const res = await fetch('/api/photos')
       if (res.ok) {
         const data = await res.json()
+        console.log('Fetched photos:', data)
         setPhotos(data.sort((a: Photo, b: Photo) => a.order - b.order))
+      } else {
+        console.error('Failed to fetch photos:', res.status, res.statusText)
+        const errorData = await res.json().catch(() => ({}))
+        console.error('Error details:', errorData)
       }
     } catch (error) {
       console.error('Error fetching photos:', error)
@@ -188,8 +193,8 @@ export default function AdminPhotosPage() {
         const urls = await Promise.all(uploadPromises)
 
         // Add all photos to database
-        const addPromises = urls.map(url =>
-          fetch('/api/photos', {
+        const addPromises = urls.map(async (url) => {
+          const res = await fetch('/api/photos', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -197,9 +202,17 @@ export default function AdminPhotosPage() {
               alt: newPhotoAlt.trim() || null,
             }),
           })
-        )
 
-        await Promise.all(addPromises)
+          if (!res.ok) {
+            const error = await res.json()
+            throw new Error(error.error || `Failed to save photo: ${url}`)
+          }
+
+          return res.json()
+        })
+
+        const results = await Promise.all(addPromises)
+        console.log(`Successfully added ${results.length} photos to database`)
       } else {
         if (!newPhotoUrl.trim()) {
           alert('Please enter a photo URL')
