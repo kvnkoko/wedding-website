@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
+import { formatDateRange } from '@/lib/utils'
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -39,35 +40,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           .then(res => res.json())
           .then(data => {
             if (data.events && data.events.length > 0) {
-              // Sort events by date
-              const sortedEvents = [...data.events].sort((a, b) => 
-                new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime()
-              )
-              // Get first and last event dates
-              const firstDate = new Date(sortedEvents[0].dateTime)
-              const lastDate = new Date(sortedEvents[sortedEvents.length - 1].dateTime)
-              
-              // Format date range
-              const firstMonth = firstDate.toLocaleDateString('en-US', { month: 'long' })
-              const firstDay = firstDate.getDate()
-              const lastMonth = lastDate.toLocaleDateString('en-US', { month: 'long' })
-              const lastDay = lastDate.getDate()
-              const year = firstDate.getFullYear()
-              
-              // Check if it's a single date
-              if (firstDate.getTime() === lastDate.getTime()) {
-                // Single date: "February 12, 2026"
-                setDateRange(`${firstMonth} ${firstDay}, ${year}`)
-              } else if (firstMonth === lastMonth && firstDate.getFullYear() === lastDate.getFullYear()) {
-                // Same month, different days: "January 22 - 25, 2025"
-                setDateRange(`${firstMonth} ${firstDay} - ${lastDay}, ${year}`)
-              } else if (firstDate.getFullYear() === lastDate.getFullYear()) {
-                // Different months, same year: "January 22 - March 25, 2025"
-                setDateRange(`${firstMonth} ${firstDay} - ${lastMonth} ${lastDay}, ${year}`)
-              } else {
-                // Different years: "January 22, 2025 - March 25, 2026"
-                setDateRange(`${firstMonth} ${firstDay}, ${firstDate.getFullYear()} - ${lastMonth} ${lastDay}, ${lastDate.getFullYear()}`)
-              }
+              setDateRange(formatDateRange(data.events))
             }
           })
           .catch(() => {

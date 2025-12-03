@@ -4,8 +4,9 @@ import { useState, useEffect, Suspense } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { useForm } from 'react-hook-form'
 import Link from 'next/link'
-import { formatDate } from '@/lib/utils'
-import PhotoCarousel from '@/components/PhotoCarousel'
+import { formatDate, formatDateRange } from '@/lib/utils'
+import PhotoCarouselSection from '@/components/PhotoCarouselSection'
+import RSVPEditForm from '@/components/RSVPEditForm'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -39,64 +40,13 @@ interface FormData {
   eventResponses: Record<string, string>
 }
 
-function PhotoCarouselSection() {
-  const [photos, setPhotos] = useState<any[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    fetch('/api/photos')
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error('Failed to fetch photos')
-        }
-        return res.json()
-      })
-      .then((data) => {
-        if (Array.isArray(data)) {
-          setPhotos(data)
-        } else {
-          setPhotos([])
-        }
-        setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-      })
-  }, [])
-
-  if (loading || !photos || photos.length === 0) {
-    return null
-  }
-
-  return <PhotoCarousel photos={photos} />
-}
 
 function HomeScreenWithCarousel({ slug, config }: { slug: string; config: InviteLinkConfig | null }) {
   const [dateRange, setDateRange] = useState('January - March 2025')
 
   useEffect(() => {
     if (config && config.events && config.events.length > 0) {
-      const sortedEvents = [...config.events].sort((a, b) => 
-        new Date(a.dateTime).getTime() - new Date(b.dateTime).getTime()
-      )
-      const firstDate = new Date(sortedEvents[0].dateTime)
-      const lastDate = new Date(sortedEvents[sortedEvents.length - 1].dateTime)
-      
-      const firstMonth = firstDate.toLocaleDateString('en-US', { month: 'long' })
-      const firstDay = firstDate.getDate()
-      const lastMonth = lastDate.toLocaleDateString('en-US', { month: 'long' })
-      const lastDay = lastDate.getDate()
-      const year = firstDate.getFullYear()
-      
-      if (firstDate.getTime() === lastDate.getTime()) {
-        setDateRange(`${firstMonth} ${firstDay}, ${year}`)
-      } else if (firstMonth === lastMonth && firstDate.getFullYear() === lastDate.getFullYear()) {
-        setDateRange(`${firstMonth} ${firstDay} - ${lastDay}, ${year}`)
-      } else if (firstDate.getFullYear() === lastDate.getFullYear()) {
-        setDateRange(`${firstMonth} ${firstDay} - ${lastMonth} ${lastDay}, ${year}`)
-      } else {
-        setDateRange(`${firstMonth} ${firstDay}, ${firstDate.getFullYear()} - ${lastMonth} ${lastDay}, ${lastDate.getFullYear()}`)
-      }
+      setDateRange(formatDateRange(config.events))
     }
   }, [config])
 
@@ -269,10 +219,24 @@ export default function RSVPFormPage() {
     }
   }
 
+  // Check for edit token
+  const editToken = searchParams.get('edit')
+  if (editToken) {
+    return <RSVPEditForm editToken={editToken} />
+  }
+
   // If no form param, show home screen with hero section
   const showForm = searchParams.get('form') === 'true'
   if (!showForm) {
-    return <HomeScreenWithCarousel slug={slug} config={config} />
+    return (
+      <Suspense fallback={
+        <div className="min-h-screen bg-cream flex items-center justify-center">
+          <p className="font-sans text-lg text-charcoal/70">Loading...</p>
+        </div>
+      }>
+        <HomeScreenWithCarousel slug={slug} config={config} />
+      </Suspense>
+    )
   }
 
   if (loading) {
