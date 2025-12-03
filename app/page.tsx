@@ -74,7 +74,7 @@ function HomeContent() {
         <div className="max-w-5xl mx-auto w-full">
           <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0">
             {/* Subtitle */}
-            <p className="font-body text-xs md:text-sm text-charcoal/50 tracking-[0.2em] uppercase mb-4">
+            <p className="font-body text-xs sm:text-sm md:text-base lg:text-lg text-charcoal/50 tracking-[0.2em] uppercase mb-4">
               A Formal Celebration Between
             </p>
             
