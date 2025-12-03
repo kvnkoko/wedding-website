@@ -105,7 +105,7 @@ export default function FAQPage() {
         <div className="mt-16 bg-white p-8 rounded-sm shadow-sm text-center">
           <h2 className="font-serif text-2xl text-charcoal mb-4">Still have questions?</h2>
           <p className="font-sans text-base text-charcoal/70">
-            Please don&apos;t hesitate to reach out to us directly. We&apos;re happy to help!
+            Please do not hesitate to reach out to us directly. We are happy to help!
           </p>
         </div>
       </div>

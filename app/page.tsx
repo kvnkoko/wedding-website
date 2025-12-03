@@ -129,7 +129,7 @@ function HomeContent() {
           <p className="font-script text-3xl text-charcoal/70 text-center mb-12">A Journey Together</p>
           <div className="prose prose-lg mx-auto text-charcoal/80 font-body leading-relaxed">
             <p className="text-center mb-6">
-              Our journey together began with a chance encounter that felt like destiny. From the bustling streets of Yangon to quiet moments in Mandalay, we&apos;ve built a love story that spans cities and cultures.
+              Our journey together began with a chance encounter that felt like destiny. From the bustling streets of Yangon to quiet moments in Mandalay, we have built a love story that spans cities and cultures.
             </p>
             <p className="text-center mb-6">
               We are thrilled to share this special time with our family and friends, celebrating not just our union, but the beautiful connections that have shaped our lives.
