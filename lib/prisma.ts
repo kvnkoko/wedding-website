@@ -41,12 +41,19 @@ const getPrismaClient = (): PrismaClient => {
 
   // Create or return cached client
   if (!globalForPrisma.prisma) {
+    const databaseUrl = process.env.DATABASE_URL
+    
+    if (!databaseUrl) {
+      throw new Error('DATABASE_URL environment variable is not set')
+    }
+    
     globalForPrisma.prisma = new PrismaClient({
       datasources: {
         db: {
-          url: process.env.DATABASE_URL,
+          url: databaseUrl,
         },
       },
+      log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
     })
   }
   
