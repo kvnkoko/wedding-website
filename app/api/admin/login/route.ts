@@ -72,10 +72,19 @@ export async function POST(request: NextRequest) {
       console.error('Error message:', dbError?.message)
       console.error('DATABASE_URL exists:', !!process.env.DATABASE_URL)
       
+      // Provide more helpful error messages
+      const errorMessage = dbError?.message || 'Unknown database error'
+      const isPrismaClientError = errorMessage.includes('Prisma Client') || errorMessage.includes('prisma generate')
+      
       return NextResponse.json(
         { 
           error: 'Database connection failed',
-          details: process.env.NODE_ENV === 'development' ? dbError?.message : dbError?.code || 'Unknown error'
+          details: process.env.NODE_ENV === 'development' || isPrismaClientError 
+            ? errorMessage 
+            : dbError?.code || 'Unknown error',
+          hint: isPrismaClientError 
+            ? 'Prisma Client needs to be generated. Check build logs.' 
+            : undefined
         },
         { status: 500 }
       )
