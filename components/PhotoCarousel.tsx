@@ -176,13 +176,10 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           <div 
             className="relative h-full flex items-stretch"
             style={{
-              transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}% - ${currentIndex * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px))`,
+              transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}%))`,
               transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              width: `${sortedPhotos.length * (100 / photosToShow)}%`,
+              width: `${(sortedPhotos.length / photosToShow) * 100}%`,
               willChange: 'transform',
-              gap: photosToShow === 1 ? '0' : photosToShow === 2 ? '12px' : '16px',
-              paddingLeft: '16px',
-              paddingRight: '16px',
             }}
           >
             {sortedPhotos.map((photo, index) => {
@@ -199,8 +196,8 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 position = sortedPhotos.length - currentIndex + index
               }
 
-              // Container width - each photo takes up 1/photosToShow of the container
-              const containerWidth = `${100 / photosToShow}%`
+              // Container width - each photo takes up 1/photosToShow of the viewport
+              const containerWidth = `calc(${100 / photosToShow}% - ${photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16}px / ${photosToShow})`
 
               return (
                 <div
@@ -210,7 +207,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     width: containerWidth,
                     height: '100%',
                     flexShrink: 0,
-                    minWidth: containerWidth,
+                    marginRight: photosToShow === 1 ? '0' : photosToShow === 2 ? '12px' : '16px',
                   }}
                 >
                   <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg flex items-center justify-center bg-cream">
