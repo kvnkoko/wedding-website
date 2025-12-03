@@ -127,24 +127,39 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('Creating FAQ with order:', newOrder, 'colorHexCodesJson:', colorHexCodesJson, 'inviteLinkConfigId:', finalInviteLinkConfigId)
+    console.log('Data to create:', {
+      question,
+      answer,
+      colorHexCodes: colorHexCodesJson,
+      inviteLinkConfigId: finalInviteLinkConfigId,
+      order: newOrder,
+    })
 
-    const faq = await prisma.fAQ.create({
-      data: {
-        question,
-        answer,
-        colorHexCodes: colorHexCodesJson,
-        inviteLinkConfigId: finalInviteLinkConfigId,
-        order: newOrder,
-      },
-      include: {
-        inviteLinkConfig: {
-          select: {
-            slug: true,
-            label: true,
+    let faq
+    try {
+      faq = await prisma.fAQ.create({
+        data: {
+          question,
+          answer,
+          colorHexCodes: colorHexCodesJson,
+          inviteLinkConfigId: finalInviteLinkConfigId,
+          order: newOrder,
+        },
+        include: {
+          inviteLinkConfig: {
+            select: {
+              slug: true,
+              label: true,
+            },
           },
         },
-      },
-    })
+      })
+    } catch (createError: any) {
+      console.error('Prisma create error:', createError)
+      console.error('Error code:', createError.code)
+      console.error('Error meta:', createError.meta)
+      throw createError
+    }
 
     console.log('FAQ created successfully:', faq.id)
 
