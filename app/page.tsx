@@ -69,94 +69,52 @@ function HomeContent() {
   // Server component content moved to client for simplicity
   return (
     <div className="min-h-screen">
-      {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden py-8 px-4">
-        {/* Elegant invitation card - redesigned to match invitation arch exactly */}
-        <div className="relative w-full max-w-md mx-auto">
-          {/* Card container with elegant arch shape matching invitation exactly */}
-          <div className="relative mx-auto" style={{
-            aspectRatio: '2/3',
-            maxWidth: '100%',
-            position: 'relative'
-          }}>
-            {/* SVG to create the exact arch shape from invitation - smooth gentle curve, straight sides and bottom */}
-            <svg className="absolute inset-0 w-full h-full" style={{ zIndex: 0 }} viewBox="0 0 400 600" preserveAspectRatio="none">
-              <defs>
-                <clipPath id="invitationArchClip">
-                  {/* Smooth gentle arch - starts at corners, curves inward to center apex, then straight sides and bottom */}
-                  <path d="M 0,50 Q 200,0 400,50 L 400,600 L 0,600 Z" />
-                </clipPath>
-              </defs>
-              <rect width="400" height="600" fill="#FAF8F3" clipPath="url(#invitationArchClip)" />
-            </svg>
+      {/* Hero Section - Modern Minimal Design */}
+      <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto w-full">
+          <div className="flex flex-col items-center justify-center text-center space-y-8 md:space-y-12 py-20 md:py-32">
+            {/* Subtitle */}
+            <p className="font-body text-xs md:text-sm text-charcoal/50 tracking-[0.2em] uppercase mb-4">
+              A Formal Celebration Between
+            </p>
             
-            {/* Elegant border frame using SVG - matching invitation exactly with double-line borders */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }} viewBox="0 0 400 600" preserveAspectRatio="none">
-              {/* Outer perimeter border - smooth gentle curved top, straight sides and bottom */}
-              <path 
-                d="M 16,50 Q 200,16 384,50 L 384,600 L 16,600 Z" 
-                fill="none" 
-                stroke="rgba(45, 45, 45, 0.2)" 
-                strokeWidth="1.5"
-              />
-              {/* Inner border line - follows exact contour with slight offset */}
-              <path 
-                d="M 20,50 Q 200,20 380,50 L 380,596 L 20,596 Z" 
-                fill="none" 
-                stroke="rgba(45, 45, 45, 0.15)" 
-                strokeWidth="1"
-              />
-              {/* Vertical double lines on left side */}
-              <line x1="32" y1="50" x2="32" y2="600" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
-              <line x1="36" y1="50" x2="36" y2="600" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="0.5" />
-              {/* Vertical double lines on right side */}
-              <line x1="368" y1="50" x2="368" y2="600" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
-              <line x1="364" y1="50" x2="364" y2="600" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="0.5" />
-            </svg>
+            {/* Main Names - Large Impactful Typography */}
+            <div className="flex flex-col items-center space-y-4 md:space-y-6">
+              <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight">
+                Kevin Koko
+              </h1>
+              <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal/80 -mt-2 md:-mt-4">
+                &amp;
+              </p>
+              <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight">
+                Tiffany Min
+              </h1>
+            </div>
             
-            {/* Content area with proper spacing - accounting for hashtag */}
-            <div className="relative z-10 h-full flex flex-col justify-center text-center px-6 md:px-8 py-8 md:py-12 pl-16 md:pl-20">
-              {/* Curved top text */}
-              <p className="font-body text-[9px] md:text-[10px] text-charcoal/60 mb-4 md:mb-6 tracking-[0.12em] uppercase leading-tight">
-                A Formal Celebration Between
-              </p>
-              
-              {/* Main Names */}
-              <div className="mb-3 md:mb-5 flex flex-col items-center">
-                <h1 className="font-title text-2xl md:text-4xl lg:text-5xl text-charcoal mb-0 leading-tight">
-                  Kevin Koko
-                </h1>
-                <p className="font-script text-lg md:text-xl text-charcoal/90 mt-2 md:mt-3 mb-0.5">And</p>
-                <h1 className="font-title text-2xl md:text-4xl lg:text-5xl text-charcoal mt-0 leading-tight">
-                  Tiffany Min
-                </h1>
-              </div>
-              
-              {/* Invitation line */}
-              <p className="font-script text-base md:text-lg text-charcoal/80 mb-6 md:mb-8">
-                invite you to celebrate with us
-              </p>
-              
-              {/* Date */}
-              <p className="font-title text-sm md:text-base text-charcoal/70 mb-5 md:mb-7">
-                {dateRange}
-              </p>
-              
+            {/* Invitation Line */}
+            <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 mt-4 md:mt-8">
+              invite you to celebrate with us
+            </p>
+            
+            {/* Date */}
+            <p className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide">
+              {dateRange}
+            </p>
+            
+            {/* CTA Button */}
+            <div className="mt-8 md:mt-12">
               <Link
                 href={`${rsvpLink}?form=true`}
-                className="inline-block bg-charcoal text-white px-6 md:px-8 py-2.5 md:py-3 rounded-sm font-sans text-[10px] md:text-xs tracking-[0.12em] uppercase hover:bg-charcoal/90 transition-all"
+                className="inline-block bg-charcoal text-white px-8 md:px-12 py-3 md:py-4 rounded-sm font-body text-xs md:text-sm tracking-[0.15em] uppercase hover:bg-charcoal/90 transition-all duration-300"
               >
                 RSVP
               </Link>
             </div>
             
-            {/* Hashtag - positioned on left edge, vertically oriented */}
-            <div className="absolute left-2 md:left-3 top-1/2 -translate-y-1/2" style={{ 
-              transform: 'translateY(-50%) rotate(-90deg)',
-              transformOrigin: 'center'
-            }}>
-              <p className="font-script text-xs md:text-sm text-charcoal/60 whitespace-nowrap">#tiffandko</p>
-            </div>
+            {/* Hashtag - Subtle bottom placement */}
+            <p className="font-script text-sm md:text-base text-charcoal/40 mt-12 md:mt-16">
+              #tiffandko
+            </p>
           </div>
         </div>
       </section>
