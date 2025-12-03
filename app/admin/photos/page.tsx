@@ -124,19 +124,19 @@ export default function AdminPhotosPage() {
     handleFileSelect(e.target.files)
   }
 
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleFileDragOver = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(true)
   }
 
-  const handleDragLeave = (e: React.DragEvent) => {
+  const handleFileDragLeave = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
   }
 
-  const handleDrop = (e: React.DragEvent) => {
+  const handleFileDrop = (e: React.DragEvent) => {
     e.preventDefault()
     e.stopPropagation()
     setIsDragging(false)
@@ -325,9 +325,9 @@ export default function AdminPhotosPage() {
                   Select Photos <span className="text-red-500">*</span>
                 </label>
                 <div
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
+                  onDragOver={handleFileDragOver}
+                  onDragLeave={handleFileDragLeave}
+                  onDrop={handleFileDrop}
                   className={`border-2 border-dashed rounded-sm p-6 text-center transition-colors ${
                     isDragging
                       ? 'border-sage bg-sage/10'
