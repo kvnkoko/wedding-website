@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 interface FAQ {
   id: string
@@ -37,7 +36,6 @@ export default function AdminFAQsPage() {
   })
   const [newColorHex, setNewColorHex] = useState('')
   const [submitting, setSubmitting] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     fetchFAQs()
