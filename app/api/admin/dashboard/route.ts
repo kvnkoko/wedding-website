@@ -7,12 +7,12 @@ export const revalidate = 0
 export const fetchCache = 'force-no-store'
 
 export async function GET(request: NextRequest) {
-  try {
-    // Return empty data during build to prevent database access
-    if (!process.env.DATABASE_URL) {
-      return NextResponse.json({ stats: [], totals: { totalRsvps: 0, totalPlusOnes: 0 } })
-    }
+  // Early return during build - don't even try to import anything
+  if (!process.env.DATABASE_URL || process.env.NEXT_PHASE === 'phase-production-build') {
+    return NextResponse.json({ stats: [], totals: { totalRsvps: 0, totalPlusOnes: 0 } })
+  }
 
+  try {
     // Lazy load to prevent import during build analysis
     const { verifyAdminSession } = await import('@/lib/auth')
     const { prisma } = await import('@/lib/prisma')
