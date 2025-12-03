@@ -137,14 +137,27 @@ export async function POST(request: NextRequest) {
 
     let faq
     try {
+      // Build data object conditionally
+      const createData: any = {
+        question,
+        answer,
+        order: newOrder,
+      }
+      
+      // Only include colorHexCodes if it's not null
+      if (colorHexCodesJson !== null) {
+        createData.colorHexCodes = colorHexCodesJson
+      }
+      
+      // Only include inviteLinkConfigId if it's not null
+      if (finalInviteLinkConfigId !== null) {
+        createData.inviteLinkConfigId = finalInviteLinkConfigId
+      }
+      
+      console.log('Final create data:', createData)
+      
       faq = await prisma.fAQ.create({
-        data: {
-          question,
-          answer,
-          colorHexCodes: colorHexCodesJson,
-          inviteLinkConfigId: finalInviteLinkConfigId,
-          order: newOrder,
-        },
+        data: createData,
         include: {
           inviteLinkConfig: {
             select: {
@@ -158,6 +171,8 @@ export async function POST(request: NextRequest) {
       console.error('Prisma create error:', createError)
       console.error('Error code:', createError.code)
       console.error('Error meta:', createError.meta)
+      console.error('Error message:', createError.message)
+      console.error('Full error:', JSON.stringify(createError, null, 2))
       throw createError
     }
 
