@@ -75,6 +75,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { question, answer, colorHexCodes, inviteLinkConfigId, order } = body
 
+    console.log('Creating FAQ with data:', { question, answer, colorHexCodes, inviteLinkConfigId, order })
+
     if (!question || !answer) {
       return NextResponse.json(
         { error: 'Question and answer are required' },
@@ -97,10 +99,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the highest order number
-    const lastFAQ = await prisma.fAQ.findFirst({
-      orderBy: { order: 'desc' },
-    })
-    const newOrder = order !== undefined ? order : (lastFAQ ? lastFAQ.order + 1 : 0)
+    let newOrder = 0
+    try {
+      const lastFAQ = await prisma.fAQ.findFirst({
+        orderBy: { order: 'desc' },
+      })
+      newOrder = order !== undefined ? order : (lastFAQ ? lastFAQ.order + 1 : 0)
+    } catch (orderError: any) {
+      console.error('Error getting last FAQ order:', orderError)
+      // Continue with order 0 if there's an error
+    }
+
+    console.log('Creating FAQ with order:', newOrder, 'colorHexCodesJson:', colorHexCodesJson)
 
     const faq = await prisma.fAQ.create({
       data: {
@@ -120,6 +130,8 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    console.log('FAQ created successfully:', faq.id)
+
     // Parse colorHexCodes JSON string to array
     const faqWithParsedColors = {
       ...faq,
@@ -129,8 +141,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, faq: faqWithParsedColors })
   } catch (error: any) {
     console.error('Error creating FAQ:', error)
+    console.error('Error stack:', error.stack)
+    console.error('Error name:', error.name)
+    console.error('Error code:', error.code)
+    
+    // Check if it's a Prisma error
+    if (error.code === 'P2002') {
+      return NextResponse.json(
+        { error: 'A FAQ with this information already exists', details: error.message },
+        { status: 400 }
+      )
+    }
+    
+    if (error.message?.includes('Unknown arg') || error.message?.includes('colorHexCodes')) {
+      return NextResponse.json(
+        { error: 'Database schema error. Please run: npx prisma db push', details: error.message },
+        { status: 500 }
+      )
+    }
+
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', details: error.message, code: error.code },
       { status: 500 }
     )
   }
