@@ -21,7 +21,10 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   const [touchEnd, setTouchEnd] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
 
-  const sortedPhotos = [...photos].sort((a, b) => a.order - b.order)
+  // Safely sort photos
+  const sortedPhotos = photos && Array.isArray(photos) 
+    ? [...photos].sort((a, b) => (a.order || 0) - (b.order || 0))
+    : []
 
   useEffect(() => {
     if (isAutoPlaying && sortedPhotos.length > 1) {
@@ -36,6 +39,13 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
       }
     }
   }, [isAutoPlaying, sortedPhotos.length])
+
+  // Reset index if photos change
+  useEffect(() => {
+    if (sortedPhotos.length > 0 && currentIndex >= sortedPhotos.length) {
+      setCurrentIndex(0)
+    }
+  }, [sortedPhotos.length, currentIndex])
 
   const goToSlide = (index: number) => {
     setCurrentIndex(index)
@@ -107,14 +117,24 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 }}
               >
                 <div className="relative w-full h-full">
-                  <Image
-                    src={photo.url}
-                    alt={photo.alt || `Photo ${index + 1}`}
-                    fill
-                    className="object-cover"
-                    priority={isActive}
-                    sizes="100vw"
-                  />
+                  {photo.url && (
+                    <Image
+                      src={photo.url}
+                      alt={photo.alt || `Photo ${index + 1}`}
+                      fill
+                      className="object-cover"
+                      priority={isActive}
+                      sizes="100vw"
+                      onError={(e) => {
+                        console.error('Error loading image:', photo.url)
+                        // Hide broken images
+                        const target = e.target as HTMLImageElement
+                        if (target) {
+                          target.style.display = 'none'
+                        }
+                      }}
+                    />
+                  )}
                   {/* Elegant Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-charcoal/20 via-transparent to-transparent" />
                 </div>

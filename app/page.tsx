@@ -9,22 +9,36 @@ import PhotoCarousel from '@/components/PhotoCarousel'
 function PhotoCarouselSection() {
   const [photos, setPhotos] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/photos')
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error('Failed to fetch photos')
+        }
+        return res.json()
+      })
       .then((data) => {
-        setPhotos(data)
+        if (Array.isArray(data)) {
+          setPhotos(data)
+        } else {
+          setPhotos([])
+        }
         setLoading(false)
       })
-      .catch(() => setLoading(false))
+      .catch((err) => {
+        console.error('Error fetching photos:', err)
+        setError('Failed to load photos')
+        setLoading(false)
+      })
   }, [])
 
-  if (loading) {
+  if (loading || error) {
     return null
   }
 
-  if (photos.length === 0) {
+  if (!photos || photos.length === 0) {
     return null
   }
 
