@@ -69,7 +69,7 @@ function HomeContent() {
   // Server component content moved to client for simplicity
   return (
     <div className="min-h-screen">
-      {/* Hero Section - Modern Minimal Design */}
+      {/* Hero Section - Clean Minimal Design Without Arch */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto w-full">
           <div className="flex flex-col items-center justify-center text-center space-y-8 md:space-y-12 py-20 md:py-32">
