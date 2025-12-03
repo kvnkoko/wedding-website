@@ -60,42 +60,35 @@ export default function RSVPFormPage() {
 
   const plusOne = watch('plusOne')
 
-  // Redirect to home page and store slug (only if not showing form)
+  // Fetch config when page loads
   useEffect(() => {
-    const showForm = searchParams.get('form') === 'true'
-    if (slug && typeof window !== 'undefined' && !showForm) {
-      // Store the slug in localStorage
-      localStorage.setItem('rsvpSlug', `/rsvp/${slug}`)
-      // Redirect to home page
-      router.push('/')
-      return
-    }
-  }, [slug, router, searchParams])
-
-  useEffect(() => {
-    // Only fetch config if we're showing the form (not redirecting)
-    const showForm = searchParams.get('form') === 'true'
-    if (!showForm) {
-      return
-    }
-
     async function fetchConfig() {
       try {
         const res = await fetch(`/api/rsvp/config/${slug}`)
         if (!res.ok) {
-          router.push('/rsvp')
+          // If slug doesn't exist, redirect to generic RSVP page
+          if (res.status === 404) {
+            router.push('/rsvp')
+            return
+          }
+          // For other errors, still try to show something
+          setLoading(false)
           return
         }
         const data = await res.json()
         setConfig(data)
       } catch (error) {
+        console.error('Error fetching config:', error)
         router.push('/rsvp')
       } finally {
         setLoading(false)
       }
     }
-    fetchConfig()
-  }, [slug, router, searchParams])
+    
+    if (slug) {
+      fetchConfig()
+    }
+  }, [slug, router])
 
   const onSubmit = async (data: FormData) => {
     setSubmitting(true)
