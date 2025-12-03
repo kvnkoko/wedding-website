@@ -71,39 +71,39 @@ function HomeContent() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden py-8 px-4">
-        {/* Elegant invitation card with proper arch shape - curved top/bottom, straight sides */}
+        {/* Elegant invitation card with proper arch shape - CURVED TOP, STRAIGHT BOTTOM, STRAIGHT SIDES */}
         <div className="relative w-full max-w-md mx-auto my-8">
-          {/* Card container with proper arch shape using CSS clip-path */}
+          {/* Card container with proper arch shape - curved top only, straight bottom */}
           <div className="relative bg-cream" style={{
-            clipPath: 'polygon(0 12%, 0 88%, 100% 88%, 100% 12%, 50% 0%, 0 12%)'
+            clipPath: 'polygon(0 10%, 0 100%, 100% 100%, 100% 10%, 50% 0%, 0 10%)'
           }}>
-            {/* SVG for elegant arched borders - curved top and bottom, straight sides */}
+            {/* SVG for elegant arched borders - curved TOP only, straight bottom and sides */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }} viewBox="0 0 400 600" preserveAspectRatio="none">
-              {/* Outer arch border - curved top and bottom with straight sides */}
+              {/* Outer arch border - curved TOP, straight bottom and sides */}
               <path 
-                d="M 20,80 Q 20,20 200,20 L 200,20 Q 380,20 380,80 L 380,520 Q 380,580 200,580 L 200,580 Q 20,580 20,520 Z" 
+                d="M 20,60 Q 20,20 200,20 Q 380,20 380,60 L 380,580 L 20,580 Z" 
                 fill="none" 
                 stroke="rgba(45, 45, 45, 0.2)" 
                 strokeWidth="2"
               />
-              {/* Inner border lines */}
+              {/* Inner border lines - following the arch */}
               <path 
-                d="M 24,80 Q 24,24 200,24 L 200,24 Q 376,24 376,80 L 376,520 Q 376,576 200,576 L 200,576 Q 24,576 24,520 Z" 
+                d="M 24,60 Q 24,24 200,24 Q 376,24 376,60 L 376,576 L 24,576 Z" 
                 fill="none" 
                 stroke="rgba(45, 45, 45, 0.15)" 
                 strokeWidth="1"
               />
               <path 
-                d="M 28,80 Q 28,28 200,28 L 200,28 Q 372,28 372,80 L 372,520 Q 372,572 200,572 L 200,572 Q 28,572 28,520 Z" 
+                d="M 28,60 Q 28,28 200,28 Q 372,28 372,60 L 372,572 L 28,572 Z" 
                 fill="none" 
                 stroke="rgba(45, 45, 45, 0.1)" 
                 strokeWidth="1"
               />
               {/* Vertical double lines on left and right sides */}
-              <line x1="40" y1="80" x2="40" y2="520" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
-              <line x1="44" y1="80" x2="44" y2="520" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="1" />
-              <line x1="360" y1="80" x2="360" y2="520" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
-              <line x1="356" y1="80" x2="356" y2="520" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="1" />
+              <line x1="40" y1="60" x2="40" y2="580" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
+              <line x1="44" y1="60" x2="44" y2="580" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="1" />
+              <line x1="360" y1="60" x2="360" y2="580" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
+              <line x1="356" y1="60" x2="356" y2="580" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="1" />
             </svg>
             
             {/* Inner content area with proper padding - extra left padding for hashtag */}
