@@ -10,6 +10,18 @@ const nextConfig = {
     // Also ignore TypeScript errors during build
     ignoreBuildErrors: false,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+      {
+        protocol: 'http',
+        hostname: '**',
+      },
+    ],
+  },
 }
 
 module.exports = nextConfig

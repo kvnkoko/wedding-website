@@ -4,6 +4,32 @@ import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import RSVPEditForm from '@/components/RSVPEditForm'
+import PhotoCarousel from '@/components/PhotoCarousel'
+
+function PhotoCarouselSection() {
+  const [photos, setPhotos] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetch('/api/photos')
+      .then((res) => res.json())
+      .then((data) => {
+        setPhotos(data)
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [])
+
+  if (loading) {
+    return null
+  }
+
+  if (photos.length === 0) {
+    return null
+  }
+
+  return <PhotoCarousel photos={photos} />
+}
 
 function HomeContent() {
   const searchParams = useSearchParams()
@@ -120,30 +146,8 @@ function HomeContent() {
         </div>
       </section>
 
-      {/* Our Story Section */}
-      <section className="py-20 px-4 bg-white relative">
-        {/* Elegant side borders */}
-        <div className="absolute left-8 top-0 bottom-0 w-px bg-charcoal/10"></div>
-        <div className="absolute right-8 top-0 bottom-0 w-px bg-charcoal/10"></div>
-        <div className="absolute left-12 top-0 bottom-0 w-px bg-charcoal/5"></div>
-        <div className="absolute right-12 top-0 bottom-0 w-px bg-charcoal/5"></div>
-        
-        <div className="max-w-4xl mx-auto">
-          <h2 className="font-title text-5xl text-charcoal text-center mb-4">Our Story</h2>
-          <p className="font-script text-3xl text-charcoal/70 text-center mb-12">A Journey Together</p>
-          <div className="prose prose-lg mx-auto text-charcoal/80 font-body leading-relaxed">
-            <p className="text-center mb-6">
-              Our journey together began with a chance encounter that felt like destiny. From the bustling streets of Yangon to quiet moments in Mandalay, we have built a love story that spans cities and cultures.
-            </p>
-            <p className="text-center mb-6">
-              We are thrilled to share this special time with our family and friends, celebrating not just our union, but the beautiful connections that have shaped our lives.
-            </p>
-            <p className="text-center font-script text-xl text-charcoal/70">
-              Join us as we begin this new chapter together, surrounded by the people we love most.
-            </p>
-          </div>
-        </div>
-      </section>
+      {/* Photo Carousel Section */}
+      <PhotoCarouselSection />
 
     </div>
   )

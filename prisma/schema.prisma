@@ -101,3 +101,14 @@ model AdminUser {
   @@map("admin_users")
 }
 
+model Photo {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("photos")
+}
+
