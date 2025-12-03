@@ -35,6 +35,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   useEffect(() => {
     const updatePhotosToShow = () => {
       if (typeof window !== 'undefined') {
+        // Desktop: always show 3 photos
         setPhotosToShow(window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1)
       }
     }
