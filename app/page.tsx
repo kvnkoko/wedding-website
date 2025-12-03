@@ -70,7 +70,7 @@ function HomeContent() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-charcoal overflow-hidden py-8 px-4">
+      <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden py-8 px-4">
         {/* Elegant invitation card - redesigned to match invitation arch exactly */}
         <div className="relative w-full max-w-md mx-auto">
           {/* Card container with elegant arch shape matching invitation exactly */}
