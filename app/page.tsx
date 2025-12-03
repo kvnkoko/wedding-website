@@ -71,31 +71,44 @@ function HomeContent() {
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden py-8 px-4">
-        {/* Elegant invitation card with proper arched borders */}
+        {/* Elegant invitation card with proper arch shape - curved top/bottom, straight sides */}
         <div className="relative w-full max-w-md mx-auto my-8">
-          {/* Card container with proper arch shape using SVG mask for elegant curves */}
-          <div className="relative bg-cream" style={{ 
-            borderRadius: '60px',
-            clipPath: 'ellipse(95% 90% at 50% 50%)'
+          {/* Card container with proper arch shape using CSS clip-path */}
+          <div className="relative bg-cream" style={{
+            clipPath: 'polygon(0 12%, 0 88%, 100% 88%, 100% 12%, 50% 0%, 0 12%)'
           }}>
-            {/* Multiple elegant border lines creating depth - using SVG for proper arch */}
-            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
-              <defs>
-                <clipPath id="archShape">
-                  <ellipse cx="50%" cy="50%" rx="47.5%" ry="45%" />
-                </clipPath>
-              </defs>
-              {/* Outer border */}
-              <ellipse cx="50%" cy="50%" rx="47.5%" ry="45%" fill="none" stroke="rgba(45, 45, 45, 0.2)" strokeWidth="2" />
-              {/* Inner borders */}
-              <ellipse cx="50%" cy="50%" rx="47%" ry="44.5%" fill="none" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
-              <ellipse cx="50%" cy="50%" rx="46.5%" ry="44%" fill="none" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="1" />
-              <ellipse cx="50%" cy="50%" rx="46%" ry="43.5%" fill="none" stroke="rgba(45, 45, 45, 0.05)" strokeWidth="1" />
+            {/* SVG for elegant arched borders - curved top and bottom, straight sides */}
+            <svg className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }} viewBox="0 0 400 600" preserveAspectRatio="none">
+              {/* Outer arch border - curved top and bottom with straight sides */}
+              <path 
+                d="M 20,80 Q 20,20 200,20 L 200,20 Q 380,20 380,80 L 380,520 Q 380,580 200,580 L 200,580 Q 20,580 20,520 Z" 
+                fill="none" 
+                stroke="rgba(45, 45, 45, 0.2)" 
+                strokeWidth="2"
+              />
+              {/* Inner border lines */}
+              <path 
+                d="M 24,80 Q 24,24 200,24 L 200,24 Q 376,24 376,80 L 376,520 Q 376,576 200,576 L 200,576 Q 24,576 24,520 Z" 
+                fill="none" 
+                stroke="rgba(45, 45, 45, 0.15)" 
+                strokeWidth="1"
+              />
+              <path 
+                d="M 28,80 Q 28,28 200,28 L 200,28 Q 372,28 372,80 L 372,520 Q 372,572 200,572 L 200,572 Q 28,572 28,520 Z" 
+                fill="none" 
+                stroke="rgba(45, 45, 45, 0.1)" 
+                strokeWidth="1"
+              />
+              {/* Vertical double lines on left and right sides */}
+              <line x1="40" y1="80" x2="40" y2="520" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
+              <line x1="44" y1="80" x2="44" y2="520" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="1" />
+              <line x1="360" y1="80" x2="360" y2="520" stroke="rgba(45, 45, 45, 0.15)" strokeWidth="1" />
+              <line x1="356" y1="80" x2="356" y2="520" stroke="rgba(45, 45, 45, 0.1)" strokeWidth="1" />
             </svg>
             
             {/* Inner content area with proper padding - extra left padding for hashtag */}
             <div className="relative z-10 text-center px-8 md:px-12 py-12 md:py-16 pl-20 md:pl-24">
-              {/* Curved top text */}
+              {/* Curved top text - positioned near the arch */}
               <p className="font-body text-[10px] md:text-xs text-charcoal/60 mb-6 md:mb-8 tracking-[0.15em] uppercase leading-tight">
                 A Formal Celebration Between
               </p>
@@ -129,7 +142,7 @@ function HomeContent() {
               </Link>
             </div>
             
-            {/* Hashtag - positioned on left edge, vertically rotated, with proper spacing */}
+            {/* Hashtag - positioned on left edge, vertically oriented from bottom to top */}
             <div className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2" style={{ 
               transform: 'translateY(-50%) rotate(-90deg)',
               transformOrigin: 'center'
