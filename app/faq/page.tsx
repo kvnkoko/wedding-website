@@ -72,7 +72,7 @@ export default function FAQPage() {
     },
     {
       question: 'What if I can only attend one event?',
-      answer: 'That\'s perfectly fine! Please RSVP for the events you can attend. Each event is special and we\'d love to see you at whichever ones work for your schedule.',
+      answer: 'That&apos;s perfectly fine! Please RSVP for the events you can attend. Each event is special and we&apos;d love to see you at whichever ones work for your schedule.',
     },
     {
       question: 'How do I update my RSVP?',
