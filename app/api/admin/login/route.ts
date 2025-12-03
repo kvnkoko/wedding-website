@@ -26,6 +26,9 @@ export async function POST(request: NextRequest) {
 
     // Test database connection first
     try {
+      // Test connection with a simple query
+      await prisma.$queryRaw`SELECT 1`
+      
       const admin = await prisma.adminUser.findUnique({
         where: { email },
       })

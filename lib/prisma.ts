@@ -47,6 +47,7 @@ const getPrismaClient = (): PrismaClient => {
       throw new Error('DATABASE_URL environment variable is not set')
     }
     
+    // For Neon and serverless environments, configure connection pooling
     globalForPrisma.prisma = new PrismaClient({
       datasources: {
         db: {
