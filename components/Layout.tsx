@@ -98,9 +98,28 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="hidden md:flex space-x-8">
               {navItems.map((item) => {
                 // Check if current path matches the nav item
-                // For RSVP, also check if we're on any /rsvp/* route
-                const isActive = item.href === pathname || 
-                  (item.label === 'RSVP' && pathname?.startsWith('/rsvp/'))
+                // For RSVP, only highlight if we're on the form page (with ?form=true) or the generic /rsvp page
+                // Don't highlight if we're on a slug home page (without ?form=true)
+                let isActive = item.href === pathname
+                
+                if (item.label === 'RSVP') {
+                  // Only highlight RSVP if:
+                  // 1. We're on /rsvp (generic page)
+                  // 2. We're on /rsvp/[slug] with ?form=true (form page)
+                  // Don't highlight if we're on /rsvp/[slug] without ?form=true (home screen)
+                  if (pathname === '/rsvp') {
+                    isActive = true
+                  } else if (pathname?.startsWith('/rsvp/')) {
+                    // Check if we have the form parameter
+                    if (typeof window !== 'undefined') {
+                      const searchParams = new URLSearchParams(window.location.search)
+                      isActive = searchParams.get('form') === 'true'
+                    } else {
+                      // Server-side: don't highlight slug pages without form param
+                      isActive = false
+                    }
+                  }
+                }
                 
                 return (
                   <Link
