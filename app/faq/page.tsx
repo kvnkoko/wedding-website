@@ -6,6 +6,7 @@ interface FAQ {
   id: string
   question: string
   answer: string
+  colorHexCodes: string[] | null
   order: number
 }
 
@@ -72,7 +73,33 @@ export default function FAQPage() {
               {faqs.map((faq) => (
                 <div key={faq.id} className="bg-white p-8 rounded-sm shadow-sm">
                   <h2 className="font-serif text-2xl text-charcoal mb-4">{faq.question}</h2>
-                  <p className="font-sans text-base text-charcoal/70 leading-relaxed whitespace-pre-line">{faq.answer}</p>
+                  <p className="font-sans text-base text-charcoal/70 leading-relaxed whitespace-pre-line mb-6">{faq.answer}</p>
+                  {faq.colorHexCodes && faq.colorHexCodes.length > 0 && (
+                    <div className="mt-6 pt-6 border-t border-taupe/20">
+                      <div className="flex items-center gap-6 flex-wrap">
+                        <h3 className="font-sans text-base font-semibold text-charcoal uppercase tracking-wide whitespace-nowrap">
+                          Colors to Wear
+                        </h3>
+                        <div className="flex items-center gap-3">
+                          {faq.colorHexCodes.map((hex, index) => (
+                            <div
+                              key={index}
+                              className="relative w-12 h-12 rounded-full flex-shrink-0"
+                              style={{
+                                backgroundColor: hex,
+                                boxShadow: `
+                                  inset 0 3px 6px rgba(0, 0, 0, 0.15),
+                                  inset 0 -2px 3px rgba(0, 0, 0, 0.1),
+                                  0 2px 6px rgba(0, 0, 0, 0.15)
+                                `,
+                              }}
+                              title={hex}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

@@ -16,7 +16,7 @@ export async function PUT(
     }
 
     const body = await request.json()
-    const { question, answer, inviteLinkConfigId, order } = body
+    const { question, answer, colorHexCodes, inviteLinkConfigId, order } = body
 
     if (!question || !answer) {
       return NextResponse.json(
@@ -25,11 +25,28 @@ export async function PUT(
       )
     }
 
+    // Validate colorHexCodes if provided
+    let colorHexCodesJson: string | null = null
+    if (colorHexCodes) {
+      if (Array.isArray(colorHexCodes)) {
+        // Validate each hex code
+        const validHexCodes = colorHexCodes.filter((code: string) => 
+          /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(code)
+        )
+        if (validHexCodes.length > 0) {
+          colorHexCodesJson = JSON.stringify(validHexCodes)
+        }
+      }
+    } else if (colorHexCodes === null || colorHexCodes === '') {
+      colorHexCodesJson = null
+    }
+
     const faq = await prisma.fAQ.update({
       where: { id: params.id },
       data: {
         question,
         answer,
+        colorHexCodes: colorHexCodesJson !== undefined ? colorHexCodesJson : undefined,
         inviteLinkConfigId: inviteLinkConfigId || null,
         order: order !== undefined ? order : undefined,
       },
@@ -43,7 +60,13 @@ export async function PUT(
       },
     })
 
-    return NextResponse.json({ success: true, faq })
+    // Parse colorHexCodes JSON string to array
+    const faqWithParsedColors = {
+      ...faq,
+      colorHexCodes: faq.colorHexCodes ? JSON.parse(faq.colorHexCodes) : null,
+    }
+
+    return NextResponse.json({ success: true, faq: faqWithParsedColors })
   } catch (error: any) {
     console.error('Error updating FAQ:', error)
     return NextResponse.json(

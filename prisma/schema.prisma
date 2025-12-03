@@ -117,6 +117,7 @@ model FAQ {
   id                 String   @id @default(cuid())
   question           String
   answer             String
+  colorHexCodes      String?  // JSON array of hex color codes: ["#A8D5BA", "#E8D5C4", ...]
   inviteLinkConfigId String?  // null = global FAQ, otherwise specific to invite link
   order              Int      @default(0)
   createdAt          DateTime @default(now())

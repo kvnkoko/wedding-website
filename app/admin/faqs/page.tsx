@@ -7,6 +7,7 @@ interface FAQ {
   id: string
   question: string
   answer: string
+  colorHexCodes: string[] | null
   inviteLinkConfigId: string | null
   order: number
   inviteLinkConfig?: {
@@ -31,8 +32,10 @@ export default function AdminFAQsPage() {
   const [formData, setFormData] = useState({
     question: '',
     answer: '',
+    colorHexCodes: [] as string[],
     inviteLinkConfigId: '',
   })
+  const [newColorHex, setNewColorHex] = useState('')
   const router = useRouter()
 
   useEffect(() => {
@@ -132,6 +135,7 @@ export default function AdminFAQsPage() {
       const payload = {
         question: formData.question.trim(),
         answer: formData.answer.trim(),
+        colorHexCodes: formData.colorHexCodes.length > 0 ? formData.colorHexCodes : null,
         inviteLinkConfigId: formData.inviteLinkConfigId || null,
       }
 
@@ -160,7 +164,8 @@ export default function AdminFAQsPage() {
       }
 
       // Reset form
-      setFormData({ question: '', answer: '', inviteLinkConfigId: '' })
+      setFormData({ question: '', answer: '', colorHexCodes: [], inviteLinkConfigId: '' })
+      setNewColorHex('')
       setShowAddForm(false)
       setEditingFAQ(null)
       await fetchFAQs()
@@ -175,8 +180,10 @@ export default function AdminFAQsPage() {
     setFormData({
       question: faq.question,
       answer: faq.answer,
+      colorHexCodes: faq.colorHexCodes || [],
       inviteLinkConfigId: faq.inviteLinkConfigId || '',
     })
+    setNewColorHex('')
     setShowAddForm(true)
   }
 
@@ -202,9 +209,30 @@ export default function AdminFAQsPage() {
   }
 
   const handleCancel = () => {
-    setFormData({ question: '', answer: '', inviteLinkConfigId: '' })
+    setFormData({ question: '', answer: '', colorHexCodes: [], inviteLinkConfigId: '' })
+    setNewColorHex('')
     setShowAddForm(false)
     setEditingFAQ(null)
+  }
+
+  const handleAddColor = () => {
+    const hex = newColorHex.trim()
+    if (hex && /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(hex)) {
+      if (!formData.colorHexCodes.includes(hex)) {
+        setFormData({
+          ...formData,
+          colorHexCodes: [...formData.colorHexCodes, hex],
+        })
+        setNewColorHex('')
+      }
+    }
+  }
+
+  const handleRemoveColor = (index: number) => {
+    setFormData({
+      ...formData,
+      colorHexCodes: formData.colorHexCodes.filter((_, i) => i !== index),
+    })
   }
 
   if (loading) {
@@ -223,7 +251,8 @@ export default function AdminFAQsPage() {
           onClick={() => {
             setShowAddForm(true)
             setEditingFAQ(null)
-            setFormData({ question: '', answer: '', inviteLinkConfigId: '' })
+            setFormData({ question: '', answer: '', colorHexCodes: [], inviteLinkConfigId: '' })
+            setNewColorHex('')
           }}
           className="bg-sage text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-sage/90 transition-all"
         >
@@ -264,6 +293,62 @@ export default function AdminFAQsPage() {
                 rows={4}
                 className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
               />
+            </div>
+
+            <div>
+              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                Color Hex Codes (Optional)
+              </label>
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newColorHex}
+                    onChange={(e) => setNewColorHex(e.target.value)}
+                    placeholder="#A8D5BA"
+                    className="flex-1 px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        handleAddColor()
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleAddColor}
+                    className="bg-sage/20 text-sage px-4 py-2 rounded-sm font-sans text-sm hover:bg-sage/30 transition-all"
+                  >
+                    Add Color
+                  </button>
+                </div>
+                {formData.colorHexCodes.length > 0 && (
+                  <div className="flex flex-wrap gap-2 p-3 bg-taupe/10 rounded-sm">
+                    {formData.colorHexCodes.map((hex, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-2 bg-white px-3 py-2 rounded-sm border border-taupe/20"
+                      >
+                        <div
+                          className="w-6 h-6 rounded-full border border-taupe/30"
+                          style={{ backgroundColor: hex }}
+                        />
+                        <span className="font-mono text-xs text-charcoal">{hex}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveColor(index)}
+                          className="text-red-500 hover:text-red-700 text-sm"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <p className="mt-1 font-sans text-xs text-charcoal/60">
+                Add hex color codes (e.g., #A8D5BA) to display color swatches in the FAQ. These will appear below the answer.
+              </p>
             </div>
 
             <div>
@@ -348,9 +433,21 @@ export default function AdminFAQsPage() {
                   <h3 className="font-serif text-lg text-charcoal mb-2">
                     {faq.question}
                   </h3>
-                  <p className="font-sans text-sm text-charcoal/70">
+                  <p className="font-sans text-sm text-charcoal/70 mb-2">
                     {faq.answer}
                   </p>
+                  {faq.colorHexCodes && faq.colorHexCodes.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {faq.colorHexCodes.map((hex, idx) => (
+                        <div
+                          key={idx}
+                          className="w-4 h-4 rounded-full border border-taupe/30"
+                          style={{ backgroundColor: hex }}
+                          title={hex}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-charcoal/40">⋮⋮</span>

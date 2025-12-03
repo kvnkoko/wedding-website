@@ -48,7 +48,13 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(faqs)
+    // Parse colorHexCodes JSON strings to arrays
+    const faqsWithParsedColors = faqs.map(faq => ({
+      ...faq,
+      colorHexCodes: faq.colorHexCodes ? JSON.parse(faq.colorHexCodes) : null,
+    }))
+
+    return NextResponse.json(faqsWithParsedColors)
   } catch (error: any) {
     console.error('Error fetching FAQs:', error)
     return NextResponse.json(
@@ -67,13 +73,27 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { question, answer, inviteLinkConfigId, order } = body
+    const { question, answer, colorHexCodes, inviteLinkConfigId, order } = body
 
     if (!question || !answer) {
       return NextResponse.json(
         { error: 'Question and answer are required' },
         { status: 400 }
       )
+    }
+
+    // Validate colorHexCodes if provided
+    let colorHexCodesJson: string | null = null
+    if (colorHexCodes) {
+      if (Array.isArray(colorHexCodes)) {
+        // Validate each hex code
+        const validHexCodes = colorHexCodes.filter((code: string) => 
+          /^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(code)
+        )
+        if (validHexCodes.length > 0) {
+          colorHexCodesJson = JSON.stringify(validHexCodes)
+        }
+      }
     }
 
     // Get the highest order number
@@ -86,6 +106,7 @@ export async function POST(request: NextRequest) {
       data: {
         question,
         answer,
+        colorHexCodes: colorHexCodesJson,
         inviteLinkConfigId: inviteLinkConfigId || null,
         order: newOrder,
       },
@@ -99,7 +120,13 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({ success: true, faq })
+    // Parse colorHexCodes JSON string to array
+    const faqWithParsedColors = {
+      ...faq,
+      colorHexCodes: faq.colorHexCodes ? JSON.parse(faq.colorHexCodes) : null,
+    }
+
+    return NextResponse.json({ success: true, faq: faqWithParsedColors })
   } catch (error: any) {
     console.error('Error creating FAQ:', error)
     return NextResponse.json(
