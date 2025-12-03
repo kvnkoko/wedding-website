@@ -47,6 +47,8 @@ const getPrismaClient = (): PrismaClient => {
       throw new Error('DATABASE_URL environment variable is not set')
     }
     
+    console.log('Creating Prisma client with database:', databaseUrl.substring(0, 30) + '...')
+    
     // For Neon and serverless environments, configure connection pooling
     globalForPrisma.prisma = new PrismaClient({
       datasources: {
@@ -54,7 +56,7 @@ const getPrismaClient = (): PrismaClient => {
           url: databaseUrl,
         },
       },
-      log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
+      log: process.env.NODE_ENV === 'development' ? ['error', 'warn', 'query'] : ['error'],
     })
   }
   

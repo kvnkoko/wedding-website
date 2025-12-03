@@ -7,6 +7,17 @@ export const dynamic = 'force-dynamic'
 // GET - Fetch FAQs (public endpoint, filtered by invite link if provided)
 export async function GET(request: NextRequest) {
   try {
+    // Test database connection first
+    try {
+      await prisma.$queryRaw`SELECT 1`
+    } catch (dbError: any) {
+      console.error('Database connection test failed:', dbError)
+      return NextResponse.json(
+        { error: 'Database connection failed', details: dbError.message },
+        { status: 500 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const inviteLinkSlug = searchParams.get('inviteLinkSlug')
 
