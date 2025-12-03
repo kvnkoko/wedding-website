@@ -49,10 +49,22 @@ export async function GET(request: NextRequest) {
     })
 
     // Parse colorHexCodes JSON strings to arrays
-    const faqsWithParsedColors = faqs.map(faq => ({
-      ...faq,
-      colorHexCodes: faq.colorHexCodes ? JSON.parse(faq.colorHexCodes) : null,
-    }))
+    const faqsWithParsedColors = faqs.map(faq => {
+      let parsedColors = null
+      if (faq.colorHexCodes) {
+        try {
+          parsedColors = JSON.parse(faq.colorHexCodes)
+        } catch (parseError) {
+          console.error('Error parsing colorHexCodes for FAQ:', faq.id, parseError)
+          // If parsing fails, set to null
+          parsedColors = null
+        }
+      }
+      return {
+        ...faq,
+        colorHexCodes: parsedColors,
+      }
+    })
 
     return NextResponse.json(faqsWithParsedColors)
   } catch (error: any) {
@@ -179,9 +191,18 @@ export async function POST(request: NextRequest) {
     console.log('FAQ created successfully:', faq.id)
 
     // Parse colorHexCodes JSON string to array
+    let parsedColors = null
+    if (faq.colorHexCodes) {
+      try {
+        parsedColors = JSON.parse(faq.colorHexCodes)
+      } catch (parseError) {
+        console.error('Error parsing colorHexCodes:', parseError)
+        parsedColors = null
+      }
+    }
     const faqWithParsedColors = {
       ...faq,
-      colorHexCodes: faq.colorHexCodes ? JSON.parse(faq.colorHexCodes) : null,
+      colorHexCodes: parsedColors,
     }
 
     return NextResponse.json({ success: true, faq: faqWithParsedColors })

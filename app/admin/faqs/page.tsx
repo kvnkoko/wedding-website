@@ -49,11 +49,13 @@ export default function AdminFAQsPage() {
         const data = await res.json()
         setFaqs(data.sort((a: FAQ, b: FAQ) => a.order - b.order))
       } else {
-        alert('Error fetching FAQs')
+        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Error fetching FAQs:', errorData)
+        alert(`Error fetching FAQs: ${errorData.error || 'Unknown error'}`)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error fetching FAQs:', error)
-      alert('Error fetching FAQs. Please try again.')
+      alert(`Error fetching FAQs: ${error.message || 'Please try again.'}`)
     } finally {
       setLoading(false)
     }

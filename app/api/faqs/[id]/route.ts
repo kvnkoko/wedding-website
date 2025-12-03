@@ -61,9 +61,18 @@ export async function PUT(
     })
 
     // Parse colorHexCodes JSON string to array
+    let parsedColors = null
+    if (faq.colorHexCodes) {
+      try {
+        parsedColors = JSON.parse(faq.colorHexCodes)
+      } catch (parseError) {
+        console.error('Error parsing colorHexCodes:', parseError)
+        parsedColors = null
+      }
+    }
     const faqWithParsedColors = {
       ...faq,
-      colorHexCodes: faq.colorHexCodes ? JSON.parse(faq.colorHexCodes) : null,
+      colorHexCodes: parsedColors,
     }
 
     return NextResponse.json({ success: true, faq: faqWithParsedColors })
