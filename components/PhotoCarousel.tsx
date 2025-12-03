@@ -187,6 +187,14 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 position = sortedPhotos.length - currentIndex + index
               }
 
+              // Container width - use standard widths for now
+              // The image will use object-contain to show full photo and fill height
+              const containerWidth = photosToShow === 1 
+                ? '100%' 
+                : photosToShow === 2 
+                ? 'calc(50% - 12px)' 
+                : 'calc(33.333% - 16px)'
+
               return (
                 <div
                   key={photo.id}
@@ -196,15 +204,15 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                       : 'opacity-0 scale-95 z-0 pointer-events-none'
                   }`}
                   style={{
-                    width: photosToShow === 1 ? '100%' : photosToShow === 2 ? 'calc(50% - 12px)' : 'calc(33.333% - 16px)',
+                    width: containerWidth,
                     height: '100%',
-                    maxWidth: '100%',
+                    flexShrink: 0,
                     transform: isVisible 
                       ? `translateX(0) scale(1)` 
                       : position < 0 
                       ? `translateX(-20px) scale(0.95)`
                       : `translateX(20px) scale(0.95)`,
-                    transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1), transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
+                    transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1), transform 1000ms cubic-bezier(0.4, 0, 0.2, 1), width 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
                   <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg flex items-center justify-center">
@@ -213,15 +221,16 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                         src={photo.url}
                         alt={photo.alt || `Photo ${index + 1}`}
                         fill
-                        className={`${
+                        className={`object-contain ${
                           imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3 && isVisible
-                            ? 'object-contain pan-zoom-horizontal'
-                            : 'object-contain'
+                            ? 'pan-zoom-horizontal'
+                            : ''
                         }`}
                         style={{
                           objectFit: 'contain',
-                          width: '100%',
+                          width: 'auto',
                           height: '100%',
+                          maxWidth: '100%',
                         }}
                         priority={isVisible && (position === 0 || (position === 1 && photosToShow > 1))}
                         sizes={photosToShow === 1 ? "100vw" : photosToShow === 2 ? "50vw" : "33vw"}
