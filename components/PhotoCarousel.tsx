@@ -198,9 +198,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                   style={{
                     width: photosToShow === 1 ? '100%' : photosToShow === 2 ? 'calc(50% - 12px)' : 'calc(33.333% - 16px)',
                     height: '100%',
-                    flex: photosToShow === 1 ? '1 1 100%' : photosToShow === 2 ? '1 1 calc(50% - 12px)' : '1 1 calc(33.333% - 16px)',
                     maxWidth: '100%',
-                    minWidth: photosToShow === 1 ? '100%' : photosToShow === 2 ? '300px' : '250px',
                     transform: isVisible 
                       ? `translateX(0) scale(1)` 
                       : position < 0 
@@ -211,39 +209,39 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 >
                   <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg bg-taupe/20">
                     {photo.url && (
-                      <>
-                        <Image
-                          src={photo.url}
-                          alt={photo.alt || `Photo ${index + 1}`}
-                          fill
-                          className={`${
-                            imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3
-                              ? 'object-cover pan-zoom-horizontal'
-                              : 'object-contain'
-                          }`}
-                          priority={isVisible && (position === 0 || (position === 1 && photosToShow > 1))}
-                          sizes={photosToShow === 1 ? "100vw" : photosToShow === 2 ? "50vw" : "33vw"}
-                          onError={(e) => {
-                            console.error('Error loading image:', photo.url)
-                            const target = e.target as HTMLImageElement
-                            if (target) {
-                              target.style.display = 'none'
-                            }
-                          }}
-                          onLoad={(e) => {
-                            // Calculate and store aspect ratio
-                            const img = e.target as HTMLImageElement
-                            if (img.naturalWidth && img.naturalHeight) {
-                              const aspectRatio = img.naturalWidth / img.naturalHeight
-                              setImageAspectRatios(prev => {
-                                const newMap = new Map(prev)
-                                newMap.set(photo.id, aspectRatio)
-                                return newMap
-                              })
-                            }
-                          }}
-                        />
-                      </>
+                      <Image
+                        src={photo.url}
+                        alt={photo.alt || `Photo ${index + 1}`}
+                        fill
+                        className={`${
+                          imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3 && isVisible
+                            ? 'object-cover pan-zoom-horizontal'
+                            : imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3
+                            ? 'object-cover'
+                            : 'object-contain'
+                        }`}
+                        priority={isVisible && (position === 0 || (position === 1 && photosToShow > 1))}
+                        sizes={photosToShow === 1 ? "100vw" : photosToShow === 2 ? "50vw" : "33vw"}
+                        onError={(e) => {
+                          console.error('Error loading image:', photo.url)
+                          const target = e.target as HTMLImageElement
+                          if (target) {
+                            target.style.display = 'none'
+                          }
+                        }}
+                        onLoad={(e) => {
+                          // Calculate and store aspect ratio
+                          const img = e.target as HTMLImageElement
+                          if (img.naturalWidth && img.naturalHeight) {
+                            const aspectRatio = img.naturalWidth / img.naturalHeight
+                            setImageAspectRatios(prev => {
+                              const newMap = new Map(prev)
+                              newMap.set(photo.id, aspectRatio)
+                              return newMap
+                            })
+                          }
+                        }}
+                      />
                     )}
                   </div>
                 </div>
