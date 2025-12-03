@@ -207,7 +207,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     transition: 'opacity 1000ms cubic-bezier(0.4, 0, 0.2, 1), transform 1000ms cubic-bezier(0.4, 0, 0.2, 1)',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg">
+                  <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg flex items-center justify-center">
                     {photo.url && (
                       <Image
                         src={photo.url}
@@ -215,9 +215,14 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                         fill
                         className={`${
                           imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3 && isVisible
-                            ? 'object-cover pan-zoom-horizontal'
-                            : 'object-cover'
+                            ? 'object-contain pan-zoom-horizontal'
+                            : 'object-contain'
                         }`}
+                        style={{
+                          objectFit: 'contain',
+                          width: '100%',
+                          height: '100%',
+                        }}
                         priority={isVisible && (position === 0 || (position === 1 && photosToShow > 1))}
                         sizes={photosToShow === 1 ? "100vw" : photosToShow === 2 ? "50vw" : "33vw"}
                         onError={(e) => {
