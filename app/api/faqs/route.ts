@@ -45,8 +45,9 @@ export async function GET(request: NextRequest) {
         where = { inviteLinkConfigId: null }
       }
     } else if (!isAdminRequest) {
-      // No invite link provided and not admin, only show global FAQs
-      where = { inviteLinkConfigId: null }
+      // No invite link provided and not admin - show ALL FAQs (both global and event-specific)
+      // This allows event-specific FAQs to show up on the main FAQ page
+      where = {} // Empty where clause means show all FAQs
     }
     // If admin request with no inviteLinkSlug, where stays empty (show all FAQs)
 
