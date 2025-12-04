@@ -76,13 +76,13 @@ export async function GET(request: NextRequest) {
       console.log('[GET /api/faqs] Found invite link config:', inviteLinkConfig ? { 
         id: inviteLinkConfig.id, 
         label: inviteLinkConfig.label,
-        eventIds: inviteLinkConfig.events.map(e => e.event.id),
-        eventNames: inviteLinkConfig.events.map(e => e.event.name)
+        eventIds: inviteLinkConfig.events.map((e: any) => e.event.id),
+        eventNames: inviteLinkConfig.events.map((e: any) => e.event.name)
       } : 'NOT FOUND')
 
       if (inviteLinkConfig && inviteLinkConfig.events.length > 0) {
         // Get event IDs from this invite link
-        const currentEventIds = inviteLinkConfig.events.map(e => e.event.id)
+        const currentEventIds = inviteLinkConfig.events.map((e: any) => e.event.id)
         console.log('[GET /api/faqs] Current invite link ID:', inviteLinkConfig.id)
         console.log('[GET /api/faqs] Current invite link slug:', inviteLinkConfig.slug)
         console.log('[GET /api/faqs] Current invite link events:', currentEventIds)
