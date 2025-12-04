@@ -214,38 +214,64 @@ export default function AdminFAQsPage() {
     setShowAddForm(true)
   }
 
-  const handleDelete = async (id: string, e?: React.MouseEvent) => {
-    e?.preventDefault()
-    e?.stopPropagation()
+  const handleDelete = async (id: string) => {
+    console.log('=== DELETE BUTTON CLICKED ===')
+    console.log('FAQ ID to delete:', id)
     
-    console.log('handleDelete called with ID:', id)
+    const confirmed = window.confirm('Are you sure you want to delete this FAQ?')
+    console.log('User confirmed:', confirmed)
     
-    if (!confirm('Are you sure you want to delete this FAQ?')) {
+    if (!confirmed) {
       console.log('Delete cancelled by user')
       return
     }
 
     try {
-      console.log('Deleting FAQ with ID:', id)
-      const res = await fetch(`/api/faqs?id=${id}`, {
+      console.log('Making DELETE request to /api/faqs?id=' + id)
+      const url = `/api/faqs?id=${encodeURIComponent(id)}`
+      console.log('Full URL:', url)
+      
+      const res = await fetch(url, {
         method: 'DELETE',
-        credentials: 'include', // Include cookies in the request
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
 
-      console.log('Delete response status:', res.status, res.statusText)
+      console.log('Response received')
+      console.log('Status:', res.status)
+      console.log('Status text:', res.statusText)
+      console.log('OK?', res.ok)
+
+      const responseText = await res.text()
+      console.log('Response text:', responseText)
 
       if (res.ok) {
-        const result = await res.json()
-        console.log('Delete result:', result)
+        let result
+        try {
+          result = JSON.parse(responseText)
+        } catch {
+          result = { success: true }
+        }
+        console.log('Delete successful, result:', result)
         await fetchFAQs()
         alert('FAQ deleted successfully!')
       } else {
-        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }))
-        console.error('Delete error response:', errorData)
+        let errorData
+        try {
+          errorData = JSON.parse(responseText)
+        } catch {
+          errorData = { error: responseText || 'Unknown error' }
+        }
+        console.error('Delete failed, error:', errorData)
         alert(`Error deleting FAQ: ${errorData.error || 'Unknown error'}`)
       }
     } catch (error: any) {
-      console.error('Error deleting FAQ:', error)
+      console.error('Exception during delete:', error)
+      console.error('Error name:', error.name)
+      console.error('Error message:', error.message)
+      console.error('Error stack:', error.stack)
       alert(`Error deleting FAQ: ${error.message || 'Please try again.'}`)
     }
   }
@@ -512,10 +538,17 @@ export default function AdminFAQsPage() {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      console.log('Delete button clicked for FAQ:', faq.id)
-                      handleDelete(faq.id, e)
+                      console.log('=== BUTTON CLICK EVENT FIRED ===')
+                      console.log('FAQ object:', faq)
+                      console.log('FAQ ID:', faq.id)
+                      handleDelete(faq.id)
                     }}
-                    className="bg-red-100 text-red-600 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 transition-all cursor-pointer"
+                    onMouseDown={(e) => {
+                      console.log('Delete button mouse down')
+                      e.stopPropagation()
+                    }}
+                    className="bg-red-100 text-red-600 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 transition-all cursor-pointer z-10 relative"
+                    style={{ pointerEvents: 'auto' }}
                   >
                     Delete
                   </button>
