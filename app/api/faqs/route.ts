@@ -265,11 +265,21 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(faqsWithParsedColors)
   } catch (error: any) {
-    console.error('Error fetching FAQs:', error)
-    console.error('Error code:', error.code)
-    console.error('Error name:', error.name)
+    console.error('[GET /api/faqs] ERROR:', error)
+    console.error('[GET /api/faqs] Error stack:', error.stack)
+    console.error('[GET /api/faqs] Error code:', error.code)
+    console.error('[GET /api/faqs] Error name:', error.name)
+    console.error('[GET /api/faqs] Error message:', error.message)
+    
+    // Return more detailed error for debugging
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message, code: error.code },
+      { 
+        error: 'Internal server error', 
+        details: error.message || String(error),
+        code: error.code,
+        name: error.name,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      },
       { status: 500 }
     )
   }
