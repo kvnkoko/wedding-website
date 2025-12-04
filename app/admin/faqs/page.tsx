@@ -44,7 +44,9 @@ export default function AdminFAQsPage() {
 
   const fetchFAQs = async () => {
     try {
-      const res = await fetch('/api/faqs')
+      const res = await fetch('/api/faqs', {
+        credentials: 'include',
+      })
       if (res.ok) {
         const data = await res.json()
         setFaqs(data.sort((a: FAQ, b: FAQ) => a.order - b.order))
@@ -159,6 +161,7 @@ export default function AdminFAQsPage() {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
+          credentials: 'include',
         })
       } else {
         // Create new FAQ
@@ -166,6 +169,7 @@ export default function AdminFAQsPage() {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
+          credentials: 'include',
         })
       }
 
@@ -219,6 +223,7 @@ export default function AdminFAQsPage() {
       console.log('Deleting FAQ with ID:', id)
       const res = await fetch(`/api/faqs?id=${id}`, {
         method: 'DELETE',
+        credentials: 'include', // Include cookies in the request
       })
 
       console.log('Delete response status:', res.status, res.statusText)
