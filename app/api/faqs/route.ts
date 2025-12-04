@@ -27,10 +27,13 @@ export async function GET(request: NextRequest) {
     const isAdminRequest = request.headers.get('referer')?.includes('/admin')
     
     if (inviteLinkSlug) {
+      console.log('[GET /api/faqs] Looking up invite link with slug:', inviteLinkSlug)
       // Get the invite link config ID
       const inviteLinkConfig = await prisma.inviteLinkConfig.findUnique({
         where: { slug: inviteLinkSlug },
       })
+
+      console.log('[GET /api/faqs] Found invite link config:', inviteLinkConfig ? { id: inviteLinkConfig.id, label: inviteLinkConfig.label } : 'NOT FOUND')
 
       if (inviteLinkConfig) {
         // Get FAQs for this specific invite link OR global FAQs (null inviteLinkConfigId)
@@ -40,8 +43,10 @@ export async function GET(request: NextRequest) {
             { inviteLinkConfigId: null },
           ],
         }
+        console.log('[GET /api/faqs] Filtering FAQs for invite link:', inviteLinkConfig.id, 'or global (null)')
       } else {
         // If invite link doesn't exist, only show global FAQs
+        console.log('[GET /api/faqs] Invite link not found, showing only global FAQs')
         where = { inviteLinkConfigId: null }
       }
     } else if (!isAdminRequest) {
@@ -104,6 +109,12 @@ export async function GET(request: NextRequest) {
         },
       })
       console.log('[GET /api/faqs] Found FAQs:', faqs.length)
+      console.log('[GET /api/faqs] FAQ details:', faqs.map(f => ({ 
+        id: f.id, 
+        question: f.question.substring(0, 50),
+        inviteLinkConfigId: f.inviteLinkConfigId,
+        inviteLinkConfig: f.inviteLinkConfig ? { slug: f.inviteLinkConfig.slug, label: f.inviteLinkConfig.label } : null
+      })))
     } catch (queryError: any) {
       console.error('Error querying FAQs:', queryError)
       console.error('Error code:', queryError.code)

@@ -20,15 +20,19 @@ export default function FAQPage() {
     
     if (typeof window !== 'undefined') {
       const storedSlug = localStorage.getItem('rsvpSlug')
+      console.log('[FAQ Page] Stored slug from localStorage:', storedSlug)
       if (storedSlug) {
         inviteLinkSlug = storedSlug.replace('/rsvp/', '')
+        console.log('[FAQ Page] Extracted inviteLinkSlug:', inviteLinkSlug)
       }
     }
 
     // Fetch FAQs based on invite link
     const url = inviteLinkSlug 
-      ? `/api/faqs?inviteLinkSlug=${inviteLinkSlug}`
+      ? `/api/faqs?inviteLinkSlug=${encodeURIComponent(inviteLinkSlug)}`
       : '/api/faqs'
+    
+    console.log('[FAQ Page] Fetching FAQs from:', url)
     
     fetch(url)
       .then(res => {
@@ -38,10 +42,16 @@ export default function FAQPage() {
         return res.json()
       })
       .then((data: FAQ[]) => {
+        console.log('[FAQ Page] Received FAQs:', data.length)
+        console.log('[FAQ Page] FAQ details:', data.map(f => ({ 
+          id: f.id, 
+          question: f.question.substring(0, 50),
+          inviteLinkConfigId: (f as any).inviteLinkConfigId 
+        })))
         setFaqs(data.sort((a, b) => a.order - b.order))
       })
       .catch((error) => {
-        console.error('Error fetching FAQs:', error)
+        console.error('[FAQ Page] Error fetching FAQs:', error)
       })
       .finally(() => {
         setLoading(false)
