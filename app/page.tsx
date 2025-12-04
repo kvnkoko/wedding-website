@@ -60,7 +60,7 @@ function HomeContent() {
         {/* Background Tulips - Filling the space with elegant botanical illustrations */}
         {/* Left Tulip Illustration - Extended to fill more vertical space */}
         <div 
-          className="hidden lg:block absolute left-0 top-[50%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none"
+          className="hidden lg:block absolute left-0 top-[35%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none"
           style={{ 
             opacity: 0.1,
             width: 'clamp(600px, 50vw, 900px)',
@@ -89,7 +89,7 @@ function HomeContent() {
 
         {/* Right Tulip Illustration - Extended to fill more vertical space */}
         <div 
-          className="hidden lg:block absolute right-0 top-[50%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none"
+          className="hidden lg:block absolute right-0 top-[40%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none"
           style={{ 
             opacity: 0.1,
             width: 'clamp(580px, 48vw, 880px)',
