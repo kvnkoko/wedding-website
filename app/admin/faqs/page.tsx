@@ -478,7 +478,15 @@ export default function AdminFAQsPage() {
               <div
                 key={faq.id}
                 draggable
-                onDragStart={() => handleDragStart(index)}
+                onDragStart={(e) => {
+                  // Only allow drag from the drag handle (⋮⋮), not from buttons
+                  const target = e.target as HTMLElement
+                  if (target.closest('button') || target.tagName === 'BUTTON') {
+                    e.preventDefault()
+                    return false
+                  }
+                  handleDragStart(index)
+                }}
                 onDragOver={(e) => handleDragOver(e, index)}
                 onDragEnd={handleDragEnd}
                 className={`flex items-start gap-4 p-4 border-2 rounded-sm cursor-move transition-all ${
