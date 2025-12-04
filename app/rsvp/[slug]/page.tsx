@@ -51,17 +51,18 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
-        {/* Background Tulips - Large, Dynamic, Asymmetrical, Absolutely Positioned */}
-        {/* Left Tulip - Larger, positioned higher, slight rotation */}
+        {/* Background Tulips - Elegant, Refined, Asymmetrical Botanical Illustrations */}
+        {/* Left Tulip Illustration - Clustered arrangement, positioned elegantly */}
         <div 
-          className="hidden lg:block absolute left-0 top-[35%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none"
+          className="hidden lg:block absolute left-0 top-[40%] -translate-y-1/2 -translate-x-[8%] z-0 pointer-events-none"
           style={{ 
-            opacity: 0.15,
-            width: 'clamp(600px, 45vw, 900px)',
+            opacity: 0.09,
+            width: 'clamp(400px, 32vw, 600px)',
             height: 'auto',
             filter: 'invert(1)',
             willChange: 'transform',
-            transform: 'rotate(-8deg)',
+            transform: 'rotate(-5deg)',
+            transition: 'opacity 0.3s ease',
           }}
         >
           <img
@@ -70,7 +71,6 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
             className="object-contain w-full h-auto"
             style={{ 
               filter: 'invert(1)',
-              transform: 'scale(1.4)',
             }}
             onError={(e) => {
               const target = e.target as HTMLImageElement
@@ -81,31 +81,35 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
           />
         </div>
 
-        {/* Right Tulip - Different size, positioned lower, opposite rotation */}
+        {/* Right Tulip Illustration - Horizontal arrangement, different style */}
         <div 
-          className="hidden lg:block absolute right-0 top-[60%] -translate-y-1/2 translate-x-[10%] z-0 pointer-events-none"
+          className="hidden lg:block absolute right-0 top-[55%] -translate-y-1/2 translate-x-[8%] z-0 pointer-events-none"
           style={{ 
-            opacity: 0.13,
-            width: 'clamp(550px, 38vw, 750px)',
+            opacity: 0.08,
+            width: 'clamp(380px, 30vw, 580px)',
             height: 'auto',
             filter: 'invert(1)',
             willChange: 'transform',
-            transform: 'rotate(12deg)',
+            transform: 'rotate(6deg)',
+            transition: 'opacity 0.3s ease',
           }}
         >
           <img
-            src="/tulips.png"
+            src="/tulips2.png"
             alt=""
+            onError={(e) => {
+              // Fallback to original tulips.png if second image doesn't exist
+              const target = e.target as HTMLImageElement
+              if (target && target.src.includes('tulips2.png')) {
+                target.src = '/tulips.png'
+                target.style.transform = 'scaleX(-1)'
+              } else if (target) {
+                target.style.display = 'none'
+              }
+            }}
             className="object-contain w-full h-auto"
             style={{ 
               filter: 'invert(1)',
-              transform: 'scaleX(-1) scale(1.3)',
-            }}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              if (target) {
-                target.style.display = 'none'
-              }
             }}
           />
         </div>
