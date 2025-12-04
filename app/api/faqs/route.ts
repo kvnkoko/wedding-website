@@ -55,10 +55,12 @@ export async function GET(request: NextRequest) {
       if (inviteLinkConfig && inviteLinkConfig.events.length > 0) {
         // Get event IDs from this invite link
         const currentEventIds = inviteLinkConfig.events.map(e => e.event.id)
+        console.log('[GET /api/faqs] Current invite link ID:', inviteLinkConfig.id)
+        console.log('[GET /api/faqs] Current invite link slug:', inviteLinkConfig.slug)
         console.log('[GET /api/faqs] Current invite link events:', currentEventIds)
         
         // Find all invite link configs that share at least one event with the current invite link
-        // This includes the current invite link itself
+        // This should include the current invite link itself
         const relatedInviteLinkConfigs = await prisma.inviteLinkConfig.findMany({
           where: {
             events: {
@@ -76,18 +78,24 @@ export async function GET(request: NextRequest) {
         })
         
         const relatedInviteLinkConfigIds = relatedInviteLinkConfigs.map(config => config.id)
-        console.log('[GET /api/faqs] Found related invite link configs (including current):', relatedInviteLinkConfigs.map(c => ({ id: c.id, slug: c.slug })))
+        console.log('[GET /api/faqs] Found related invite link configs:', relatedInviteLinkConfigs.map(c => ({ id: c.id, slug: c.slug })))
         console.log('[GET /api/faqs] Related invite link config IDs:', relatedInviteLinkConfigIds)
-        console.log('[GET /api/faqs] Current invite link ID:', inviteLinkConfig.id, 'is in related list?', relatedInviteLinkConfigIds.includes(inviteLinkConfig.id))
+        console.log('[GET /api/faqs] Current invite link ID in related list?', relatedInviteLinkConfigIds.includes(inviteLinkConfig.id))
+        
+        // CRITICAL: Always explicitly include the current invite link's ID
+        // This ensures FAQs directly tied to this invite link are always included
+        // Use a Set to deduplicate IDs
+        const allInviteLinkConfigIds = Array.from(new Set([
+          inviteLinkConfig.id, // Always include current invite link first
+          ...relatedInviteLinkConfigIds, // Then add related ones
+        ]))
+        console.log('[GET /api/faqs] All invite link config IDs to search (deduplicated):', allInviteLinkConfigIds)
+        console.log('[GET /api/faqs] Current invite link ID guaranteed in list?', allInviteLinkConfigIds.includes(inviteLinkConfig.id))
         
         // Get FAQs for:
-        // 1. This specific invite link (explicitly included)
-        // 2. Any invite link configs that share events with this one (should include current one too)
+        // 1. This specific invite link (explicitly included above)
+        // 2. Any invite link configs that share events with this one
         // 3. Global FAQs (null inviteLinkConfigId)
-        // Use a Set to deduplicate IDs
-        const allInviteLinkConfigIds = Array.from(new Set([inviteLinkConfig.id, ...relatedInviteLinkConfigIds]))
-        console.log('[GET /api/faqs] All invite link config IDs to search:', allInviteLinkConfigIds)
-        
         where = {
           OR: [
             { inviteLinkConfigId: { in: allInviteLinkConfigIds } },
@@ -95,6 +103,13 @@ export async function GET(request: NextRequest) {
           ],
         }
         console.log('[GET /api/faqs] Final where clause:', JSON.stringify(where))
+        
+        // Debug: Let's also check if there are any FAQs directly tied to this invite link
+        const directFAQs = await prisma.fAQ.findMany({
+          where: { inviteLinkConfigId: inviteLinkConfig.id },
+          select: { id: true, question: true },
+        })
+        console.log('[GET /api/faqs] FAQs directly tied to current invite link:', directFAQs.length, directFAQs.map(f => ({ id: f.id, question: f.question.substring(0, 50) })))
       } else if (inviteLinkConfig) {
         // Invite link exists but has no events, show FAQs for this invite link and global
         where = {
