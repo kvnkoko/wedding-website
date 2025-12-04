@@ -383,26 +383,58 @@ export async function DELETE(request: NextRequest) {
   try {
     const admin = await verifyAdminSession(request)
     if (!admin) {
+      console.log('[DELETE /api/faqs] Unauthorized - no admin session')
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
 
+    console.log('[DELETE /api/faqs] Delete request for ID:', id)
+
     if (!id) {
+      console.error('[DELETE /api/faqs] No ID provided')
       return NextResponse.json(
         { error: 'FAQ ID is required' },
         { status: 400 }
       )
     }
 
+    // Check if FAQ exists first
+    const existingFAQ = await prisma.fAQ.findUnique({
+      where: { id },
+    })
+
+    if (!existingFAQ) {
+      console.error('[DELETE /api/faqs] FAQ not found:', id)
+      return NextResponse.json(
+        { error: 'FAQ not found' },
+        { status: 404 }
+      )
+    }
+
+    console.log('[DELETE /api/faqs] Deleting FAQ:', existingFAQ.question)
+
     await prisma.fAQ.delete({
       where: { id },
     })
 
+    console.log('[DELETE /api/faqs] FAQ deleted successfully:', id)
+
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    console.error('Error deleting FAQ:', error)
+    console.error('[DELETE /api/faqs] Error deleting FAQ:', error)
+    console.error('[DELETE /api/faqs] Error code:', error.code)
+    console.error('[DELETE /api/faqs] Error message:', error.message)
+    
+    // Handle Prisma errors
+    if (error.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'FAQ not found', details: error.message },
+        { status: 404 }
+      )
+    }
+    
     return NextResponse.json(
       { error: 'Internal server error', details: error.message },
       { status: 500 }

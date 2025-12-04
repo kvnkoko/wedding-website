@@ -216,18 +216,26 @@ export default function AdminFAQsPage() {
     }
 
     try {
+      console.log('Deleting FAQ with ID:', id)
       const res = await fetch(`/api/faqs?id=${id}`, {
         method: 'DELETE',
       })
 
+      console.log('Delete response status:', res.status, res.statusText)
+
       if (res.ok) {
+        const result = await res.json()
+        console.log('Delete result:', result)
         await fetchFAQs()
+        alert('FAQ deleted successfully!')
       } else {
-        alert('Error deleting FAQ')
+        const errorData = await res.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('Delete error response:', errorData)
+        alert(`Error deleting FAQ: ${errorData.error || 'Unknown error'}`)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting FAQ:', error)
-      alert('Error deleting FAQ. Please try again.')
+      alert(`Error deleting FAQ: ${error.message || 'Please try again.'}`)
     }
   }
 
