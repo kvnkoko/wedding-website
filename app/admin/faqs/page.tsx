@@ -220,11 +220,8 @@ export default function AdminFAQsPage() {
     
     // Temporarily skip confirm to test if delete works
     // TODO: Add back confirmation once delete is working
-    console.log('Skipping confirmation for testing...')
+    console.log('Proceeding with delete (confirmation skipped for testing)...')
     
-    try {
-      console.log('Making DELETE request to /api/faqs?id=' + id)
-
     try {
       console.log('Making DELETE request to /api/faqs?id=' + id)
       const url = `/api/faqs?id=${encodeURIComponent(id)}`
