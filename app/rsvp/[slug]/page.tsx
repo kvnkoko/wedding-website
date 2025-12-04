@@ -51,27 +51,67 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto w-full relative z-10">
-          <div className="flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12 xl:gap-16">
-            {/* Left Tulip - Hidden on mobile, visible on desktop */}
-            <div className="hidden lg:block lg:flex-shrink-0 lg:w-72 xl:w-96 relative" style={{ opacity: 0.08 }}>
-              <img
-                src="/tulips.png"
-                alt=""
-                className="object-contain w-full h-auto"
-                style={{ filter: 'invert(1)' }}
-                onError={(e) => {
-                  // Hide if image fails to load
-                  const target = e.target as HTMLImageElement
-                  if (target) {
-                    target.style.display = 'none'
-                  }
-                }}
-              />
-            </div>
+        {/* Background Tulips - Large, Dynamic, Absolutely Positioned */}
+        {/* Left Tulip - Hidden on mobile, visible on desktop */}
+        <div 
+          className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[15%] z-0 pointer-events-none"
+          style={{ 
+            opacity: 0.12,
+            width: 'clamp(500px, 40vw, 800px)',
+            height: 'auto',
+            filter: 'invert(1)',
+            willChange: 'transform',
+          }}
+        >
+          <img
+            src="/tulips.png"
+            alt=""
+            className="object-contain w-full h-auto"
+            style={{ 
+              filter: 'invert(1)',
+              transform: 'scale(1.2)',
+            }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none'
+              }
+            }}
+          />
+        </div>
 
+        {/* Right Tulip - Hidden on mobile, visible on desktop */}
+        <div 
+          className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 translate-x-[15%] z-0 pointer-events-none"
+          style={{ 
+            opacity: 0.12,
+            width: 'clamp(500px, 40vw, 800px)',
+            height: 'auto',
+            filter: 'invert(1)',
+            willChange: 'transform',
+          }}
+        >
+          <img
+            src="/tulips.png"
+            alt=""
+            className="object-contain w-full h-auto"
+            style={{ 
+              filter: 'invert(1)',
+              transform: 'scaleX(-1) scale(1.2)',
+            }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none'
+              }
+            }}
+          />
+        </div>
+
+        <div className="max-w-7xl mx-auto w-full relative z-10">
+          <div className="flex flex-col items-center justify-center">
             {/* Center Content */}
-            <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0 flex-1">
+            <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0 w-full">
               <p className="font-body text-xs sm:text-sm md:text-base lg:text-lg text-charcoal/50 tracking-[0.2em] uppercase mb-4">
                 Together with our families
               </p>
@@ -110,23 +150,6 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
               <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/50 mt-12 md:mt-16">
                 #tiffandko
               </p>
-            </div>
-
-            {/* Right Tulip - Hidden on mobile, visible on desktop */}
-            <div className="hidden lg:block lg:flex-shrink-0 lg:w-72 xl:w-96 relative" style={{ opacity: 0.08 }}>
-              <img
-                src="/tulips.png"
-                alt=""
-                className="object-contain w-full h-auto"
-                style={{ filter: 'invert(1)', transform: 'scaleX(-1)' }}
-                onError={(e) => {
-                  // Hide if image fails to load
-                  const target = e.target as HTMLImageElement
-                  if (target) {
-                    target.style.display = 'none'
-                  }
-                }}
-              />
             </div>
           </div>
         </div>
