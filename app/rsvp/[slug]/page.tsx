@@ -51,17 +51,17 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
-        {/* Background Tulips - Elegant, Refined, Asymmetrical Botanical Illustrations */}
-        {/* Left Tulip Illustration - Clustered arrangement, positioned elegantly */}
+        {/* Background Tulips - Intentional, Balanced Composition */}
+        {/* Left Tulip Illustration - Positioned to frame the left side of the content */}
         <div 
-          className="hidden lg:block absolute left-0 top-[40%] -translate-y-1/2 -translate-x-[8%] z-0 pointer-events-none"
+          className="hidden lg:block absolute left-0 top-[45%] -translate-y-1/2 -translate-x-[5%] z-0 pointer-events-none"
           style={{ 
             opacity: 0.09,
-            width: 'clamp(400px, 32vw, 600px)',
+            width: 'clamp(420px, 35vw, 650px)',
             height: 'auto',
             filter: 'invert(1)',
             willChange: 'transform',
-            transform: 'rotate(-5deg)',
+            transform: 'rotate(-3deg)',
             transition: 'opacity 0.3s ease',
           }}
         >
@@ -81,16 +81,16 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
           />
         </div>
 
-        {/* Right Tulip Illustration - Horizontal arrangement, different style */}
+        {/* Right Tulip Illustration - Positioned to frame the right side, balanced with left */}
         <div 
-          className="hidden lg:block absolute right-0 top-[55%] -translate-y-1/2 translate-x-[8%] z-0 pointer-events-none"
+          className="hidden lg:block absolute right-0 top-[50%] -translate-y-1/2 translate-x-[5%] z-0 pointer-events-none"
           style={{ 
-            opacity: 0.08,
-            width: 'clamp(380px, 30vw, 580px)',
+            opacity: 0.09,
+            width: 'clamp(400px, 33vw, 620px)',
             height: 'auto',
             filter: 'invert(1)',
             willChange: 'transform',
-            transform: 'rotate(6deg)',
+            transform: 'rotate(4deg)',
             transition: 'opacity 0.3s ease',
           }}
         >
