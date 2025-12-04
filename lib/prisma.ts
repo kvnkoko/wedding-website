@@ -40,15 +40,23 @@ const getPrismaClient = (): PrismaClient => {
   }
 
   // Create or return cached client
-  // In development, always create a fresh client to pick up schema changes
-  if (!globalForPrisma.prisma) {
+  // In development, always recreate to ensure we have the latest schema
+  const shouldRecreate = process.env.NODE_ENV === 'development' && !globalForPrisma.prisma
+  
+  if (shouldRecreate || !globalForPrisma.prisma) {
+    // Disconnect old client if recreating
+    if (globalForPrisma.prisma) {
+      globalForPrisma.prisma.$disconnect().catch(() => {})
+      globalForPrisma.prisma = undefined
+    }
+    
     const databaseUrl = process.env.DATABASE_URL
     
     if (!databaseUrl) {
       throw new Error('DATABASE_URL environment variable is not set')
     }
     
-    console.log('[Prisma] Creating new Prisma client')
+    console.log('[Prisma] Creating Prisma client, database:', databaseUrl.substring(0, databaseUrl.indexOf('@') + 1) + '...')
     
     // For Neon and serverless environments, configure connection pooling
     globalForPrisma.prisma = new PrismaClient({
@@ -59,21 +67,6 @@ const getPrismaClient = (): PrismaClient => {
       },
       log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
     })
-  } else if (process.env.NODE_ENV === 'development') {
-    // In development, test if the client can access FAQs table
-    // If not, recreate it
-    try {
-      // Quick test query
-      await globalForPrisma.prisma.$queryRaw`SELECT 1 FROM "faqs" LIMIT 1`.catch(async () => {
-        // If query fails, the table might not exist or client is stale
-        console.log('[Prisma] Client appears stale, recreating...')
-        await globalForPrisma.prisma.$disconnect().catch(() => {})
-        globalForPrisma.prisma = undefined as any
-        return getPrismaClient() // Recursive call to recreate
-      })
-    } catch {
-      // Ignore test errors
-    }
   }
   
   return globalForPrisma.prisma

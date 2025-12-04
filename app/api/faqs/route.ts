@@ -37,6 +37,43 @@ export async function GET(request: NextRequest) {
 
     let faqs
     try {
+      // First, try to verify the table exists with a raw query
+      try {
+        await prisma.$queryRaw`SELECT 1 FROM "faqs" LIMIT 1`
+      } catch (tableCheckError: any) {
+        console.error('Table check failed:', tableCheckError.message)
+        // If table doesn't exist, try to create it
+        if (tableCheckError.message?.includes('does not exist') || tableCheckError.code === 'P2021') {
+          console.log('Attempting to create FAQs table...')
+          try {
+            await prisma.$executeRawUnsafe(`
+              CREATE TABLE IF NOT EXISTS "faqs" (
+                "id" TEXT NOT NULL,
+                "question" TEXT NOT NULL,
+                "answer" TEXT NOT NULL,
+                "colorHexCodes" TEXT,
+                "inviteLinkConfigId" TEXT,
+                "order" INTEGER NOT NULL DEFAULT 0,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                "updatedAt" TIMESTAMP(3) NOT NULL,
+                CONSTRAINT "faqs_pkey" PRIMARY KEY ("id")
+              )
+            `)
+            await prisma.$executeRawUnsafe(`
+              ALTER TABLE "faqs" ADD CONSTRAINT IF NOT EXISTS "faqs_inviteLinkConfigId_fkey" 
+              FOREIGN KEY ("inviteLinkConfigId") REFERENCES "invite_link_configs"("id") ON DELETE SET NULL ON UPDATE CASCADE
+            `).catch(() => {}) // Ignore if constraint already exists
+            console.log('FAQs table created successfully')
+          } catch (createError: any) {
+            console.error('Failed to create table:', createError.message)
+            return NextResponse.json(
+              { error: 'FAQs table not found and could not be created. Please run: npx prisma db push', details: createError.message },
+              { status: 500 }
+            )
+          }
+        }
+      }
+      
       faqs = await prisma.fAQ.findMany({
         where,
         orderBy: { order: 'asc' },
