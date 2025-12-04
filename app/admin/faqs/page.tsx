@@ -549,22 +549,27 @@ export default function AdminFAQsPage() {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      e.nativeEvent.stopImmediatePropagation()
-                      console.log('=== BUTTON CLICK EVENT FIRED ===')
-                      console.log('FAQ object:', faq)
+                      if (e.nativeEvent) {
+                        e.nativeEvent.stopImmediatePropagation()
+                      }
+                      console.log('=== DELETE BUTTON CLICKED ===')
                       console.log('FAQ ID:', faq.id)
-                      // Small delay to ensure event propagation is stopped
-                      setTimeout(() => {
-                        handleDelete(faq.id)
-                      }, 0)
+                      handleDelete(faq.id)
                     }}
                     onMouseDown={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
-                      console.log('Delete button mouse down')
+                      if (e.nativeEvent) {
+                        e.nativeEvent.stopImmediatePropagation()
+                      }
                     }}
-                    className="bg-red-100 text-red-600 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 transition-all cursor-pointer z-10 relative"
-                    style={{ pointerEvents: 'auto', position: 'relative', zIndex: 10 }}
+                    onDragStart={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                    }}
+                    draggable={false}
+                    className="bg-red-100 text-red-600 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 transition-all cursor-pointer"
+                    style={{ pointerEvents: 'auto', position: 'relative', zIndex: 1000 }}
                   >
                     Delete
                   </button>
