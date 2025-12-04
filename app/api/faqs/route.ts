@@ -7,33 +7,6 @@ export const dynamic = 'force-dynamic'
 // GET - Fetch FAQs (public endpoint, filtered by invite link if provided)
 export async function GET(request: NextRequest) {
   try {
-    // Test database connection and table existence
-    try {
-      await prisma.$queryRaw`SELECT 1`
-      // Check if faqs table exists
-      const tableCheck = await prisma.$queryRaw`
-        SELECT EXISTS (
-          SELECT FROM information_schema.tables 
-          WHERE table_schema = 'public' 
-          AND table_name = 'faqs'
-        ) as exists
-      `
-      const tableExists = (tableCheck as any[])[0]?.exists
-      if (!tableExists) {
-        console.error('FAQs table does not exist in database')
-        return NextResponse.json(
-          { error: 'FAQs table not found. Please run: npx prisma db push', details: 'Table faqs does not exist' },
-          { status: 500 }
-        )
-      }
-    } catch (dbError: any) {
-      console.error('Database connection test failed:', dbError)
-      return NextResponse.json(
-        { error: 'Database connection failed', details: dbError.message },
-        { status: 500 }
-      )
-    }
-
     const { searchParams } = new URL(request.url)
     const inviteLinkSlug = searchParams.get('inviteLinkSlug')
 
@@ -62,18 +35,34 @@ export async function GET(request: NextRequest) {
       where = { inviteLinkConfigId: null }
     }
 
-    const faqs = await prisma.fAQ.findMany({
-      where,
-      orderBy: { order: 'asc' },
-      include: {
-        inviteLinkConfig: {
-          select: {
-            slug: true,
-            label: true,
+    let faqs
+    try {
+      faqs = await prisma.fAQ.findMany({
+        where,
+        orderBy: { order: 'asc' },
+        include: {
+          inviteLinkConfig: {
+            select: {
+              slug: true,
+              label: true,
+            },
           },
         },
-      },
-    })
+      })
+    } catch (queryError: any) {
+      console.error('Error querying FAQs:', queryError)
+      console.error('Error code:', queryError.code)
+      console.error('Error message:', queryError.message)
+      
+      // If it's a table doesn't exist error, provide helpful message
+      if (queryError.message?.includes('does not exist') || queryError.code === 'P2021') {
+        return NextResponse.json(
+          { error: 'FAQs table not found. Please run: npx prisma db push', details: queryError.message },
+          { status: 500 }
+        )
+      }
+      throw queryError
+    }
 
     // Parse colorHexCodes JSON strings to arrays
     const faqsWithParsedColors = faqs.map(faq => {
@@ -96,8 +85,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(faqsWithParsedColors)
   } catch (error: any) {
     console.error('Error fetching FAQs:', error)
+    console.error('Error code:', error.code)
+    console.error('Error name:', error.name)
     return NextResponse.json(
-      { error: 'Internal server error', details: error.message },
+      { error: 'Internal server error', details: error.message, code: error.code },
       { status: 500 }
     )
   }
