@@ -19,6 +19,11 @@ export async function GET(request: NextRequest) {
     
     const { searchParams } = new URL(request.url)
     const inviteLinkSlug = searchParams.get('inviteLinkSlug')
+    
+    // Decode the slug in case it's URL-encoded (e.g., "Signing%20Ceremony" -> "Signing Ceremony")
+    const decodedSlug = inviteLinkSlug ? decodeURIComponent(inviteLinkSlug) : null
+    console.log('[GET /api/faqs] Raw inviteLinkSlug from query:', inviteLinkSlug)
+    console.log('[GET /api/faqs] Decoded inviteLinkSlug:', decodedSlug)
 
     let where: any = {}
 
@@ -26,11 +31,11 @@ export async function GET(request: NextRequest) {
     // For public pages, filter by invite link
     const isAdminRequest = request.headers.get('referer')?.includes('/admin')
     
-    if (inviteLinkSlug) {
-      console.log('[GET /api/faqs] Looking up invite link with slug:', inviteLinkSlug)
+    if (decodedSlug) {
+      console.log('[GET /api/faqs] Looking up invite link with slug:', decodedSlug)
       // Get the invite link config with its events
       const inviteLinkConfig = await prisma.inviteLinkConfig.findUnique({
-        where: { slug: inviteLinkSlug },
+        where: { slug: decodedSlug },
         include: {
           events: {
             include: {
@@ -195,7 +200,7 @@ export async function GET(request: NextRequest) {
       })))
       
       // If we have an invite link config, double-check that we got FAQs directly tied to it
-      if (inviteLinkSlug && inviteLinkConfig) {
+      if (decodedSlug && inviteLinkConfig) {
         const directFAQsCount = faqs.filter(f => f.inviteLinkConfigId === inviteLinkConfig.id).length
         console.log('[GET /api/faqs] FAQs directly tied to current invite link in results:', directFAQsCount)
         
