@@ -103,19 +103,15 @@ function HomeContent() {
           <img
             src="/tulips2.png"
             alt=""
-            onError={(e) => {
-              // Fallback to original tulips.png if second image doesn't exist
-              const target = e.target as HTMLImageElement
-              if (target && target.src.includes('tulips2.png')) {
-                target.src = '/tulips.png'
-                target.style.transform = 'scaleX(-1)'
-              } else if (target) {
-                target.style.display = 'none'
-              }
-            }}
             className="object-contain w-full h-auto"
             style={{ 
               filter: 'invert(1)',
+            }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none'
+              }
             }}
           />
         </div>
