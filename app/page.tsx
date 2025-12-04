@@ -58,12 +58,38 @@ function HomeContent() {
       {/* Hero Section - Clean Minimal Design Without Arch */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
         {/* Background Tulips - Filling the space with elegant botanical illustrations */}
-        {/* Left Tulip Illustration - Mobile and Desktop */}
+        {/* Mobile: Single large tulip filling entire background */}
         <div 
-          className="absolute left-0 top-[15%] md:top-[18%] lg:top-[20%] -translate-y-1/2 -translate-x-[15%] md:-translate-x-[12%] z-0 pointer-events-none"
+          className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
           style={{ 
-            opacity: 0.08,
-            width: 'clamp(300px, 60vw, 900px)',
+            opacity: 0.06,
+            filter: 'invert(1)',
+          }}
+        >
+          <img
+            src="/tulips.png"
+            alt=""
+            className="object-cover w-full h-full"
+            style={{ 
+              filter: 'invert(1)',
+              minWidth: '100%',
+              minHeight: '100%',
+            }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none'
+              }
+            }}
+          />
+        </div>
+
+        {/* Desktop: Left Tulip Illustration */}
+        <div 
+          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none"
+          style={{ 
+            opacity: 0.1,
+            width: 'clamp(600px, 50vw, 900px)',
             height: 'auto',
             filter: 'invert(1)',
             willChange: 'transform',
