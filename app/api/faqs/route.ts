@@ -45,10 +45,10 @@ export async function GET(request: NextRequest) {
     // For public pages, filter by invite link
     const isAdminRequest = request.headers.get('referer')?.includes('/admin')
     
+    let inviteLinkConfig: any = null // Declare outside the if block so it's accessible later
     if (decodedSlug) {
       console.log('[GET /api/faqs] Looking up invite link with slug:', decodedSlug)
       // Get the invite link config with its events
-      let inviteLinkConfig
       try {
         inviteLinkConfig = await prisma.inviteLinkConfig.findUnique({
           where: { slug: decodedSlug },
