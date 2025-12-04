@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 interface FAQ {
   id: string
@@ -11,19 +12,36 @@ interface FAQ {
 }
 
 export default function FAQPage() {
+  const pathname = usePathname()
   const [faqs, setFaqs] = useState<FAQ[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get stored slug from localStorage to determine which FAQs to show
+    // Get slug from multiple sources:
+    // 1. Check if we're on a slug page directly (from referrer or URL)
+    // 2. Check localStorage for stored slug
     let inviteLinkSlug: string | null = null
     
     if (typeof window !== 'undefined') {
-      const storedSlug = localStorage.getItem('rsvpSlug')
-      console.log('[FAQ Page] Stored slug from localStorage:', storedSlug)
-      if (storedSlug) {
-        inviteLinkSlug = storedSlug.replace('/rsvp/', '')
-        console.log('[FAQ Page] Extracted inviteLinkSlug:', inviteLinkSlug)
+      // First, try to get slug from document.referrer if we came from a slug page
+      const referrer = document.referrer
+      console.log('[FAQ Page] Referrer:', referrer)
+      
+      // Check if referrer contains /rsvp/ with a slug
+      const referrerMatch = referrer.match(/\/rsvp\/([^\/\?]+)/)
+      if (referrerMatch) {
+        inviteLinkSlug = referrerMatch[1]
+        console.log('[FAQ Page] Found slug from referrer:', inviteLinkSlug)
+      }
+      
+      // If not found in referrer, check localStorage
+      if (!inviteLinkSlug) {
+        const storedSlug = localStorage.getItem('rsvpSlug')
+        console.log('[FAQ Page] Stored slug from localStorage:', storedSlug)
+        if (storedSlug) {
+          inviteLinkSlug = storedSlug.replace('/rsvp/', '')
+          console.log('[FAQ Page] Extracted inviteLinkSlug from localStorage:', inviteLinkSlug)
+        }
       }
     }
 
