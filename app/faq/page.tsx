@@ -45,11 +45,36 @@ export default function FAQPage() {
       }
     }
 
+    // Decode the slug if it's URL-encoded (localStorage stores it encoded)
+    // Then re-encode it properly for the URL
+    let finalSlug = inviteLinkSlug
+    if (finalSlug) {
+      try {
+        // Decode it fully (handles cases where it might be encoded multiple times)
+        let decoded = finalSlug
+        let previousDecoded = ''
+        while (previousDecoded !== decoded) {
+          previousDecoded = decoded
+          try {
+            decoded = decodeURIComponent(decoded)
+          } catch (e) {
+            decoded = previousDecoded
+            break
+          }
+        }
+        // Now encode it properly once for the URL
+        finalSlug = encodeURIComponent(decoded)
+        console.log('[FAQ Page] Decoded slug from:', inviteLinkSlug, 'to:', decoded, 'then encoded to:', finalSlug)
+      } catch (e) {
+        console.error('[FAQ Page] Error decoding slug:', e)
+        // If decoding fails, just use it as-is
+        finalSlug = inviteLinkSlug
+      }
+    }
+
     // Fetch FAQs based on invite link
-    // Note: inviteLinkSlug from localStorage is already URL-encoded, so we use it directly
-    // The API will handle decoding it properly
-    const url = inviteLinkSlug 
-      ? `/api/faqs?inviteLinkSlug=${inviteLinkSlug}`
+    const url = finalSlug 
+      ? `/api/faqs?inviteLinkSlug=${finalSlug}`
       : '/api/faqs'
     
     console.log('[FAQ Page] Fetching FAQs from:', url)
