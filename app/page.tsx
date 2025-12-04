@@ -11,7 +11,8 @@ function HomeContent() {
   const searchParams = useSearchParams()
   const editToken = searchParams.get('edit')
   const [rsvpLink, setRsvpLink] = useState('/rsvp')
-  const [dateRange, setDateRange] = useState('January - March 2025')
+  const [dateRange, setDateRange] = useState<string | null>(null) // Start with null, don't show default
+  const [dateLoading, setDateLoading] = useState(true)
 
   // Get RSVP link from localStorage if available and fetch event dates
   useEffect(() => {
@@ -27,11 +28,22 @@ function HomeContent() {
           .then(data => {
             if (data.events && data.events.length > 0) {
               setDateRange(formatDateRange(data.events))
+            } else {
+              // If no events, don't show date
+              setDateRange(null)
             }
           })
           .catch(() => {
-            // If fetch fails, keep default date
+            // If fetch fails, don't show date
+            setDateRange(null)
           })
+          .finally(() => {
+            setDateLoading(false)
+          })
+      } else {
+        // No slug stored, don't show date
+        setDateRange(null)
+        setDateLoading(false)
       }
     }
   }, [])
@@ -90,10 +102,12 @@ function HomeContent() {
                 Invite you to celebrate with us
               </p>
               
-              {/* Date */}
-              <p className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide">
-                {dateRange}
-              </p>
+              {/* Date - Only show if we have data and loading is complete */}
+              {!dateLoading && dateRange && (
+                <p className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide">
+                  {dateRange}
+                </p>
+              )}
               
               {/* CTA Button */}
               <div className="mt-8 md:mt-12">

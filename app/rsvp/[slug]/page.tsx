@@ -42,13 +42,10 @@ interface FormData {
 
 
 function HomeScreenWithCarousel({ slug, config }: { slug: string; config: InviteLinkConfig | null }) {
-  const [dateRange, setDateRange] = useState('January - March 2025')
-
-  useEffect(() => {
-    if (config && config.events && config.events.length > 0) {
-      setDateRange(formatDateRange(config.events))
-    }
-  }, [config])
+  // Calculate dateRange directly from config, don't use state to avoid flash
+  const dateRange = config && config.events && config.events.length > 0 
+    ? formatDateRange(config.events)
+    : null // Don't show default date, show nothing until we have real data
 
   return (
     <div className="min-h-screen">
@@ -95,9 +92,11 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 Invite you to celebrate with us
               </p>
               
-              <p className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide">
-                {dateRange}
-              </p>
+              {dateRange && (
+                <p className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide">
+                  {dateRange}
+                </p>
+              )}
               
               <div className="mt-8 md:mt-12">
                 <Link
@@ -228,6 +227,14 @@ export default function RSVPFormPage() {
   // If no form param, show home screen with hero section
   const showForm = searchParams.get('form') === 'true'
   if (!showForm) {
+    // Don't render until we have config to avoid flash of incorrect content
+    if (loading) {
+      return (
+        <div className="min-h-screen bg-cream flex items-center justify-center">
+          <p className="font-sans text-lg text-charcoal/70">Loading...</p>
+        </div>
+      )
+    }
     return (
       <Suspense fallback={
         <div className="min-h-screen bg-cream flex items-center justify-center">
