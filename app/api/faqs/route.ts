@@ -7,6 +7,16 @@ export const dynamic = 'force-dynamic'
 // GET - Fetch FAQs (public endpoint, filtered by invite link if provided)
 export async function GET(request: NextRequest) {
   try {
+    // Debug: Check database connection and table
+    try {
+      const tableCount = await prisma.$queryRaw<Array<{ count: bigint }>>`
+        SELECT COUNT(*) as count FROM "faqs"
+      `
+      console.log('[GET /api/faqs] Table count from raw query:', Number(tableCount[0]?.count || 0))
+    } catch (rawError: any) {
+      console.error('[GET /api/faqs] Raw query error:', rawError.message)
+    }
+    
     const { searchParams } = new URL(request.url)
     const inviteLinkSlug = searchParams.get('inviteLinkSlug')
 
@@ -74,6 +84,7 @@ export async function GET(request: NextRequest) {
         }
       }
       
+      console.log('[GET /api/faqs] Querying with where clause:', JSON.stringify(where))
       faqs = await prisma.fAQ.findMany({
         where,
         orderBy: { order: 'asc' },
@@ -86,6 +97,7 @@ export async function GET(request: NextRequest) {
           },
         },
       })
+      console.log('[GET /api/faqs] Found FAQs:', faqs.length)
     } catch (queryError: any) {
       console.error('Error querying FAQs:', queryError)
       console.error('Error code:', queryError.code)
@@ -222,8 +234,9 @@ export async function POST(request: NextRequest) {
       }
       
       console.log('Final create data:', createData)
-      console.log('Prisma client type:', typeof prisma.fAQ)
-      console.log('Prisma client create type:', typeof prisma.fAQ.create)
+      console.log('[POST /api/faqs] Prisma client type:', typeof prisma.fAQ)
+      console.log('[POST /api/faqs] Prisma client create type:', typeof prisma.fAQ.create)
+      console.log('[POST /api/faqs] DATABASE_URL:', process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 30) + '...' : 'NOT SET')
       
       faq = await prisma.fAQ.create({
         data: createData,
@@ -237,8 +250,21 @@ export async function POST(request: NextRequest) {
         },
       })
       
-      console.log('FAQ object returned from create:', faq)
-      console.log('FAQ has id?', !!faq.id)
+      console.log('[POST /api/faqs] FAQ object returned from create:', faq)
+      console.log('[POST /api/faqs] FAQ has id?', !!faq.id)
+      
+      // Immediately verify with a raw query
+      try {
+        const verifyRaw = await prisma.$queryRaw<Array<{ id: string; question: string }>>`
+          SELECT id, question FROM "faqs" WHERE id = ${faq.id}
+        `
+        console.log('[POST /api/faqs] Verified FAQ in database:', verifyRaw.length > 0 ? 'YES' : 'NO')
+        if (verifyRaw.length > 0) {
+          console.log('[POST /api/faqs] Verified FAQ question:', verifyRaw[0].question)
+        }
+      } catch (verifyError: any) {
+        console.error('[POST /api/faqs] Verification query failed:', verifyError.message)
+      }
     } catch (createError: any) {
       console.error('Prisma create error:', createError)
       console.error('Error code:', createError.code)
