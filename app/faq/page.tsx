@@ -46,8 +46,10 @@ export default function FAQPage() {
     }
 
     // Fetch FAQs based on invite link
+    // Note: inviteLinkSlug from localStorage is already URL-encoded, so we use it directly
+    // The API will handle decoding it properly
     const url = inviteLinkSlug 
-      ? `/api/faqs?inviteLinkSlug=${encodeURIComponent(inviteLinkSlug)}`
+      ? `/api/faqs?inviteLinkSlug=${inviteLinkSlug}`
       : '/api/faqs'
     
     console.log('[FAQ Page] Fetching FAQs from:', url)

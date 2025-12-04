@@ -20,10 +20,24 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const inviteLinkSlug = searchParams.get('inviteLinkSlug')
     
-    // Decode the slug in case it's URL-encoded (e.g., "Signing%20Ceremony" -> "Signing Ceremony")
-    const decodedSlug = inviteLinkSlug ? decodeURIComponent(inviteLinkSlug) : null
+    // Decode the slug - handle multiple levels of encoding (e.g., "Signing%2520Ceremony" -> "Signing%20Ceremony" -> "Signing Ceremony")
+    let decodedSlug = inviteLinkSlug
+    if (decodedSlug) {
+      // Keep decoding until no more % encoded characters remain
+      let previousDecoded = ''
+      while (previousDecoded !== decodedSlug) {
+        previousDecoded = decodedSlug
+        try {
+          decodedSlug = decodeURIComponent(decodedSlug)
+        } catch (e) {
+          // If decoding fails, use the last successfully decoded value
+          decodedSlug = previousDecoded
+          break
+        }
+      }
+    }
     console.log('[GET /api/faqs] Raw inviteLinkSlug from query:', inviteLinkSlug)
-    console.log('[GET /api/faqs] Decoded inviteLinkSlug:', decodedSlug)
+    console.log('[GET /api/faqs] Fully decoded inviteLinkSlug:', decodedSlug)
 
     let where: any = {}
 
