@@ -244,6 +244,14 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('FAQ created successfully:', faq.id)
+    
+    // Verify it was actually saved by querying it back
+    const verifyFAQ = await prisma.fAQ.findUnique({ where: { id: faq.id } })
+    if (!verifyFAQ) {
+      console.error('ERROR: FAQ was created but cannot be found in database!')
+      throw new Error('FAQ creation failed - FAQ not found after creation')
+    }
+    console.log('Verified FAQ exists in database:', verifyFAQ.id)
 
     // Parse colorHexCodes JSON string to array
     let parsedColors = null
