@@ -41,9 +41,7 @@ const getPrismaClient = (): PrismaClient => {
 
   // Create or return cached client
   // In development, always recreate to ensure we have the latest schema
-  const shouldRecreate = process.env.NODE_ENV === 'development' && !globalForPrisma.prisma
-  
-  if (shouldRecreate || !globalForPrisma.prisma) {
+  if (!globalForPrisma.prisma) {
     // Disconnect old client if recreating
     if (globalForPrisma.prisma) {
       globalForPrisma.prisma.$disconnect().catch(() => {})

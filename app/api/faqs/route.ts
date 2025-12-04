@@ -222,6 +222,8 @@ export async function POST(request: NextRequest) {
       }
       
       console.log('Final create data:', createData)
+      console.log('Prisma client type:', typeof prisma.fAQ)
+      console.log('Prisma client create type:', typeof prisma.fAQ.create)
       
       faq = await prisma.fAQ.create({
         data: createData,
@@ -234,6 +236,9 @@ export async function POST(request: NextRequest) {
           },
         },
       })
+      
+      console.log('FAQ object returned from create:', faq)
+      console.log('FAQ has id?', !!faq.id)
     } catch (createError: any) {
       console.error('Prisma create error:', createError)
       console.error('Error code:', createError.code)
