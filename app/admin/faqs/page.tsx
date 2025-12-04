@@ -218,13 +218,16 @@ export default function AdminFAQsPage() {
     console.log('=== DELETE BUTTON CLICKED ===')
     console.log('FAQ ID to delete:', id)
     
-    const confirmed = window.confirm('Are you sure you want to delete this FAQ?')
+    // Use a more reliable confirmation method
+    const confirmed = confirm('Are you sure you want to delete this FAQ?')
     console.log('User confirmed:', confirmed)
     
     if (!confirmed) {
       console.log('Delete cancelled by user')
       return
     }
+    
+    console.log('Proceeding with delete...')
 
     try {
       console.log('Making DELETE request to /api/faqs?id=' + id)
@@ -538,17 +541,22 @@ export default function AdminFAQsPage() {
                     onClick={(e) => {
                       e.preventDefault()
                       e.stopPropagation()
+                      e.nativeEvent.stopImmediatePropagation()
                       console.log('=== BUTTON CLICK EVENT FIRED ===')
                       console.log('FAQ object:', faq)
                       console.log('FAQ ID:', faq.id)
-                      handleDelete(faq.id)
+                      // Small delay to ensure event propagation is stopped
+                      setTimeout(() => {
+                        handleDelete(faq.id)
+                      }, 0)
                     }}
                     onMouseDown={(e) => {
-                      console.log('Delete button mouse down')
+                      e.preventDefault()
                       e.stopPropagation()
+                      console.log('Delete button mouse down')
                     }}
                     className="bg-red-100 text-red-600 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 transition-all cursor-pointer z-10 relative"
-                    style={{ pointerEvents: 'auto' }}
+                    style={{ pointerEvents: 'auto', position: 'relative', zIndex: 10 }}
                   >
                     Delete
                   </button>
