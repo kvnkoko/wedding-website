@@ -55,8 +55,10 @@ export async function GET(request: NextRequest) {
       if (inviteLinkConfig && inviteLinkConfig.events.length > 0) {
         // Get event IDs from this invite link
         const currentEventIds = inviteLinkConfig.events.map(e => e.event.id)
+        console.log('[GET /api/faqs] Current invite link events:', currentEventIds)
         
         // Find all invite link configs that share at least one event with the current invite link
+        // This includes the current invite link itself
         const relatedInviteLinkConfigs = await prisma.inviteLinkConfig.findMany({
           where: {
             events: {
@@ -69,24 +71,30 @@ export async function GET(request: NextRequest) {
           },
           select: {
             id: true,
+            slug: true,
           },
         })
         
         const relatedInviteLinkConfigIds = relatedInviteLinkConfigs.map(config => config.id)
-        console.log('[GET /api/faqs] Found related invite link configs:', relatedInviteLinkConfigIds)
+        console.log('[GET /api/faqs] Found related invite link configs (including current):', relatedInviteLinkConfigs.map(c => ({ id: c.id, slug: c.slug })))
+        console.log('[GET /api/faqs] Related invite link config IDs:', relatedInviteLinkConfigIds)
+        console.log('[GET /api/faqs] Current invite link ID:', inviteLinkConfig.id, 'is in related list?', relatedInviteLinkConfigIds.includes(inviteLinkConfig.id))
         
         // Get FAQs for:
-        // 1. This specific invite link
-        // 2. Any invite link configs that share events with this one
+        // 1. This specific invite link (explicitly included)
+        // 2. Any invite link configs that share events with this one (should include current one too)
         // 3. Global FAQs (null inviteLinkConfigId)
+        // Use a Set to deduplicate IDs
+        const allInviteLinkConfigIds = Array.from(new Set([inviteLinkConfig.id, ...relatedInviteLinkConfigIds]))
+        console.log('[GET /api/faqs] All invite link config IDs to search:', allInviteLinkConfigIds)
+        
         where = {
           OR: [
-            { inviteLinkConfigId: inviteLinkConfig.id },
-            { inviteLinkConfigId: { in: relatedInviteLinkConfigIds } },
+            { inviteLinkConfigId: { in: allInviteLinkConfigIds } },
             { inviteLinkConfigId: null },
           ],
         }
-        console.log('[GET /api/faqs] Filtering FAQs for invite link:', inviteLinkConfig.id, 'or related configs:', relatedInviteLinkConfigIds, 'or global (null)')
+        console.log('[GET /api/faqs] Final where clause:', JSON.stringify(where))
       } else if (inviteLinkConfig) {
         // Invite link exists but has no events, show FAQs for this invite link and global
         where = {

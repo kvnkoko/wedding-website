@@ -18,29 +18,29 @@ export default function FAQPage() {
 
   useEffect(() => {
     // Get slug from multiple sources:
-    // 1. Check if we're on a slug page directly (from referrer or URL)
-    // 2. Check localStorage for stored slug
+    // 1. Check localStorage for stored slug (most reliable)
+    // 2. Check if we're on a slug page directly (from referrer)
     let inviteLinkSlug: string | null = null
     
     if (typeof window !== 'undefined') {
-      // First, try to get slug from document.referrer if we came from a slug page
-      const referrer = document.referrer
-      console.log('[FAQ Page] Referrer:', referrer)
-      
-      // Check if referrer contains /rsvp/ with a slug
-      const referrerMatch = referrer.match(/\/rsvp\/([^\/\?]+)/)
-      if (referrerMatch) {
-        inviteLinkSlug = referrerMatch[1]
-        console.log('[FAQ Page] Found slug from referrer:', inviteLinkSlug)
+      // First, check localStorage (most reliable since it persists across navigation)
+      const storedSlug = localStorage.getItem('rsvpSlug')
+      console.log('[FAQ Page] Stored slug from localStorage:', storedSlug)
+      if (storedSlug) {
+        inviteLinkSlug = storedSlug.replace('/rsvp/', '')
+        console.log('[FAQ Page] Extracted inviteLinkSlug from localStorage:', inviteLinkSlug)
       }
       
-      // If not found in referrer, check localStorage
+      // If not found in localStorage, try to get slug from document.referrer
       if (!inviteLinkSlug) {
-        const storedSlug = localStorage.getItem('rsvpSlug')
-        console.log('[FAQ Page] Stored slug from localStorage:', storedSlug)
-        if (storedSlug) {
-          inviteLinkSlug = storedSlug.replace('/rsvp/', '')
-          console.log('[FAQ Page] Extracted inviteLinkSlug from localStorage:', inviteLinkSlug)
+        const referrer = document.referrer
+        console.log('[FAQ Page] Referrer:', referrer)
+        
+        // Check if referrer contains /rsvp/ with a slug
+        const referrerMatch = referrer.match(/\/rsvp\/([^\/\?]+)/)
+        if (referrerMatch) {
+          inviteLinkSlug = referrerMatch[1]
+          console.log('[FAQ Page] Found slug from referrer:', inviteLinkSlug)
         }
       }
     }
