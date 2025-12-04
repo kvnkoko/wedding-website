@@ -22,6 +22,10 @@ export async function GET(request: NextRequest) {
 
     let where: any = {}
 
+    // For admin pages, show all FAQs (no filtering)
+    // For public pages, filter by invite link
+    const isAdminRequest = request.headers.get('referer')?.includes('/admin')
+    
     if (inviteLinkSlug) {
       // Get the invite link config ID
       const inviteLinkConfig = await prisma.inviteLinkConfig.findUnique({
@@ -40,10 +44,11 @@ export async function GET(request: NextRequest) {
         // If invite link doesn't exist, only show global FAQs
         where = { inviteLinkConfigId: null }
       }
-    } else {
-      // No invite link provided, only show global FAQs
+    } else if (!isAdminRequest) {
+      // No invite link provided and not admin, only show global FAQs
       where = { inviteLinkConfigId: null }
     }
+    // If admin request with no inviteLinkSlug, where stays empty (show all FAQs)
 
     let faqs
     try {
