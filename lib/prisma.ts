@@ -42,12 +42,6 @@ const getPrismaClient = (): PrismaClient => {
   // Create or return cached client
   // In development, always recreate to ensure we have the latest schema
   if (!globalForPrisma.prisma) {
-    // Disconnect old client if recreating
-    if (globalForPrisma.prisma) {
-      globalForPrisma.prisma.$disconnect().catch(() => {})
-      globalForPrisma.prisma = undefined
-    }
-    
     const databaseUrl = process.env.DATABASE_URL
     
     if (!databaseUrl) {
