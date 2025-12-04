@@ -28,22 +28,74 @@ export async function GET(request: NextRequest) {
     
     if (inviteLinkSlug) {
       console.log('[GET /api/faqs] Looking up invite link with slug:', inviteLinkSlug)
-      // Get the invite link config ID
+      // Get the invite link config with its events
       const inviteLinkConfig = await prisma.inviteLinkConfig.findUnique({
         where: { slug: inviteLinkSlug },
+        include: {
+          events: {
+            include: {
+              event: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
       })
 
-      console.log('[GET /api/faqs] Found invite link config:', inviteLinkConfig ? { id: inviteLinkConfig.id, label: inviteLinkConfig.label } : 'NOT FOUND')
+      console.log('[GET /api/faqs] Found invite link config:', inviteLinkConfig ? { 
+        id: inviteLinkConfig.id, 
+        label: inviteLinkConfig.label,
+        eventIds: inviteLinkConfig.events.map(e => e.event.id),
+        eventNames: inviteLinkConfig.events.map(e => e.event.name)
+      } : 'NOT FOUND')
 
-      if (inviteLinkConfig) {
-        // Get FAQs for this specific invite link OR global FAQs (null inviteLinkConfigId)
+      if (inviteLinkConfig && inviteLinkConfig.events.length > 0) {
+        // Get event IDs from this invite link
+        const currentEventIds = inviteLinkConfig.events.map(e => e.event.id)
+        
+        // Find all invite link configs that share at least one event with the current invite link
+        const relatedInviteLinkConfigs = await prisma.inviteLinkConfig.findMany({
+          where: {
+            events: {
+              some: {
+                eventId: {
+                  in: currentEventIds,
+                },
+              },
+            },
+          },
+          select: {
+            id: true,
+          },
+        })
+        
+        const relatedInviteLinkConfigIds = relatedInviteLinkConfigs.map(config => config.id)
+        console.log('[GET /api/faqs] Found related invite link configs:', relatedInviteLinkConfigIds)
+        
+        // Get FAQs for:
+        // 1. This specific invite link
+        // 2. Any invite link configs that share events with this one
+        // 3. Global FAQs (null inviteLinkConfigId)
+        where = {
+          OR: [
+            { inviteLinkConfigId: inviteLinkConfig.id },
+            { inviteLinkConfigId: { in: relatedInviteLinkConfigIds } },
+            { inviteLinkConfigId: null },
+          ],
+        }
+        console.log('[GET /api/faqs] Filtering FAQs for invite link:', inviteLinkConfig.id, 'or related configs:', relatedInviteLinkConfigIds, 'or global (null)')
+      } else if (inviteLinkConfig) {
+        // Invite link exists but has no events, show FAQs for this invite link and global
         where = {
           OR: [
             { inviteLinkConfigId: inviteLinkConfig.id },
             { inviteLinkConfigId: null },
           ],
         }
-        console.log('[GET /api/faqs] Filtering FAQs for invite link:', inviteLinkConfig.id, 'or global (null)')
+        console.log('[GET /api/faqs] Invite link has no events, showing FAQs for this invite link or global')
       } else {
         // If invite link doesn't exist, only show global FAQs
         console.log('[GET /api/faqs] Invite link not found, showing only global FAQs')
