@@ -218,16 +218,12 @@ export default function AdminFAQsPage() {
     console.log('=== DELETE BUTTON CLICKED ===')
     console.log('FAQ ID to delete:', id)
     
-    // Use a more reliable confirmation method
-    const confirmed = confirm('Are you sure you want to delete this FAQ?')
-    console.log('User confirmed:', confirmed)
+    // Temporarily skip confirm to test if delete works
+    // TODO: Add back confirmation once delete is working
+    console.log('Skipping confirmation for testing...')
     
-    if (!confirmed) {
-      console.log('Delete cancelled by user')
-      return
-    }
-    
-    console.log('Proceeding with delete...')
+    try {
+      console.log('Making DELETE request to /api/faqs?id=' + id)
 
     try {
       console.log('Making DELETE request to /api/faqs?id=' + id)
