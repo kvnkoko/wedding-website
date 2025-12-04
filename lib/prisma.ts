@@ -40,7 +40,13 @@ const getPrismaClient = (): PrismaClient => {
   }
 
   // Create or return cached client
-  if (!globalForPrisma.prisma) {
+  // Force recreate if in development to pick up schema changes
+  if (!globalForPrisma.prisma || (process.env.NODE_ENV === 'development' && process.env.FORCE_RECREATE_PRISMA)) {
+    // Disconnect old client if it exists
+    if (globalForPrisma.prisma) {
+      globalForPrisma.prisma.$disconnect().catch(() => {})
+    }
+    
     const databaseUrl = process.env.DATABASE_URL
     
     if (!databaseUrl) {
@@ -56,13 +62,6 @@ const getPrismaClient = (): PrismaClient => {
       },
       log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
     })
-    
-    // Test connection on first creation
-    if (process.env.NODE_ENV === 'development') {
-      globalForPrisma.prisma.$connect().catch((err) => {
-        console.error('Failed to connect to database:', err)
-      })
-    }
   }
   
   return globalForPrisma.prisma
