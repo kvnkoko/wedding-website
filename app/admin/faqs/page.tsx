@@ -214,8 +214,14 @@ export default function AdminFAQsPage() {
     setShowAddForm(true)
   }
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, e?: React.MouseEvent) => {
+    e?.preventDefault()
+    e?.stopPropagation()
+    
+    console.log('handleDelete called with ID:', id)
+    
     if (!confirm('Are you sure you want to delete this FAQ?')) {
+      console.log('Delete cancelled by user')
       return
     }
 
@@ -487,17 +493,29 @@ export default function AdminFAQsPage() {
                     </div>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                   <span className="text-charcoal/40">⋮⋮</span>
                   <button
-                    onClick={() => handleEdit(faq)}
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      console.log('Edit button clicked for FAQ:', faq.id)
+                      handleEdit(faq)
+                    }}
                     className="bg-sage/20 text-sage px-4 py-2 rounded-sm font-sans text-xs hover:bg-sage/30 transition-all"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(faq.id)}
-                    className="bg-red-100 text-red-600 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 transition-all"
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      e.stopPropagation()
+                      console.log('Delete button clicked for FAQ:', faq.id)
+                      handleDelete(faq.id, e)
+                    }}
+                    className="bg-red-100 text-red-600 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 transition-all cursor-pointer"
                   >
                     Delete
                   </button>
