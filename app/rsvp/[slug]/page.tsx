@@ -114,7 +114,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
           <div className="flex flex-col items-center justify-center">
             {/* Center Content */}
             <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0 w-full">
-              <p className="font-body text-xs sm:text-sm md:text-base lg:text-lg text-charcoal/50 tracking-[0.2em] uppercase mb-4">
+              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/50 tracking-[0.2em] uppercase mb-4">
                 Together with our families
               </p>
               
@@ -122,7 +122,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap">
                   Kevin Koko
                 </h1>
-                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal/80 -mt-2 md:-mt-4">
+                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal/80 mt-2 md:mt-4">
                   And
                 </p>
                 <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap">
