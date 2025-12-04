@@ -57,17 +57,17 @@ function HomeContent() {
     <div className="min-h-screen">
       {/* Hero Section - Clean Minimal Design Without Arch */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
-        {/* Background Tulips - Intentional, Balanced Composition */}
-        {/* Left Tulip Illustration - Positioned to frame the left side of the content */}
+        {/* Background Tulips - Filling the space with elegant botanical illustrations */}
+        {/* Left Tulip Illustration - Extended to fill more vertical space */}
         <div 
-          className="hidden lg:block absolute left-0 top-[45%] -translate-y-1/2 -translate-x-[5%] z-0 pointer-events-none"
+          className="hidden lg:block absolute left-0 top-[50%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none"
           style={{ 
-            opacity: 0.09,
-            width: 'clamp(420px, 35vw, 650px)',
+            opacity: 0.1,
+            width: 'clamp(600px, 50vw, 900px)',
             height: 'auto',
             filter: 'invert(1)',
             willChange: 'transform',
-            transform: 'rotate(-3deg)',
+            transform: 'rotate(-2deg)',
             transition: 'opacity 0.3s ease',
           }}
         >
@@ -87,16 +87,16 @@ function HomeContent() {
           />
         </div>
 
-        {/* Right Tulip Illustration - Positioned to frame the right side, balanced with left */}
+        {/* Right Tulip Illustration - Extended to fill more vertical space */}
         <div 
-          className="hidden lg:block absolute right-0 top-[50%] -translate-y-1/2 translate-x-[5%] z-0 pointer-events-none"
+          className="hidden lg:block absolute right-0 top-[50%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none"
           style={{ 
-            opacity: 0.09,
-            width: 'clamp(400px, 33vw, 620px)',
+            opacity: 0.1,
+            width: 'clamp(580px, 48vw, 880px)',
             height: 'auto',
             filter: 'invert(1)',
             willChange: 'transform',
-            transform: 'rotate(4deg)',
+            transform: 'rotate(3deg)',
             transition: 'opacity 0.3s ease',
           }}
         >
