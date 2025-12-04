@@ -57,16 +57,17 @@ function HomeContent() {
     <div className="min-h-screen">
       {/* Hero Section - Clean Minimal Design Without Arch */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
-        {/* Background Tulips - Large, Dynamic, Absolutely Positioned */}
-        {/* Left Tulip - Hidden on mobile, visible on desktop */}
+        {/* Background Tulips - Large, Dynamic, Asymmetrical, Absolutely Positioned */}
+        {/* Left Tulip - Larger, positioned higher, slight rotation */}
         <div 
-          className="hidden lg:block absolute left-0 top-1/2 -translate-y-1/2 -translate-x-[15%] z-0 pointer-events-none"
+          className="hidden lg:block absolute left-0 top-[35%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none"
           style={{ 
-            opacity: 0.12,
-            width: 'clamp(500px, 40vw, 800px)',
+            opacity: 0.15,
+            width: 'clamp(600px, 45vw, 900px)',
             height: 'auto',
             filter: 'invert(1)',
             willChange: 'transform',
+            transform: 'rotate(-8deg)',
           }}
         >
           <img
@@ -75,7 +76,7 @@ function HomeContent() {
             className="object-contain w-full h-auto"
             style={{ 
               filter: 'invert(1)',
-              transform: 'scale(1.2)',
+              transform: 'scale(1.4)',
             }}
             onError={(e) => {
               const target = e.target as HTMLImageElement
@@ -86,15 +87,16 @@ function HomeContent() {
           />
         </div>
 
-        {/* Right Tulip - Hidden on mobile, visible on desktop */}
+        {/* Right Tulip - Different size, positioned lower, opposite rotation */}
         <div 
-          className="hidden lg:block absolute right-0 top-1/2 -translate-y-1/2 translate-x-[15%] z-0 pointer-events-none"
+          className="hidden lg:block absolute right-0 top-[60%] -translate-y-1/2 translate-x-[10%] z-0 pointer-events-none"
           style={{ 
-            opacity: 0.12,
-            width: 'clamp(500px, 40vw, 800px)',
+            opacity: 0.13,
+            width: 'clamp(550px, 38vw, 750px)',
             height: 'auto',
             filter: 'invert(1)',
             willChange: 'transform',
+            transform: 'rotate(12deg)',
           }}
         >
           <img
@@ -103,7 +105,7 @@ function HomeContent() {
             className="object-contain w-full h-auto"
             style={{ 
               filter: 'invert(1)',
-              transform: 'scaleX(-1) scale(1.2)',
+              transform: 'scaleX(-1) scale(1.3)',
             }}
             onError={(e) => {
               const target = e.target as HTMLImageElement
