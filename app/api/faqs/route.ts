@@ -48,21 +48,30 @@ export async function GET(request: NextRequest) {
     if (decodedSlug) {
       console.log('[GET /api/faqs] Looking up invite link with slug:', decodedSlug)
       // Get the invite link config with its events
-      const inviteLinkConfig = await prisma.inviteLinkConfig.findUnique({
-        where: { slug: decodedSlug },
-        include: {
-          events: {
-            include: {
-              event: {
-                select: {
-                  id: true,
-                  name: true,
+      let inviteLinkConfig
+      try {
+        inviteLinkConfig = await prisma.inviteLinkConfig.findUnique({
+          where: { slug: decodedSlug },
+          include: {
+            events: {
+              include: {
+                event: {
+                  select: {
+                    id: true,
+                    name: true,
+                  },
                 },
               },
             },
           },
-        },
-      })
+        })
+        console.log('[GET /api/faqs] Database query completed successfully')
+      } catch (dbError: any) {
+        console.error('[GET /api/faqs] Database error when looking up invite link:', dbError)
+        console.error('[GET /api/faqs] Database error message:', dbError.message)
+        console.error('[GET /api/faqs] Database error code:', dbError.code)
+        throw dbError // Re-throw to be caught by outer catch
+      }
 
       console.log('[GET /api/faqs] Found invite link config:', inviteLinkConfig ? { 
         id: inviteLinkConfig.id, 
