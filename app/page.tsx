@@ -143,12 +143,14 @@ function HomeContent() {
                 Invite you to celebrate with us
               </p>
               
-              {/* Date - Only show if we have data and loading is complete */}
-              {!dateLoading && dateRange && (
-                <p className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide">
-                  {dateRange}
-                </p>
-              )}
+              {/* Date - Reserve space to prevent layout shift */}
+              <div className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide min-h-[1.5em]">
+                {!dateLoading && dateRange ? (
+                  <p>{dateRange}</p>
+                ) : (
+                  <p className="invisible">January 22 - March 22, 2025</p>
+                )}
+              </div>
               
               {/* CTA Button */}
               <div className="mt-8 md:mt-12">

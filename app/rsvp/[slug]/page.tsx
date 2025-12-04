@@ -134,11 +134,14 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 Invite you to celebrate with us
               </p>
               
-              {dateRange && (
-                <p className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide">
-                  {dateRange}
-                </p>
-              )}
+              {/* Date - Reserve space to prevent layout shift */}
+              <div className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide min-h-[1.5em]">
+                {dateRange ? (
+                  <p>{dateRange}</p>
+                ) : (
+                  <p className="invisible">January 22 - March 22, 2025</p>
+                )}
+              </div>
               
               <div className="mt-8 md:mt-12">
                 <Link
