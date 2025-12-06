@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import RSVPEditForm from '@/components/RSVPEditForm'
 import PhotoCarouselSection from '@/components/PhotoCarouselSection'
 
 function HomeContent() {
@@ -13,8 +12,21 @@ function HomeContent() {
   // Main page should not show any event information or RSVP links
   // This is the public site - event details are only shown on slug-specific pages
 
+  // If someone tries to use an edit link, show message to contact directly
   if (editToken) {
-    return <RSVPEditForm editToken={editToken} />
+    return (
+      <div className="min-h-screen py-20 px-4 bg-cream flex items-center justify-center">
+        <div className="max-w-2xl mx-auto text-center bg-white p-12 rounded-sm shadow-sm">
+          <h1 className="font-serif text-5xl text-charcoal mb-6">RSVP Changes</h1>
+          <p className="font-sans text-lg text-charcoal/70 mb-4 leading-relaxed">
+            To make changes to your RSVP, please contact us directly.
+          </p>
+          <p className="font-sans text-base text-charcoal/60">
+            We'll be happy to help you update your RSVP or answer any questions you may have.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   // Server component content moved to client for simplicity

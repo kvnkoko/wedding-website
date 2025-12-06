@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { formatDate, formatDateRange } from '@/lib/utils'
 import PhotoCarouselSection from '@/components/PhotoCarouselSection'
-import RSVPEditForm from '@/components/RSVPEditForm'
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
@@ -262,10 +261,22 @@ export default function RSVPFormPage() {
     }
   }
 
-  // Check for edit token
+  // Check for edit token - if someone tries to edit, show message to contact directly
   const editToken = searchParams.get('edit')
   if (editToken) {
-    return <RSVPEditForm editToken={editToken} />
+    return (
+      <div className="min-h-screen py-20 px-4 bg-cream flex items-center justify-center">
+        <div className="max-w-2xl mx-auto text-center bg-white p-12 rounded-sm shadow-sm">
+          <h1 className="font-serif text-5xl text-charcoal mb-6">RSVP Changes</h1>
+          <p className="font-sans text-lg text-charcoal/70 mb-4 leading-relaxed">
+            To make changes to your RSVP, please contact us directly.
+          </p>
+          <p className="font-sans text-base text-charcoal/60">
+            We'll be happy to help you update your RSVP or answer any questions you may have.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   // If no form param, show home screen with hero section
@@ -362,11 +373,8 @@ export default function RSVPFormPage() {
             </div>
 
             <div className="bg-beige p-6 rounded-sm">
-              <p className="font-sans text-sm text-charcoal/70 mb-2">
-                <strong>Edit Link:</strong> You can edit your RSVP using this link:
-              </p>
-              <p className="font-sans text-xs text-sage break-all">
-                {typeof window !== 'undefined' && `${window.location.origin}/?edit=${submissionData.editToken}`}
+              <p className="font-sans text-sm text-charcoal/70">
+                <strong>Need to make changes?</strong> Please contact us directly if you need to update your RSVP or have any questions.
               </p>
             </div>
           </div>
