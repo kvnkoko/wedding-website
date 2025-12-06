@@ -9,46 +9,48 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [rsvpLink, setRsvpLink] = useState('/rsvp')
-  const [dateRange, setDateRange] = useState('January - March 2025')
+  const [dateRange, setDateRange] = useState<string | null>(null) // Start with null - only show on slug pages
 
   // Determine RSVP link based on current route
-  // If on a slug page, link to that slug's RSVP form
-  // Also store it in localStorage so it persists across navigation
+  // IMPORTANT: Main page should NOT show event dates or RSVP links
+  // Only show dates/RSVP when actually on a slug page
   useEffect(() => {
     const updateRsvpLinkAndDates = () => {
       if (typeof window === 'undefined') return
 
-      let slugPath: string | null = null
-
+      // Only set RSVP link and dates if we're actually on a slug page
+      // Main page (/) should not show any event information
       if (pathname?.startsWith('/rsvp/')) {
         // Extract slug from pathname (e.g., /rsvp/abc123 -> /rsvp/abc123)
-        slugPath = pathname
-        // Store in localStorage so we remember it even when navigating away
+        const slugPath = pathname
+        // Store in localStorage for navigation within slug pages
         localStorage.setItem('rsvpSlug', slugPath)
-      } else {
-        // Check if we have a stored slug
-        slugPath = localStorage.getItem('rsvpSlug')
-      }
-
-      if (slugPath) {
+        
         // Add ?form=true to show the form instead of redirecting
         setRsvpLink(`${slugPath}?form=true`)
         
-        // Fetch event dates
+        // Fetch event dates only for slug pages
         const slug = slugPath.replace('/rsvp/', '')
         fetch(`/api/rsvp/config/${slug}`)
           .then(res => res.json())
           .then(data => {
             if (data.events && data.events.length > 0) {
               setDateRange(formatDateRange(data.events))
+            } else {
+              setDateRange(null)
             }
           })
           .catch(() => {
-            // If fetch fails, keep default date
+            setDateRange(null)
           })
       } else {
+        // Main page or other pages - clear everything
         setRsvpLink('/rsvp')
-        setDateRange('January - March 2025')
+        setDateRange(null) // No dates on main page
+        // Clear localStorage when not on a slug page to prevent leaking info
+        if (pathname === '/' || pathname === '/faq') {
+          localStorage.removeItem('rsvpSlug')
+        }
       }
     }
 
@@ -115,7 +117,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <p className="font-script text-2xl mb-2">With Love,</p>
           <p className="font-title text-lg mb-2">Kevin & Tiffany</p>
-          <p className="font-body text-sm text-white/70 tracking-wider">{dateRange}</p>
+          {dateRange && (
+            <p className="font-body text-sm text-white/70 tracking-wider">{dateRange}</p>
+          )}
           <p className="font-script text-base text-white/60 mt-4">#tiffandko</p>
         </div>
       </footer>

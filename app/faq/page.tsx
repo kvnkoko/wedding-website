@@ -17,31 +17,29 @@ export default function FAQPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get slug from multiple sources:
-    // 1. Check localStorage for stored slug (most reliable)
-    // 2. Check if we're on a slug page directly (from referrer)
+    // IMPORTANT: Main /faq page should NEVER show event-specific FAQs
+    // Only show General FAQs (no events) on the main FAQ page
+    // Event-specific FAQs should only show when accessed from a slug page
     let inviteLinkSlug: string | null = null
     
     if (typeof window !== 'undefined') {
-      // First, check localStorage (most reliable since it persists across navigation)
-      const storedSlug = localStorage.getItem('rsvpSlug')
-      console.log('[FAQ Page] Stored slug from localStorage:', storedSlug)
-      if (storedSlug) {
-        inviteLinkSlug = storedSlug.replace('/rsvp/', '')
-        console.log('[FAQ Page] Extracted inviteLinkSlug from localStorage:', inviteLinkSlug)
-      }
+      // Only check referrer if we came from a slug page
+      // Do NOT check localStorage - that would show event FAQs on main page
+      const referrer = document.referrer
+      console.log('[FAQ Page] Referrer:', referrer)
       
-      // If not found in localStorage, try to get slug from document.referrer
-      if (!inviteLinkSlug) {
-        const referrer = document.referrer
-        console.log('[FAQ Page] Referrer:', referrer)
-        
-        // Check if referrer contains /rsvp/ with a slug
+      // Only use slug if referrer is from an actual /rsvp/[slug] page
+      // This ensures main /faq page always shows only General FAQs
+      if (referrer) {
         const referrerMatch = referrer.match(/\/rsvp\/([^\/\?]+)/)
         if (referrerMatch) {
           inviteLinkSlug = referrerMatch[1]
-          console.log('[FAQ Page] Found slug from referrer:', inviteLinkSlug)
+          console.log('[FAQ Page] Found slug from referrer (slug page):', inviteLinkSlug)
+        } else {
+          console.log('[FAQ Page] No slug in referrer - showing only General FAQs')
         }
+      } else {
+        console.log('[FAQ Page] No referrer - showing only General FAQs')
       }
     }
 
