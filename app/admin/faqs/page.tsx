@@ -21,6 +21,14 @@ interface InviteLinkConfig {
   label: string
 }
 
+interface FAQFormData {
+  question: string
+  answer: string
+  colorHexCodes: string[]
+  selectedInviteLinkIds: string[]
+  isGlobal: boolean
+}
+
 export default function AdminFAQsPage() {
   const [faqs, setFaqs] = useState<FAQ[]>([])
   const [inviteLinks, setInviteLinks] = useState<InviteLinkConfig[]>([])
@@ -28,11 +36,12 @@ export default function AdminFAQsPage() {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
   const [editingFAQ, setEditingFAQ] = useState<FAQ | null>(null)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FAQFormData>({
     question: '',
     answer: '',
-    colorHexCodes: [] as string[],
-    inviteLinkConfigId: '',
+    colorHexCodes: [],
+    selectedInviteLinkIds: [],
+    isGlobal: false,
   })
   const [newColorHex, setNewColorHex] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -147,16 +156,18 @@ export default function AdminFAQsPage() {
     try {
       // If "All Events" is selected, create a global FAQ (null inviteLinkConfigId)
       // Otherwise, create one FAQ per selected invite link
-      const inviteLinkIds = formData.isGlobal ? [] : formData.selectedInviteLinkIds
+      // Explicitly type formData to ensure TypeScript recognizes all properties
+      const data: FAQFormData = formData
+      const inviteLinkIds: string[] = data.isGlobal ? [] : data.selectedInviteLinkIds
       
       // Create FAQs - one per selected invite link, or one global if "All Events" is selected
       const results = []
-      if (formData.isGlobal || inviteLinkIds.length === 0) {
+      if (data.isGlobal || inviteLinkIds.length === 0) {
         // Create global FAQ
         const payload = {
-          question: formData.question.trim(),
-          answer: formData.answer.trim(),
-          colorHexCodes: formData.colorHexCodes.length > 0 ? formData.colorHexCodes : null,
+          question: data.question.trim(),
+          answer: data.answer.trim(),
+          colorHexCodes: data.colorHexCodes.length > 0 ? data.colorHexCodes : null,
           inviteLinkConfigId: null,
         }
         results.push(payload)
@@ -164,9 +175,9 @@ export default function AdminFAQsPage() {
         // Create one FAQ per selected invite link
         for (const inviteLinkId of inviteLinkIds) {
           const payload = {
-            question: formData.question.trim(),
-            answer: formData.answer.trim(),
-            colorHexCodes: formData.colorHexCodes.length > 0 ? formData.colorHexCodes : null,
+            question: data.question.trim(),
+            answer: data.answer.trim(),
+            colorHexCodes: data.colorHexCodes.length > 0 ? data.colorHexCodes : null,
             inviteLinkConfigId: inviteLinkId,
           }
           results.push(payload)

@@ -51,21 +51,19 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
     <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
-        {/* Background Tulips - Filling the space with elegant botanical illustrations */}
-        {/* Mobile: Single large tulip filling entire background */}
+        {/* Background Calla Lilies - Filling the space with elegant botanical illustrations */}
+        {/* Mobile: Single large calla lily filling entire background */}
         <div 
           className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
           style={{ 
-            opacity: 0.06,
-            filter: 'invert(1)',
+            opacity: 0.08,
           }}
         >
           <img
-            src="/tulips.png"
+            src="/calla lily 1.png"
             alt=""
-            className="object-cover w-full h-full"
+            className="object-contain w-full h-full"
             style={{ 
-              filter: 'invert(1)',
               minWidth: '100%',
               minHeight: '100%',
             }}
@@ -78,26 +76,22 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
           />
         </div>
 
-        {/* Desktop: Left Tulip Illustration */}
+        {/* Desktop: Left Calla Lily Illustration */}
         <div 
           className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none"
           style={{ 
-            opacity: 0.1,
+            opacity: 0.12,
             width: 'clamp(600px, 50vw, 900px)',
             height: 'auto',
-            filter: 'invert(1)',
             willChange: 'transform',
             transform: 'rotate(-2deg)',
             transition: 'opacity 0.3s ease',
           }}
         >
           <img
-            src="/tulips.png"
+            src="/calla lily 1.png"
             alt=""
             className="object-contain w-full h-auto"
-            style={{ 
-              filter: 'invert(1)',
-            }}
             onError={(e) => {
               const target = e.target as HTMLImageElement
               if (target) {
@@ -107,26 +101,22 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
           />
         </div>
 
-        {/* Right Tulip Illustration - Desktop only (both would be too crowded on mobile) */}
+        {/* Right Calla Lily Illustration - Desktop only (both would be too crowded on mobile) */}
         <div 
           className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none"
           style={{ 
-            opacity: 0.1,
+            opacity: 0.12,
             width: 'clamp(580px, 48vw, 880px)',
             height: 'auto',
-            filter: 'invert(1)',
             willChange: 'transform',
             transform: 'rotate(3deg)',
             transition: 'opacity 0.3s ease',
           }}
         >
           <img
-            src="/tulips2.png"
+            src="/calla lilly 2.png"
             alt=""
             className="object-contain w-full h-auto"
-            style={{ 
-              filter: 'invert(1)',
-            }}
             onError={(e) => {
               const target = e.target as HTMLImageElement
               if (target) {
