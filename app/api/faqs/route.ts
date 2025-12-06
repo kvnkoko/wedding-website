@@ -190,27 +190,10 @@ export async function GET(request: NextRequest) {
       console.log('[GET /api/faqs] FAQ details:', faqs.map(f => ({ 
         id: f.id, 
         question: f.question.substring(0, 50),
-        inviteLinkConfigId: f.inviteLinkConfigId,
-        inviteLinkConfig: f.inviteLinkConfig ? { slug: f.inviteLinkConfig.slug, label: f.inviteLinkConfig.label } : null
+        eventIds: f.events?.map(e => e.event.id) || [],
+        eventNames: f.events?.map(e => e.event.name) || [],
+        isGlobal: !f.events || f.events.length === 0
       })))
-      
-      // If we have an invite link config, double-check that we got FAQs directly tied to it
-      if (decodedSlug && inviteLinkConfig) {
-        const directFAQsCount = faqs.filter(f => f.inviteLinkConfigId === inviteLinkConfig.id).length
-        console.log('[GET /api/faqs] FAQs directly tied to current invite link in results:', directFAQsCount)
-        
-        // If no direct FAQs found, query them separately to debug
-        if (directFAQsCount === 0) {
-          const directFAQsCheck = await prisma.fAQ.findMany({
-            where: { inviteLinkConfigId: inviteLinkConfig.id },
-            select: { id: true, question: true, order: true },
-          })
-          console.log('[GET /api/faqs] DEBUG: Direct query for current invite link FAQs found:', directFAQsCheck.length)
-          if (directFAQsCheck.length > 0) {
-            console.log('[GET /api/faqs] DEBUG: These FAQs exist but were not included:', directFAQsCheck.map(f => ({ id: f.id, question: f.question.substring(0, 50) })))
-          }
-        }
-      }
     } catch (queryError: any) {
       console.error('Error querying FAQs:', queryError)
       console.error('Error code:', queryError.code)
