@@ -5,48 +5,13 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import RSVPEditForm from '@/components/RSVPEditForm'
 import PhotoCarouselSection from '@/components/PhotoCarouselSection'
-import { formatDateRange } from '@/lib/utils'
 
 function HomeContent() {
   const searchParams = useSearchParams()
   const editToken = searchParams.get('edit')
-  const [rsvpLink, setRsvpLink] = useState('/rsvp')
-  const [dateRange, setDateRange] = useState<string | null>(null) // Start with null, don't show default
-  const [dateLoading, setDateLoading] = useState(true)
 
-  // Get RSVP link from localStorage if available and fetch event dates
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const storedSlug = localStorage.getItem('rsvpSlug')
-      if (storedSlug) {
-        setRsvpLink(storedSlug)
-        // Extract slug from path (e.g., /rsvp/abc123 -> abc123)
-        const slug = storedSlug.replace('/rsvp/', '')
-        // Fetch event dates
-        fetch(`/api/rsvp/config/${slug}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.events && data.events.length > 0) {
-              setDateRange(formatDateRange(data.events))
-            } else {
-              // If no events, don't show date
-              setDateRange(null)
-            }
-          })
-          .catch(() => {
-            // If fetch fails, don't show date
-            setDateRange(null)
-          })
-          .finally(() => {
-            setDateLoading(false)
-          })
-      } else {
-        // No slug stored, don't show date
-        setDateRange(null)
-        setDateLoading(false)
-      }
-    }
-  }, [])
+  // Main page should not show any event information or RSVP links
+  // This is the public site - event details are only shown on slug-specific pages
 
   if (editToken) {
     return <RSVPEditForm editToken={editToken} />
@@ -159,24 +124,8 @@ function HomeContent() {
                 Invite you to celebrate with us
               </p>
               
-              {/* Date - Reserve space to prevent layout shift */}
-              <div className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide min-h-[1.5em]">
-                {!dateLoading && dateRange ? (
-                  <p>{dateRange}</p>
-                ) : (
-                  <p className="invisible">January 22 - March 22, 2025</p>
-                )}
-              </div>
-              
-              {/* CTA Button */}
-              <div className="mt-8 md:mt-12">
-                <Link
-                  href={`${rsvpLink}?form=true`}
-                  className="inline-block bg-charcoal text-white px-8 md:px-12 py-3 md:py-4 rounded-sm font-body text-xs md:text-sm tracking-[0.15em] uppercase hover:bg-charcoal/90 transition-all duration-300"
-                >
-                  RSVP
-                </Link>
-              </div>
+              {/* No date or RSVP button on main page - this is the public site */}
+              {/* Event information is only shown on personalized slug pages */}
               
               {/* Hashtag - Subtle bottom placement, balanced size */}
               <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/50 mt-12 md:mt-16">
