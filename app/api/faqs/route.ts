@@ -83,79 +83,47 @@ export async function GET(request: NextRequest) {
       if (inviteLinkConfig && inviteLinkConfig.events.length > 0) {
         // Get event IDs from this invite link
         const currentEventIds = inviteLinkConfig.events.map((e: any) => e.event.id)
-        console.log('[GET /api/faqs] Current invite link ID:', inviteLinkConfig.id)
-        console.log('[GET /api/faqs] Current invite link slug:', inviteLinkConfig.slug)
         console.log('[GET /api/faqs] Current invite link events:', currentEventIds)
         
-        // Find all invite link configs that share at least one event with the current invite link
-        // This should include the current invite link itself
-        const relatedInviteLinkConfigs = await prisma.inviteLinkConfig.findMany({
-          where: {
-            events: {
-              some: {
-                eventId: {
-                  in: currentEventIds,
+        // Get FAQs that:
+        // 1. Have events that match any of the current slug's events (FAQEvent junction table)
+        // 2. Have no events (global FAQs)
+        where = {
+          OR: [
+            {
+              events: {
+                some: {
+                  eventId: {
+                    in: currentEventIds,
+                  },
                 },
               },
             },
-          },
-          select: {
-            id: true,
-            slug: true,
-          },
-        })
-        
-        const relatedInviteLinkConfigIds = relatedInviteLinkConfigs.map(config => config.id)
-        console.log('[GET /api/faqs] Found related invite link configs:', relatedInviteLinkConfigs.map(c => ({ id: c.id, slug: c.slug })))
-        console.log('[GET /api/faqs] Related invite link config IDs:', relatedInviteLinkConfigIds)
-        console.log('[GET /api/faqs] Current invite link ID in related list?', relatedInviteLinkConfigIds.includes(inviteLinkConfig.id))
-        
-        // CRITICAL: Always explicitly include the current invite link's ID
-        // This ensures FAQs directly tied to this invite link are always included
-        // Use a Set to deduplicate IDs
-        const allInviteLinkConfigIds = Array.from(new Set([
-          inviteLinkConfig.id, // Always include current invite link first
-          ...relatedInviteLinkConfigIds, // Then add related ones
-        ]))
-        console.log('[GET /api/faqs] All invite link config IDs to search (deduplicated):', allInviteLinkConfigIds)
-        console.log('[GET /api/faqs] Current invite link ID guaranteed in list?', allInviteLinkConfigIds.includes(inviteLinkConfig.id))
-        
-        // Get FAQs for:
-        // 1. This specific invite link (explicitly included above)
-        // 2. Any invite link configs that share events with this one
-        // 3. Global FAQs (null inviteLinkConfigId)
-        where = {
-          OR: [
-            { inviteLinkConfigId: { in: allInviteLinkConfigIds } },
-            { inviteLinkConfigId: null },
+            {
+              events: {
+                none: {}, // No events = global FAQ
+              },
+            },
           ],
         }
         console.log('[GET /api/faqs] Final where clause:', JSON.stringify(where))
-        
-        // Debug: Let's also check if there are any FAQs directly tied to this invite link
-        const directFAQs = await prisma.fAQ.findMany({
-          where: { inviteLinkConfigId: inviteLinkConfig.id },
-          select: { id: true, question: true },
-        })
-        console.log('[GET /api/faqs] FAQs directly tied to current invite link:', directFAQs.length, directFAQs.map(f => ({ id: f.id, question: f.question.substring(0, 50) })))
-      } else if (inviteLinkConfig) {
-        // Invite link exists but has no events, show FAQs for this invite link and global
-        where = {
-          OR: [
-            { inviteLinkConfigId: inviteLinkConfig.id },
-            { inviteLinkConfigId: null },
-          ],
-        }
-        console.log('[GET /api/faqs] Invite link has no events, showing FAQs for this invite link or global')
       } else {
-        // If invite link doesn't exist, only show global FAQs
-        console.log('[GET /api/faqs] Invite link not found, showing only global FAQs')
-        where = { inviteLinkConfigId: null }
+        // If invite link doesn't exist or has no events, only show global FAQs
+        console.log('[GET /api/faqs] Invite link not found or has no events, showing only global FAQs')
+        where = {
+          events: {
+            none: {}, // No events = global FAQ
+          },
+        }
       }
     } else if (!isAdminRequest) {
-      // No invite link provided and not admin - show ALL FAQs (both global and event-specific)
-      // This allows event-specific FAQs to show up on the main FAQ page
-      where = {} // Empty where clause means show all FAQs
+      // No invite link provided and not admin - show ONLY global FAQs
+      // Event-specific FAQs should only show on slug pages
+      where = {
+        events: {
+          none: {}, // No events = global FAQ
+        },
+      }
     }
     // If admin request with no inviteLinkSlug, where stays empty (show all FAQs)
 
@@ -205,10 +173,14 @@ export async function GET(request: NextRequest) {
         where,
         orderBy: { order: 'asc' },
         include: {
-          inviteLinkConfig: {
-            select: {
-              slug: true,
-              label: true,
+          events: {
+            include: {
+              event: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
         },
@@ -303,9 +275,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { question, answer, colorHexCodes, inviteLinkConfigId, order } = body
+    const { question, answer, colorHexCodes, eventIds, order } = body
 
-    console.log('Creating FAQ with data:', { question, answer, colorHexCodes, inviteLinkConfigId, order })
+    console.log('Creating FAQ with data:', { question, answer, colorHexCodes, eventIds, order })
 
     if (!question || !answer) {
       return NextResponse.json(
@@ -340,28 +312,32 @@ export async function POST(request: NextRequest) {
       // Continue with order 0 if there's an error
     }
 
-    // Validate inviteLinkConfigId if provided
-    let finalInviteLinkConfigId: string | null = null
-    if (inviteLinkConfigId) {
-      // Check if the invite link config exists
-      const inviteLinkConfig = await prisma.inviteLinkConfig.findUnique({
-        where: { id: inviteLinkConfigId },
+    // Validate eventIds if provided
+    let finalEventIds: string[] = []
+    if (eventIds && Array.isArray(eventIds) && eventIds.length > 0) {
+      // Validate that all event IDs exist
+      const existingEvents = await prisma.event.findMany({
+        where: { id: { in: eventIds } },
+        select: { id: true },
       })
-      if (!inviteLinkConfig) {
+      const existingEventIds = existingEvents.map(e => e.id)
+      const invalidEventIds = eventIds.filter((id: string) => !existingEventIds.includes(id))
+      
+      if (invalidEventIds.length > 0) {
         return NextResponse.json(
-          { error: 'Invalid invite link configuration ID', details: `Invite link with ID ${inviteLinkConfigId} not found` },
+          { error: 'Invalid event IDs', details: `Events with IDs ${invalidEventIds.join(', ')} not found` },
           { status: 400 }
         )
       }
-      finalInviteLinkConfigId = inviteLinkConfigId
+      finalEventIds = eventIds
     }
 
-    console.log('Creating FAQ with order:', newOrder, 'colorHexCodesJson:', colorHexCodesJson, 'inviteLinkConfigId:', finalInviteLinkConfigId)
+    console.log('Creating FAQ with order:', newOrder, 'colorHexCodesJson:', colorHexCodesJson, 'eventIds:', finalEventIds)
     console.log('Data to create:', {
       question,
       answer,
       colorHexCodes: colorHexCodesJson,
-      inviteLinkConfigId: finalInviteLinkConfigId,
+      eventIds: finalEventIds,
       order: newOrder,
     })
 
@@ -372,6 +348,7 @@ export async function POST(request: NextRequest) {
         question,
         answer,
         order: newOrder,
+        inviteLinkConfigId: null, // Always null for new FAQs (using events instead)
       }
       
       // Only include colorHexCodes if it's not null
@@ -379,23 +356,25 @@ export async function POST(request: NextRequest) {
         createData.colorHexCodes = colorHexCodesJson
       }
       
-      // Only include inviteLinkConfigId if it's not null
-      if (finalInviteLinkConfigId !== null) {
-        createData.inviteLinkConfigId = finalInviteLinkConfigId
-      }
-      
-      console.log('Final create data:', createData)
-      console.log('[POST /api/faqs] Prisma client type:', typeof prisma.fAQ)
-      console.log('[POST /api/faqs] Prisma client create type:', typeof prisma.fAQ.create)
-      console.log('[POST /api/faqs] DATABASE_URL:', process.env.DATABASE_URL ? process.env.DATABASE_URL.substring(0, 30) + '...' : 'NOT SET')
-      
+      // Create FAQ with events
       faq = await prisma.fAQ.create({
-        data: createData,
+        data: {
+          ...createData,
+          events: finalEventIds.length > 0 ? {
+            create: finalEventIds.map((eventId: string) => ({
+              eventId,
+            })),
+          } : undefined,
+        },
         include: {
-          inviteLinkConfig: {
-            select: {
-              slug: true,
-              label: true,
+          events: {
+            include: {
+              event: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
             },
           },
         },

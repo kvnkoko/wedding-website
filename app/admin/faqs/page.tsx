@@ -9,29 +9,30 @@ interface FAQ {
   colorHexCodes: string[] | null
   inviteLinkConfigId: string | null
   order: number
-  inviteLinkConfig?: {
-    slug: string
-    label: string
-  }
+  events?: Array<{
+    event: {
+      id: string
+      name: string
+    }
+  }>
 }
 
-interface InviteLinkConfig {
+interface Event {
   id: string
-  slug: string
-  label: string
+  name: string
 }
 
 interface FAQFormData {
   question: string
   answer: string
   colorHexCodes: string[]
-  selectedInviteLinkIds: string[]
+  selectedEventIds: string[]
   isGlobal: boolean
 }
 
 export default function AdminFAQsPage() {
   const [faqs, setFaqs] = useState<FAQ[]>([])
-  const [inviteLinks, setInviteLinks] = useState<InviteLinkConfig[]>([])
+  const [events, setEvents] = useState<Event[]>([])
   const [loading, setLoading] = useState(true)
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null)
   const [showAddForm, setShowAddForm] = useState(false)
@@ -40,7 +41,7 @@ export default function AdminFAQsPage() {
     question: '',
     answer: '',
     colorHexCodes: [],
-    selectedInviteLinkIds: [],
+    selectedEventIds: [],
     isGlobal: false,
   })
   const [newColorHex, setNewColorHex] = useState('')
@@ -48,7 +49,7 @@ export default function AdminFAQsPage() {
 
   useEffect(() => {
     fetchFAQs()
-    fetchInviteLinks()
+    fetchEvents()
   }, [])
 
   const fetchFAQs = async () => {
@@ -72,21 +73,27 @@ export default function AdminFAQsPage() {
     }
   }
 
-  const fetchInviteLinks = async () => {
+  const fetchEvents = async () => {
     try {
-      const res = await fetch('/api/admin/invite-links')
+      console.log('[FAQ Admin] Fetching events from /api/admin/events')
+      const res = await fetch('/api/admin/events', {
+        credentials: 'include',
+      })
+      console.log('[FAQ Admin] Events API response status:', res.status)
       if (res.ok) {
         const data = await res.json()
-        // Map the data to the expected format
-        const mappedLinks = data.map((link: any) => ({
-          id: link.id,
-          slug: link.slug,
-          label: link.label,
-        }))
-        setInviteLinks(mappedLinks)
+        console.log('[FAQ Admin] Fetched events:', data)
+        console.log('[FAQ Admin] Number of events:', data.length)
+        setEvents(data)
+      } else {
+        console.error('[FAQ Admin] Error fetching events - status:', res.status)
+        const errorData = await res.json().catch(() => ({}))
+        console.error('[FAQ Admin] Error data:', errorData)
+        alert(`Error loading events: ${errorData.error || 'Unknown error'}. Please refresh the page.`)
       }
     } catch (error) {
-      console.error('Error fetching invite links:', error)
+      console.error('[FAQ Admin] Error fetching events:', error)
+      alert('Error loading events. Please check the console and refresh the page.')
     }
   }
 
@@ -154,41 +161,23 @@ export default function AdminFAQsPage() {
     setSubmitting(true)
     
     try {
-      // If "All Events" is selected, create a global FAQ (null inviteLinkConfigId)
-      // Otherwise, create one FAQ per selected invite link
-      // Explicitly type formData to ensure TypeScript recognizes all properties
+      // If "General FAQ" is selected, create a global FAQ (no events)
+      // Otherwise, create FAQ with selected events
       const data: FAQFormData = formData
-      const inviteLinkIds: string[] = data.isGlobal ? [] : data.selectedInviteLinkIds
+      const eventIds: string[] = data.isGlobal ? [] : data.selectedEventIds
       
-      // Create FAQs - one per selected invite link, or one global if "All Events" is selected
-      const results = []
-      if (data.isGlobal || inviteLinkIds.length === 0) {
-        // Create global FAQ
-        const payload = {
-          question: data.question.trim(),
-          answer: data.answer.trim(),
-          colorHexCodes: data.colorHexCodes.length > 0 ? data.colorHexCodes : null,
-          inviteLinkConfigId: null,
-        }
-        results.push(payload)
-      } else {
-        // Create one FAQ per selected invite link
-        for (const inviteLinkId of inviteLinkIds) {
-          const payload = {
-            question: data.question.trim(),
-            answer: data.answer.trim(),
-            colorHexCodes: data.colorHexCodes.length > 0 ? data.colorHexCodes : null,
-            inviteLinkConfigId: inviteLinkId,
-          }
-          results.push(payload)
-        }
+      // Create FAQ with events
+      const payload = {
+        question: data.question.trim(),
+        answer: data.answer.trim(),
+        colorHexCodes: data.colorHexCodes.length > 0 ? data.colorHexCodes : null,
+        eventIds: eventIds, // Array of event IDs
       }
 
-      console.log('Submitting FAQs:', results)
+      console.log('Submitting FAQ:', payload)
 
       if (editingFAQ) {
-        // For editing, only update the single FAQ (keep it simple for now)
-        const payload = results[0] // Use first result
+        // Update existing FAQ
         const res = await fetch(`/api/faqs/${editingFAQ.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -201,36 +190,29 @@ export default function AdminFAQsPage() {
           throw new Error(errorData.error || errorData.details || 'Failed to update FAQ')
         }
       } else {
-        // Create multiple FAQs - one per selected invite link (or one global)
-        const promises = results.map((payload) =>
-          fetch('/api/faqs', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-            credentials: 'include',
-          })
-        )
+        // Create new FAQ
+        const res = await fetch('/api/faqs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          credentials: 'include',
+        })
 
-        const responses = await Promise.all(promises)
-        
-        for (const res of responses) {
-          if (!res.ok) {
-            const errorData = await res.json().catch(() => ({ error: 'Unknown error' }))
-            throw new Error(errorData.error || errorData.details || 'Failed to create FAQ')
-          }
+        if (!res.ok) {
+          const errorData = await res.json().catch(() => ({ error: 'Unknown error' }))
+          throw new Error(errorData.error || errorData.details || 'Failed to create FAQ')
         }
       }
       
       // Reset form
-      setFormData({ question: '', answer: '', colorHexCodes: [], selectedInviteLinkIds: [], isGlobal: false })
+      setFormData({ question: '', answer: '', colorHexCodes: [], selectedEventIds: [], isGlobal: false })
       setNewColorHex('')
       setShowAddForm(false)
       setEditingFAQ(null)
       await fetchFAQs()
       
       // Show success message
-      const count = results.length
-      alert(`FAQ${count > 1 ? 's' : ''} ${editingFAQ ? 'updated' : 'created'} successfully! ${count > 1 ? `(${count} FAQs created)` : ''}`)
+      alert(`FAQ ${editingFAQ ? 'updated' : 'created'} successfully!`)
     } catch (error: any) {
       console.error('Error saving FAQ:', error)
       const errorMessage = error?.message || 'Error saving FAQ. Please check the browser console for details.'
@@ -240,14 +222,26 @@ export default function AdminFAQsPage() {
     }
   }
 
-  const handleEdit = (faq: FAQ) => {
+  const handleEdit = async (faq: FAQ) => {
     setEditingFAQ(faq)
+    // Fetch events for this FAQ
+    let selectedEventIds: string[] = []
+    try {
+      const res = await fetch(`/api/faqs/${faq.id}/events`)
+      if (res.ok) {
+        const eventData = await res.json()
+        selectedEventIds = eventData.map((e: { eventId: string }) => e.eventId)
+      }
+    } catch (error) {
+      console.error('Error fetching FAQ events:', error)
+    }
+    
     setFormData({
       question: faq.question,
       answer: faq.answer,
       colorHexCodes: faq.colorHexCodes || [],
-      selectedInviteLinkIds: faq.inviteLinkConfigId ? [faq.inviteLinkConfigId] : [],
-      isGlobal: !faq.inviteLinkConfigId,
+      selectedEventIds: selectedEventIds,
+      isGlobal: selectedEventIds.length === 0,
     })
     setNewColorHex('')
     setShowAddForm(true)
@@ -312,7 +306,7 @@ export default function AdminFAQsPage() {
   }
 
   const handleCancel = () => {
-    setFormData({ question: '', answer: '', colorHexCodes: [], selectedInviteLinkIds: [], isGlobal: false })
+    setFormData({ question: '', answer: '', colorHexCodes: [], selectedEventIds: [], isGlobal: false })
     setNewColorHex('')
     setShowAddForm(false)
     setEditingFAQ(null)
@@ -354,7 +348,7 @@ export default function AdminFAQsPage() {
           onClick={() => {
             setShowAddForm(true)
             setEditingFAQ(null)
-            setFormData({ question: '', answer: '', colorHexCodes: [], selectedInviteLinkIds: [], isGlobal: false })
+            setFormData({ question: '', answer: '', colorHexCodes: [], selectedEventIds: [], isGlobal: false })
             setNewColorHex('')
           }}
           className="bg-sage text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-sage/90 transition-all"
@@ -456,7 +450,7 @@ export default function AdminFAQsPage() {
 
             <div>
               <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                Show for Invite Links
+                Show for Events
               </label>
               <div className="space-y-3">
                 <label className="flex items-center gap-2 cursor-pointer">
@@ -465,47 +459,59 @@ export default function AdminFAQsPage() {
                     checked={formData.isGlobal}
                     onChange={(e) => {
                       if (e.target.checked) {
-                        setFormData({ ...formData, isGlobal: true, selectedInviteLinkIds: [] })
+                        setFormData({ ...formData, isGlobal: true, selectedEventIds: [] })
                       } else {
                         setFormData({ ...formData, isGlobal: false })
                       }
                     }}
                     className="w-4 h-4 text-sage border-taupe/30 rounded focus:ring-sage"
                   />
-                  <span className="font-sans text-sm text-charcoal">All Events (Global FAQ)</span>
+                  <span className="font-sans text-sm text-charcoal">General FAQ (shows on all pages)</span>
                 </label>
                 
                 {!formData.isGlobal && (
                   <div className="pl-6 space-y-2 border-l-2 border-taupe/20">
-                    <p className="font-sans text-xs text-charcoal/70 mb-2">Or select specific invite links:</p>
-                    {inviteLinks.map((link) => (
-                      <label key={link.id} className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={formData.selectedInviteLinkIds.includes(link.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setFormData({
-                                ...formData,
-                                selectedInviteLinkIds: [...formData.selectedInviteLinkIds, link.id],
-                              })
-                            } else {
-                              setFormData({
-                                ...formData,
-                                selectedInviteLinkIds: formData.selectedInviteLinkIds.filter((id) => id !== link.id),
-                              })
-                            }
-                          }}
-                          className="w-4 h-4 text-sage border-taupe/30 rounded focus:ring-sage"
-                        />
-                        <span className="font-sans text-sm text-charcoal">{link.label}</span>
-                      </label>
-                    ))}
+                    <p className="font-sans text-xs text-charcoal/70 mb-2">Or select specific events (multi-select):</p>
+                    {events.length === 0 ? (
+                      <div className="space-y-2">
+                        <p className="font-sans text-xs text-charcoal/50 italic">Loading events...</p>
+                        <p className="font-sans text-xs text-red-500">If events don't load, check the browser console for errors.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {events.map((event) => (
+                          <label key={event.id} className="flex items-center gap-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={formData.selectedEventIds.includes(event.id)}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  setFormData({
+                                    ...formData,
+                                    selectedEventIds: [...formData.selectedEventIds, event.id],
+                                  })
+                                } else {
+                                  setFormData({
+                                    ...formData,
+                                    selectedEventIds: formData.selectedEventIds.filter((id) => id !== event.id),
+                                  })
+                                }
+                              }}
+                              className="w-4 h-4 text-sage border-taupe/30 rounded focus:ring-sage"
+                            />
+                            <span className="font-sans text-sm text-charcoal">{event.name}</span>
+                          </label>
+                        ))}
+                        {events.length === 0 && (
+                          <p className="font-sans text-xs text-charcoal/50">No events found. Please create events first in the Events admin page.</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
               <p className="mt-2 font-sans text-xs text-charcoal/60">
-                Select "All Events" for a global FAQ, or choose specific invite links. You can select multiple invite links to create the same FAQ for different events.
+                Select "General FAQ" for a global FAQ that shows on all pages, or choose specific events. FAQs tied to events will only show on slug pages that include those events.
               </p>
             </div>
 
@@ -566,14 +572,15 @@ export default function AdminFAQsPage() {
                     <p className="font-sans text-sm font-medium text-charcoal">
                       Order: {index + 1}
                     </p>
-                    {faq.inviteLinkConfig && (
-                      <span className="px-2 py-1 bg-sage/20 text-sage text-xs rounded-sm">
-                        {faq.inviteLinkConfig.label}
-                      </span>
-                    )}
-                    {!faq.inviteLinkConfig && (
+                    {faq.events && faq.events.length > 0 ? (
+                      faq.events.map((faqEvent) => (
+                        <span key={faqEvent.event.id} className="px-2 py-1 bg-sage/20 text-sage text-xs rounded-sm">
+                          {faqEvent.event.name}
+                        </span>
+                      ))
+                    ) : (
                       <span className="px-2 py-1 bg-charcoal/20 text-charcoal text-xs rounded-sm">
-                        Global (All Events)
+                        General FAQ (All Events)
                       </span>
                     )}
                   </div>

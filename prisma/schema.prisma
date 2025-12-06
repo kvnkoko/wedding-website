@@ -23,6 +23,7 @@ model Event {
 
   inviteLinkConfigs InviteLinkConfigEvent[]
   rsvpResponses     RsvpEventResponse[]
+  faqs               FAQEvent[]
 
   @@map("events")
 }
@@ -118,13 +119,27 @@ model FAQ {
   question           String
   answer             String
   colorHexCodes      String?  // JSON array of hex color codes: ["#A8D5BA", "#E8D5C4", ...]
-  inviteLinkConfigId String?  // null = global FAQ, otherwise specific to invite link
+  inviteLinkConfigId String?  // null = global FAQ, otherwise specific to invite link (deprecated, use events instead)
   order              Int      @default(0)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
   inviteLinkConfig InviteLinkConfig? @relation(fields: [inviteLinkConfigId], references: [id], onDelete: Cascade)
+  events            FAQEvent[]
 
   @@map("faqs")
+}
+
+model FAQEvent {
+  id        String   @id @default(cuid())
+  faqId     String
+  eventId   String
+  createdAt DateTime @default(now())
+
+  faq   FAQ   @relation(fields: [faqId], references: [id], onDelete: Cascade)
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([faqId, eventId])
+  @@map("faq_events")
 }
 
