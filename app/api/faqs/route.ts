@@ -129,15 +129,18 @@ export async function GET(request: NextRequest) {
 
     let faqs
     try {
-      // First, try to verify the table exists with a raw query
+      // First, try to verify the tables exist with a raw query
       try {
         await prisma.$queryRaw`SELECT 1 FROM "faqs" LIMIT 1`
+        // Also check for FAQEvent table
+        await prisma.$queryRaw`SELECT 1 FROM "faq_events" LIMIT 1`
       } catch (tableCheckError: any) {
         console.error('Table check failed:', tableCheckError.message)
         // If table doesn't exist, try to create it
         if (tableCheckError.message?.includes('does not exist') || tableCheckError.code === 'P2021') {
-          console.log('Attempting to create FAQs table...')
+          console.log('Attempting to create FAQs and FAQEvent tables...')
           try {
+            // Create FAQs table
             await prisma.$executeRawUnsafe(`
               CREATE TABLE IF NOT EXISTS "faqs" (
                 "id" TEXT NOT NULL,
@@ -155,7 +158,21 @@ export async function GET(request: NextRequest) {
               ALTER TABLE "faqs" ADD CONSTRAINT IF NOT EXISTS "faqs_inviteLinkConfigId_fkey" 
               FOREIGN KEY ("inviteLinkConfigId") REFERENCES "invite_link_configs"("id") ON DELETE SET NULL ON UPDATE CASCADE
             `).catch(() => {}) // Ignore if constraint already exists
-            console.log('FAQs table created successfully')
+            
+            // Create FAQEvent junction table
+            await prisma.$executeRawUnsafe(`
+              CREATE TABLE IF NOT EXISTS "faq_events" (
+                "id" TEXT NOT NULL,
+                "faqId" TEXT NOT NULL,
+                "eventId" TEXT NOT NULL,
+                "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT "faq_events_pkey" PRIMARY KEY ("id"),
+                CONSTRAINT "faq_events_faqId_fkey" FOREIGN KEY ("faqId") REFERENCES "faqs"("id") ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT "faq_events_eventId_fkey" FOREIGN KEY ("eventId") REFERENCES "events"("id") ON DELETE CASCADE ON UPDATE CASCADE,
+                CONSTRAINT "faq_events_faqId_eventId_key" UNIQUE ("faqId", "eventId")
+              )
+            `)
+            console.log('FAQs and FAQEvent tables created successfully')
           } catch (createError: any) {
             console.error('Failed to create table:', createError.message)
             return NextResponse.json(
