@@ -119,11 +119,21 @@ export async function GET(request: NextRequest) {
     } else if (!isAdminRequest) {
       // No invite link provided and not admin - show ONLY global FAQs
       // Event-specific FAQs should only show on slug pages
+      // A global FAQ has NO events in the FAQEvent junction table
       where = {
-        events: {
-          none: {}, // No events = global FAQ
-        },
+        AND: [
+          {
+            events: {
+              none: {}, // No events in junction table = global FAQ
+            },
+          },
+          {
+            // Also ensure inviteLinkConfigId is null (for backwards compatibility with old FAQs)
+            inviteLinkConfigId: null,
+          },
+        ],
       }
+      console.log('[GET /api/faqs] Main page (no slug) - showing only global FAQs (no events)')
     }
     // If admin request with no inviteLinkSlug, where stays empty (show all FAQs)
 
