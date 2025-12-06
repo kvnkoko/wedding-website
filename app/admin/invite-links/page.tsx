@@ -23,6 +23,18 @@ export default function AdminInviteLinksPage() {
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState<InviteLinkConfig | null>(null)
   const [showForm, setShowForm] = useState(false)
+  const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
+
+  const copyToClipboard = async (url: string, configId: string) => {
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopiedUrl(configId)
+      setTimeout(() => setCopiedUrl(null), 2000) // Reset after 2 seconds
+    } catch (err) {
+      console.error('Failed to copy:', err)
+      alert('Failed to copy URL. Please copy manually.')
+    }
+  }
 
   useEffect(() => {
     fetchData()
@@ -242,17 +254,32 @@ export default function AdminInviteLinksPage() {
               </div>
             </div>
             <div className="bg-beige p-4 rounded-sm">
-              <p className="font-sans text-xs text-charcoal/70 mb-1">RSVP URL:</p>
-              <p className="font-mono text-sm text-sage break-all mb-2">
-                {typeof window !== 'undefined' &&
-                  (() => {
-                    // Use production URL if available, otherwise use current origin
-                    const origin = window.location.origin
-                    // Remove preview deployment hash if present (e.g., wedding-website-faz2o1kdc-kevin-kokos-projects.vercel.app -> wedding-website.vercel.app)
-                    const productionUrl = origin.replace(/-[a-z0-9]+-kevin-kokos-projects\.vercel\.app$/, '.vercel.app')
-                    return `${productionUrl}/rsvp/${config.slug}`
-                  })()}
-              </p>
+              <p className="font-sans text-xs text-charcoal/70 mb-2">RSVP URL:</p>
+              <div className="flex items-center gap-2 mb-2">
+                <p className="font-mono text-sm text-sage break-all flex-1">
+                  {typeof window !== 'undefined' &&
+                    (() => {
+                      // Use production URL if available, otherwise use current origin
+                      const origin = window.location.origin
+                      // Remove preview deployment hash if present (e.g., wedding-website-faz2o1kdc-kevin-kokos-projects.vercel.app -> wedding-website.vercel.app)
+                      const productionUrl = origin.replace(/-[a-z0-9]+-kevin-kokos-projects\.vercel\.app$/, '.vercel.app')
+                      return `${productionUrl}/rsvp/${config.slug}`
+                    })()}
+                </p>
+                {typeof window !== 'undefined' && (
+                  <button
+                    onClick={() => {
+                      const origin = window.location.origin
+                      const productionUrl = origin.replace(/-[a-z0-9]+-kevin-kokos-projects\.vercel\.app$/, '.vercel.app')
+                      const url = `${productionUrl}/rsvp/${config.slug}`
+                      copyToClipboard(url, config.id)
+                    }}
+                    className="bg-sage text-white px-3 py-1.5 rounded-sm font-sans text-xs tracking-wide uppercase hover:bg-sage/90 transition-all whitespace-nowrap flex-shrink-0"
+                  >
+                    {copiedUrl === config.id ? 'Copied!' : 'Copy URL'}
+                  </button>
+                )}
+              </div>
               {typeof window !== 'undefined' && window.location.hostname.includes('-kevin-kokos-projects.vercel.app') && (
                 <p className="font-sans text-xs text-charcoal/50 italic">
                   ⚠️ Preview URLs require Vercel login. Use production URL above for sharing.
