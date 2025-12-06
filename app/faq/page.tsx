@@ -17,29 +17,34 @@ export default function FAQPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // IMPORTANT: Main /faq page should NEVER show event-specific FAQs
-    // Only show General FAQs (no events) on the main FAQ page
-    // Event-specific FAQs should only show when accessed from a slug page
+    // Get slug for FAQ filtering
+    // Rules:
+    // 1. If referrer is from /rsvp/[slug], use that slug
+    // 2. If referrer is from main page (/) or /faq, DON'T use localStorage (public access)
+    // 3. If no referrer or referrer from slug page, use localStorage if available
     let inviteLinkSlug: string | null = null
     
     if (typeof window !== 'undefined') {
-      // Only check referrer if we came from a slug page
-      // Do NOT check localStorage - that would show event FAQs on main page
       const referrer = document.referrer
-      console.log('[FAQ Page] Referrer:', referrer)
+      const referrerMatch = referrer ? referrer.match(/\/rsvp\/([^\/\?]+)/) : null
+      const isFromMainPage = referrer && (referrer.endsWith('/') || referrer.includes('/faq') || referrer.match(/^https?:\/\/[^\/]+\/?$/))
       
-      // Only use slug if referrer is from an actual /rsvp/[slug] page
-      // This ensures main /faq page always shows only General FAQs
-      if (referrer) {
-        const referrerMatch = referrer.match(/\/rsvp\/([^\/\?]+)/)
-        if (referrerMatch) {
-          inviteLinkSlug = referrerMatch[1]
-          console.log('[FAQ Page] Found slug from referrer (slug page):', inviteLinkSlug)
+      if (referrerMatch) {
+        // Coming from a slug page - use that slug
+        inviteLinkSlug = referrerMatch[1]
+        console.log('[FAQ Page] Found slug from referrer (slug page):', inviteLinkSlug)
+      } else if (!isFromMainPage) {
+        // Not from main page - check localStorage (user might have navigated from slug page)
+        const storedSlug = localStorage.getItem('rsvpSlug')
+        if (storedSlug) {
+          inviteLinkSlug = storedSlug.replace('/rsvp/', '')
+          console.log('[FAQ Page] Using stored slug from localStorage:', inviteLinkSlug)
         } else {
-          console.log('[FAQ Page] No slug in referrer - showing only General FAQs')
+          console.log('[FAQ Page] No slug - showing only General FAQs')
         }
       } else {
-        console.log('[FAQ Page] No referrer - showing only General FAQs')
+        // Coming from main page or /faq - show only General FAQs (public access)
+        console.log('[FAQ Page] Access from main page - showing only General FAQs')
       }
     }
 

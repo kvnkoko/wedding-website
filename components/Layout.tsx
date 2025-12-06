@@ -43,14 +43,17 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           .catch(() => {
             setDateRange(null)
           })
-      } else {
-        // Main page or other pages - clear everything
+      } else if (pathname === '/') {
+        // ONLY clear on main page (/) - not on /faq
+        // This allows slug pages to work when navigating to /faq
         setRsvpLink('/rsvp')
         setDateRange(null) // No dates on main page
-        // Clear localStorage when not on a slug page to prevent leaking info
-        if (pathname === '/' || pathname === '/faq') {
-          localStorage.removeItem('rsvpSlug')
-        }
+        localStorage.removeItem('rsvpSlug') // Clear only on main page
+      } else {
+        // Other pages (like /faq) - don't clear localStorage, but don't show dates
+        setRsvpLink('/rsvp')
+        setDateRange(null)
+        // Keep localStorage intact so slug pages can still access their FAQs
       }
     }
 
