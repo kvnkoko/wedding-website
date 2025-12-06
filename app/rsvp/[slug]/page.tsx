@@ -386,7 +386,7 @@ export default function RSVPFormPage() {
             </p>
           )}
           <p className="font-sans text-base text-charcoal/70 mb-8">
-            Please fill out the form below to RSVP for your invited events.
+            Please fill out the form below to RSVP.
           </p>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
