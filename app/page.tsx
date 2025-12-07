@@ -51,7 +51,7 @@ function HomeContent() {
         {/* Background Calla Lilies - Filling the space with elegant botanical illustrations */}
         {/* Mobile: Single large calla lily filling entire background */}
         <div 
-          className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center animate-fade-in"
+          className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
           style={{ 
             opacity: 0.008,
           }}
@@ -75,7 +75,7 @@ function HomeContent() {
 
         {/* Desktop: Left Calla Lily Illustration */}
         <div 
-          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-100 parallax-slow"
+          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none parallax-slow"
           style={{ 
             opacity: 0.01,
             width: 'clamp(600px, 50vw, 900px)',
@@ -99,7 +99,7 @@ function HomeContent() {
 
         {/* Right Calla Lily Illustration - Desktop only (both would be too crowded on mobile) */}
         <div 
-          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-200 parallax-slow"
+          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none parallax-slow"
           style={{ 
             opacity: 0.01,
             width: 'clamp(580px, 48vw, 880px)',
