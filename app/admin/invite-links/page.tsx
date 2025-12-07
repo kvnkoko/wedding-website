@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Copy, Check } from 'phosphor-react'
 
 interface Event {
   id: string
@@ -274,9 +275,14 @@ export default function AdminInviteLinksPage() {
                       const url = `${productionUrl}/rsvp/${config.slug}`
                       copyToClipboard(url, config.id)
                     }}
-                    className="bg-sage text-white px-3 py-1.5 rounded-sm font-sans text-xs tracking-wide uppercase hover:bg-sage/90 transition-all whitespace-nowrap flex-shrink-0"
+                    className="bg-sage text-white p-2 rounded-sm hover:bg-sage/90 transition-all flex-shrink-0 flex items-center justify-center"
+                    title={copiedUrl === config.id ? 'Copied!' : 'Copy URL'}
                   >
-                    {copiedUrl === config.id ? 'Copied!' : 'Copy URL'}
+                    {copiedUrl === config.id ? (
+                      <Check size={18} weight="bold" />
+                    ) : (
+                      <Copy size={18} weight="bold" />
+                    )}
                   </button>
                 )}
               </div>
