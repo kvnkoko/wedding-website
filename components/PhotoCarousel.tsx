@@ -165,7 +165,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-cream">
       {/* Main Carousel Container */}
       <div 
-        className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8 px-4 md:px-8 lg:px-12"
+        className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
