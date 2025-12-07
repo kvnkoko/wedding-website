@@ -5,9 +5,23 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import PhotoCarouselSection from '@/components/PhotoCarouselSection'
 
+// Parallax scroll effect
+function useParallax() {
+  const [scrollY, setScrollY] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  return scrollY
+}
+
 function HomeContent() {
   const searchParams = useSearchParams()
   const editToken = searchParams.get('edit')
+  const scrollY = useParallax()
 
   // Main page should not show any event information or RSVP links
   // This is the public site - event details are only shown on slug-specific pages
@@ -39,7 +53,7 @@ function HomeContent() {
         <div 
           className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center animate-fade-in"
           style={{ 
-            opacity: 0.08,
+            opacity: 0.04,
           }}
         >
           <img
@@ -61,13 +75,13 @@ function HomeContent() {
 
         {/* Desktop: Left Calla Lily Illustration */}
         <div 
-          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-100"
+          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-100 parallax-slow"
           style={{ 
-            opacity: 0.12,
+            opacity: 0.05,
             width: 'clamp(600px, 50vw, 900px)',
             height: 'auto',
             willChange: 'transform',
-            transform: 'rotate(-2deg)',
+            transform: `rotate(-2deg) translateY(${scrollY * 0.3}px)`,
           }}
         >
           <img
@@ -85,13 +99,13 @@ function HomeContent() {
 
         {/* Right Calla Lily Illustration - Desktop only (both would be too crowded on mobile) */}
         <div 
-          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-200"
+          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-200 parallax-slow"
           style={{ 
-            opacity: 0.12,
+            opacity: 0.05,
             width: 'clamp(580px, 48vw, 880px)',
             height: 'auto',
             willChange: 'transform',
-            transform: 'rotate(3deg)',
+            transform: `rotate(3deg) translateY(${scrollY * 0.2}px)`,
           }}
         >
           <img

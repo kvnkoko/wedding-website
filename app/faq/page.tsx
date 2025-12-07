@@ -109,7 +109,10 @@ export default function FAQPage() {
   if (loading) {
     return (
       <div className="min-h-screen py-20 px-4 bg-cream flex items-center justify-center">
-        <p className="font-sans text-lg text-charcoal/70">Loading...</p>
+        <div className="flex flex-col items-center gap-4">
+          <div className="spinner w-8 h-8 border-3 border-charcoal/30 border-t-charcoal rounded-full"></div>
+          <p className="font-sans text-lg text-charcoal/70 animate-fade-in">Loading...</p>
+        </div>
       </div>
     )
   }
@@ -117,10 +120,10 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen py-20 px-4 bg-cream">
       <div className="max-w-3xl mx-auto">
-        <h1 className="font-serif text-6xl text-charcoal text-center mb-16">Frequently Asked Questions</h1>
+        <h1 className="font-serif text-6xl text-charcoal text-center mb-16 animate-fade-in-up">Frequently Asked Questions</h1>
         
         {faqs.length === 0 ? (
-          <div className="bg-white p-8 rounded-sm shadow-sm text-center">
+          <div className="bg-white p-8 rounded-sm shadow-sm text-center animate-fade-in-up animate-delay-200">
             <p className="font-sans text-base text-charcoal/70">
               No FAQs available at this time. Please check back later or contact us directly.
             </p>
@@ -128,8 +131,8 @@ export default function FAQPage() {
         ) : (
           <>
             <div className="space-y-6">
-              {faqs.map((faq) => (
-                <div key={faq.id} className="bg-white p-8 rounded-sm shadow-sm">
+              {faqs.map((faq, index) => (
+                <div key={faq.id} className="bg-white p-8 rounded-sm shadow-sm animate-fade-in-up shadow-lift" style={{ animationDelay: `${(index + 1) * 0.1}s` }}>
                   <h2 className="font-serif text-2xl text-charcoal mb-4">{faq.question}</h2>
                   <p className="font-sans text-base text-charcoal/70 leading-relaxed whitespace-pre-line mb-6">{faq.answer}</p>
                   {faq.colorHexCodes && faq.colorHexCodes.length > 0 && (
@@ -162,7 +165,7 @@ export default function FAQPage() {
               ))}
             </div>
 
-            <div className="mt-16 bg-white p-8 rounded-sm shadow-sm text-center">
+            <div className="mt-16 bg-white p-8 rounded-sm shadow-sm text-center animate-fade-in-up shadow-lift" style={{ animationDelay: `${(faqs.length + 1) * 0.1}s` }}>
               <h2 className="font-serif text-2xl text-charcoal mb-4">Still have questions?</h2>
               <p className="font-sans text-base text-charcoal/70">
                 Please do not hesitate to reach out to us directly. We are happy to help!

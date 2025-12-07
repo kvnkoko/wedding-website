@@ -88,7 +88,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       <nav className="border-b border-taupe/30 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href={homeLink} className="font-title text-2xl text-charcoal hover:text-sage transition-colors">
+            <Link href={homeLink} className="font-title text-2xl text-charcoal hover:text-sage transition-all duration-300 hover:scale-105">
               Kevin & Tiffany
             </Link>
             <div className="hidden md:flex space-x-8">
@@ -123,13 +123,19 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`font-body text-sm tracking-wide transition-colors ${
+                    className={`font-body text-sm tracking-wide transition-all duration-300 relative ${
                       isActive
-                        ? 'text-charcoal border-b-2 border-sage'
+                        ? 'text-charcoal'
                         : 'text-charcoal/70 hover:text-charcoal'
                     }`}
                   >
-                    {item.label}
+                    <span className="relative z-10">{item.label}</span>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sage transition-all duration-300" />
+                    )}
+                    {!isActive && (
+                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sage scale-x-0 transition-transform duration-300 hover:scale-x-100 origin-left" />
+                    )}
                   </Link>
                 )
               })}

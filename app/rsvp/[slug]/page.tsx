@@ -7,6 +7,19 @@ import Link from 'next/link'
 import { formatDate, formatDateRange } from '@/lib/utils'
 import PhotoCarouselSection from '@/components/PhotoCarouselSection'
 
+// Parallax scroll effect
+function useParallax() {
+  const [scrollY, setScrollY] = useState(0)
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  return scrollY
+}
+
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
 export const dynamicParams = true
@@ -41,6 +54,7 @@ interface FormData {
 
 
 function HomeScreenWithCarousel({ slug, config }: { slug: string; config: InviteLinkConfig | null }) {
+  const scrollY = useParallax()
   // Calculate dateRange directly from config, don't use state to avoid flash
   const dateRange = config && config.events && config.events.length > 0 
     ? formatDateRange(config.events)
@@ -55,7 +69,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
         <div 
           className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center animate-fade-in"
           style={{ 
-            opacity: 0.08,
+            opacity: 0.04,
           }}
         >
           <img
@@ -77,13 +91,13 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
 
         {/* Desktop: Left Calla Lily Illustration */}
         <div 
-          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-100"
+          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-100 parallax-slow"
           style={{ 
-            opacity: 0.12,
+            opacity: 0.05,
             width: 'clamp(600px, 50vw, 900px)',
             height: 'auto',
             willChange: 'transform',
-            transform: 'rotate(-2deg)',
+            transform: `rotate(-2deg) translateY(${scrollY * 0.3}px)`,
           }}
         >
           <img
@@ -101,13 +115,13 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
 
         {/* Right Calla Lily Illustration - Desktop only (both would be too crowded on mobile) */}
         <div 
-          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-200"
+          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-200 parallax-slow"
           style={{ 
-            opacity: 0.12,
+            opacity: 0.05,
             width: 'clamp(580px, 48vw, 880px)',
             height: 'auto',
             willChange: 'transform',
-            transform: 'rotate(3deg)',
+            transform: `rotate(3deg) translateY(${scrollY * 0.2}px)`,
           }}
         >
           <img
@@ -159,7 +173,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
               <div className="mt-8 md:mt-12 animate-fade-in-up animate-delay-1000">
                 <Link
                   href={`/rsvp/${slug}?form=true`}
-                  className="inline-block bg-charcoal text-white px-8 md:px-12 py-3 md:py-4 rounded-sm font-body text-xs md:text-sm tracking-[0.15em] uppercase hover:bg-charcoal/90 transition-all duration-300"
+                  className="inline-block bg-charcoal text-white px-8 md:px-12 py-3 md:py-4 rounded-sm font-body text-xs md:text-sm tracking-[0.15em] uppercase btn-hover-lift shadow-lift"
                 >
                   RSVP
                 </Link>
@@ -406,7 +420,7 @@ export default function RSVPFormPage() {
                   </label>
                   <input
                     {...register('name', { required: 'Name is required' })}
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
                   />
                   {errors.name && (
                     <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
@@ -420,7 +434,7 @@ export default function RSVPFormPage() {
                   <input
                     {...register('phone', { required: 'Phone is required' })}
                     type="tel"
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
                   />
                   {errors.phone && (
                     <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
@@ -434,7 +448,7 @@ export default function RSVPFormPage() {
                   <input
                     {...register('email')}
                     type="email"
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
                   />
                 </div>
 
@@ -444,7 +458,7 @@ export default function RSVPFormPage() {
                   </label>
                   <select
                     {...register('side')}
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
                   >
                     <option value="Bride">Bride</option>
                     <option value="Groom">Groom</option>
@@ -519,7 +533,7 @@ export default function RSVPFormPage() {
                       </label>
                       <input
                         {...register('plusOneName')}
-                        className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                        className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
                       />
                     </div>
                     <div>
@@ -529,7 +543,7 @@ export default function RSVPFormPage() {
                       <input
                         {...register('plusOneRelation')}
                         placeholder="e.g., Spouse, Partner, Friend"
-                        className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                        className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
                       />
                     </div>
                   </>
@@ -549,7 +563,7 @@ export default function RSVPFormPage() {
                     {...register('notes')}
                     rows={4}
                     placeholder="Any additional notes or messages..."
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white resize-none"
                   />
                 </div>
               </div>
@@ -558,9 +572,16 @@ export default function RSVPFormPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-charcoal text-white px-8 py-4 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-charcoal text-white px-8 py-4 rounded-sm font-sans text-sm tracking-wider uppercase btn-hover-lift shadow-lift disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none"
             >
-              {submitting ? 'Submitting...' : 'Submit RSVP'}
+              {submitting ? (
+                <span className="flex items-center justify-center gap-2">
+                  <span className="spinner w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
+                  Submitting...
+                </span>
+              ) : (
+                'Submit RSVP'
+              )}
             </button>
           </form>
         </div>
