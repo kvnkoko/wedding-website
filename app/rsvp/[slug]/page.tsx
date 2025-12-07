@@ -97,7 +97,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
             width: 'clamp(600px, 50vw, 900px)',
             height: 'auto',
             willChange: 'transform',
-            transform: `rotate(-2deg) translateY(${scrollY * 0.3}px)`,
+            transform: `rotate(-2deg) translateY(${scrollY * 0.05}px)`,
           }}
         >
           <img
@@ -121,7 +121,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
             width: 'clamp(580px, 48vw, 880px)',
             height: 'auto',
             willChange: 'transform',
-            transform: `rotate(3deg) translateY(${scrollY * 0.2}px)`,
+            transform: `rotate(3deg) translateY(${scrollY * 0.03}px)`,
           }}
         >
           <img
