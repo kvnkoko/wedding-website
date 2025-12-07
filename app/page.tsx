@@ -53,7 +53,7 @@ function HomeContent() {
         <div 
           className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center animate-fade-in"
           style={{ 
-            opacity: 0.02,
+            opacity: 0.008,
           }}
         >
           <img
@@ -77,7 +77,7 @@ function HomeContent() {
         <div 
           className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-100 parallax-slow"
           style={{ 
-            opacity: 0.025,
+            opacity: 0.01,
             width: 'clamp(600px, 50vw, 900px)',
             height: 'auto',
             willChange: 'transform',
@@ -101,7 +101,7 @@ function HomeContent() {
         <div 
           className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-200 parallax-slow"
           style={{ 
-            opacity: 0.025,
+            opacity: 0.01,
             width: 'clamp(580px, 48vw, 880px)',
             height: 'auto',
             willChange: 'transform',
