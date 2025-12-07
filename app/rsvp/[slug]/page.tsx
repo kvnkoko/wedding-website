@@ -53,7 +53,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
         {/* Background Calla Lilies - Filling the space with elegant botanical illustrations */}
         {/* Mobile: Single large calla lily filling entire background */}
         <div 
-          className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
+          className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center animate-fade-in"
           style={{ 
             opacity: 0.08,
           }}
@@ -77,14 +77,13 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
 
         {/* Desktop: Left Calla Lily Illustration */}
         <div 
-          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none"
+          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-100"
           style={{ 
             opacity: 0.12,
             width: 'clamp(600px, 50vw, 900px)',
             height: 'auto',
             willChange: 'transform',
             transform: 'rotate(-2deg)',
-            transition: 'opacity 0.3s ease',
           }}
         >
           <img
@@ -102,14 +101,13 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
 
         {/* Right Calla Lily Illustration - Desktop only (both would be too crowded on mobile) */}
         <div 
-          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none"
+          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none animate-fade-in animate-delay-200"
           style={{ 
             opacity: 0.12,
             width: 'clamp(580px, 48vw, 880px)',
             height: 'auto',
             willChange: 'transform',
             transform: 'rotate(3deg)',
-            transition: 'opacity 0.3s ease',
           }}
         >
           <img
@@ -129,28 +127,28 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
           <div className="flex flex-col items-center justify-center">
             {/* Center Content */}
             <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0 w-full">
-              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/50 tracking-[0.2em] uppercase mb-4">
+              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/50 tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300">
                 Together with our families
               </p>
               
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap">
+                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-400">
                   Kevin Koko
                 </h1>
-                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal/80 mt-16 md:mt-20 lg:mt-[calc(6rem+30px)] xl:mt-[calc(7rem+30px)]">
+                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal/80 mt-16 md:mt-20 lg:mt-[calc(6rem+30px)] xl:mt-[calc(7rem+30px)] animate-fade-in-up animate-delay-600">
                   And
                 </p>
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap">
+                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-700">
                   Tiffany Min
                 </h1>
               </div>
               
-              <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 mt-4 md:mt-8">
+              <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 mt-4 md:mt-8 animate-fade-in-up animate-delay-800">
                 Invite you to celebrate with us
               </p>
               
               {/* Date - Reserve space to prevent layout shift */}
-              <div className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide min-h-[1.5em]">
+              <div className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide min-h-[1.5em] animate-fade-in-up animate-delay-900">
                 {dateRange ? (
                   <p>{dateRange}</p>
                 ) : (
@@ -158,7 +156,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 )}
               </div>
               
-              <div className="mt-8 md:mt-12">
+              <div className="mt-8 md:mt-12 animate-fade-in-up animate-delay-1000">
                 <Link
                   href={`/rsvp/${slug}?form=true`}
                   className="inline-block bg-charcoal text-white px-8 md:px-12 py-3 md:py-4 rounded-sm font-body text-xs md:text-sm tracking-[0.15em] uppercase hover:bg-charcoal/90 transition-all duration-300"
@@ -167,7 +165,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 </Link>
               </div>
               
-              <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/50 mt-12 md:mt-16">
+              <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/50 mt-12 md:mt-16 animate-fade-in-up animate-delay-1000">
                 #tiffandko
               </p>
             </div>

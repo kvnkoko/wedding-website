@@ -39,6 +39,10 @@ export default function PhotoCarouselSection() {
     return null
   }
 
-  return <PhotoCarousel photos={photos} />
+  return (
+    <div className="animate-fade-in-up animate-delay-1000">
+      <PhotoCarousel photos={photos} />
+    </div>
+  )
 }
 
