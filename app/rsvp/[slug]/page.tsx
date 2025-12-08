@@ -521,7 +521,7 @@ export default function RSVPFormPage() {
                     {...register('phone', { required: 'Phone is required' })}
                     type="tel"
                     className="form-input touch-ripple"
-                    placeholder="(555) 123-4567"
+                    placeholder="(678) 999-8212"
                   />
                   {errors.phone && (
                     <p className="error-message mobile-shake">{errors.phone.message}</p>

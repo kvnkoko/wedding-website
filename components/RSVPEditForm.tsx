@@ -228,6 +228,7 @@ export default function RSVPEditForm({ editToken }: { editToken: string }) {
                     {...register('phone', { required: 'Phone is required' })}
                     type="tel"
                     className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                    placeholder="(678) 999-8212"
                   />
                   {errors.phone && (
                     <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
