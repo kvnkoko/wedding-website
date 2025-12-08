@@ -142,18 +142,18 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
           <div className="flex flex-col items-center justify-center">
             {/* Center Content */}
             <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-4 md:py-12 lg:py-20 -mt-16 sm:-mt-8 md:mt-0 w-full">
-              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/50 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed">
+              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/50 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed mobile-text-reveal">
                 Together with our families
               </p>
               
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed">
+                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal">
                   <span className="block sm:inline">Kevin</span> <span className="block sm:inline">Koko</span>
                 </h1>
-                <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed">
+                <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed mobile-text-reveal">
                   And
                 </p>
-                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed">
+                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal">
                   <span className="block sm:inline">Tiffany</span> <span className="block sm:inline">Min</span>
                 </h1>
               </div>
@@ -507,11 +507,11 @@ export default function RSVPFormPage() {
                   <label className="form-label form-label-required">Full Name</label>
                   <input
                     {...register('name', { required: 'Name is required' })}
-                    className="form-input"
+                    className="form-input touch-ripple"
                     placeholder="Enter your full name"
                   />
                   {errors.name && (
-                    <p className="error-message">{errors.name.message}</p>
+                    <p className="error-message mobile-shake">{errors.name.message}</p>
                   )}
                 </div>
 
@@ -520,11 +520,11 @@ export default function RSVPFormPage() {
                   <input
                     {...register('phone', { required: 'Phone is required' })}
                     type="tel"
-                    className="form-input"
+                    className="form-input touch-ripple"
                     placeholder="(555) 123-4567"
                   />
                   {errors.phone && (
-                    <p className="error-message">{errors.phone.message}</p>
+                    <p className="error-message mobile-shake">{errors.phone.message}</p>
                   )}
                 </div>
 
@@ -533,7 +533,7 @@ export default function RSVPFormPage() {
                   <input
                     {...register('email')}
                     type="email"
-                    className="form-input"
+                    className="form-input touch-ripple"
                     placeholder="your.email@example.com"
                   />
                 </div>
@@ -542,7 +542,7 @@ export default function RSVPFormPage() {
                   <label className="form-label">Side</label>
                   <select
                     {...register('side')}
-                    className="form-select"
+                    className="form-select touch-ripple"
                   >
                     <option value="Bride">Bride</option>
                     <option value="Groom">Groom</option>
@@ -622,7 +622,7 @@ export default function RSVPFormPage() {
                       <label className="form-label">Plus-One Name</label>
                       <input
                         {...register('plusOneName')}
-                        className="form-input"
+                        className="form-input touch-ripple"
                         placeholder="Enter their full name"
                       />
                     </div>
@@ -630,7 +630,7 @@ export default function RSVPFormPage() {
                       <label className="form-label">Relationship</label>
                       <input
                         {...register('plusOneRelation')}
-                        className="form-input"
+                        className="form-input touch-ripple"
                         placeholder="e.g., Spouse, Partner, Friend"
                       />
                     </div>
@@ -650,7 +650,7 @@ export default function RSVPFormPage() {
                 <textarea
                   {...register('notes')}
                   rows={5}
-                  className="form-textarea"
+                  className="form-textarea touch-ripple"
                   placeholder="Share your excitement, dietary restrictions, or any special requests..."
                 />
               </div>
@@ -660,7 +660,7 @@ export default function RSVPFormPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="submit-button"
+                className="submit-button touch-ripple mobile-touch-glow"
               >
                 {submitting ? (
                   <span className="flex items-center justify-center gap-3">

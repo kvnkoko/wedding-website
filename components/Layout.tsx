@@ -204,76 +204,101 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               {/* Dark Mode Toggle - Mobile */}
               <button
                 onClick={toggle}
-                className="p-2 rounded-lg transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95 text-charcoal dark:text-dark-text"
+                className="p-2.5 rounded-xl transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95 text-charcoal dark:text-dark-text touch-ripple relative overflow-hidden group"
                 aria-label="Toggle dark mode"
               >
-                {isDark ? (
-                  <Sun className="w-5 h-5" weight="duotone" />
-                ) : (
-                  <Moon className="w-5 h-5" weight="duotone" />
-                )}
+                <div className="relative w-5 h-5 flex items-center justify-center">
+                  <Sun 
+                    className={`absolute w-5 h-5 transition-all duration-500 ${isDark ? 'rotate-180 opacity-100 scale-100' : 'rotate-0 opacity-0 scale-0'}`}
+                    weight="duotone" 
+                  />
+                  <Moon 
+                    className={`absolute w-5 h-5 transition-all duration-500 ${!isDark ? 'rotate-0 opacity-100 scale-100' : '-rotate-180 opacity-0 scale-0'}`}
+                    weight="duotone" 
+                  />
+                </div>
               </button>
               
               {/* Mobile Menu Button */}
               <button 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-charcoal dark:text-dark-text p-2 rounded-lg transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95"
+                className="text-charcoal dark:text-dark-text p-2.5 rounded-xl transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95 touch-ripple relative overflow-hidden"
                 aria-label="Menu"
                 aria-expanded={mobileMenuOpen}
               >
-                {mobileMenuOpen ? (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <div className="relative w-6 h-6 flex items-center justify-center">
+                  <svg 
+                    className={`absolute w-6 h-6 transition-all duration-300 ${mobileMenuOpen ? 'rotate-90 opacity-0' : 'rotate-0 opacity-100'}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
-                ) : (
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  <svg 
+                    className={`absolute w-6 h-6 transition-all duration-300 ${mobileMenuOpen ? 'rotate-0 opacity-100' : '-rotate-90 opacity-0'}`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
                   </svg>
-                )}
+                </div>
               </button>
             </div>
           </div>
           
-          {/* Mobile Menu Dropdown */}
+          {/* Mobile Menu Dropdown with Backdrop */}
           {mobileMenuOpen && (
-            <div className="md:hidden border-t border-taupe/30 dark:border-dark-border bg-white dark:bg-dark-surface/90 backdrop-blur-md transition-all duration-300 ease-out">
-              <div className="px-4 py-4 space-y-4">
-                {navItems.map((item) => {
-                  let isActive = item.href === pathname || item.href.split('?')[0] === pathname
-                  
-                  if (item.label === 'Home') {
-                    if (pathname === '/' || (pathname?.startsWith('/rsvp/') && !searchParams?.get('form'))) {
-                      isActive = true
-                    } else {
-                      isActive = false
+            <>
+              <div 
+                className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40 mobile-menu-backdrop"
+                onClick={() => setMobileMenuOpen(false)}
+                aria-hidden="true"
+              />
+              <div className="md:hidden border-t border-taupe/30 dark:border-dark-border bg-white/95 dark:bg-dark-surface/95 backdrop-blur-xl mobile-menu-container relative z-50 shadow-2xl">
+                <div className="px-4 py-6 space-y-2">
+                  {navItems.map((item, index) => {
+                    let isActive = item.href === pathname || item.href.split('?')[0] === pathname
+                    
+                    if (item.label === 'Home') {
+                      if (pathname === '/' || (pathname?.startsWith('/rsvp/') && !searchParams?.get('form'))) {
+                        isActive = true
+                      } else {
+                        isActive = false
+                      }
+                    } else if (item.label === 'RSVP') {
+                      if (pathname === '/rsvp') {
+                        isActive = true
+                      } else if (pathname?.startsWith('/rsvp/')) {
+                        isActive = searchParams?.get('form') === 'true'
+                      }
+                    } else if (item.label === 'FAQ') {
+                      isActive = pathname === '/faq'
                     }
-                  } else if (item.label === 'RSVP') {
-                    if (pathname === '/rsvp') {
-                      isActive = true
-                    } else if (pathname?.startsWith('/rsvp/')) {
-                      isActive = searchParams?.get('form') === 'true'
-                    }
-                  } else if (item.label === 'FAQ') {
-                    isActive = pathname === '/faq'
-                  }
-                  
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className={`block font-body text-base tracking-wide transition-all duration-300 py-2 px-2 rounded-lg ${
-                        isActive
-                          ? 'text-charcoal dark:text-dark-text bg-taupe/20 dark:bg-dark-border/50'
-                          : 'text-charcoal/70 dark:text-dark-text-secondary hover:text-charcoal dark:hover:text-dark-text hover:bg-taupe/10 dark:hover:bg-dark-border/30'
-                      }`}
-                    >
-                      {item.label}
-                    </Link>
-                  )
-                })}
+                    
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setMobileMenuOpen(false)}
+                        className={`mobile-menu-item block font-body text-lg tracking-wide transition-all duration-300 py-4 px-4 rounded-xl touch-ripple mobile-touch-glow ${
+                          isActive
+                            ? 'text-charcoal dark:text-dark-text bg-gradient-to-r from-sage/20 to-sage/10 dark:from-sage/30 dark:to-sage/20 border-l-4 border-sage shadow-sm'
+                            : 'text-charcoal/70 dark:text-dark-text-secondary active:text-charcoal dark:active:text-dark-text active:bg-taupe/20 dark:active:bg-dark-border/40'
+                        }`}
+                        style={{ animationDelay: `${index * 0.05}s` }}
+                      >
+                        <span className="flex items-center gap-3">
+                          <span className="w-1.5 h-1.5 rounded-full bg-sage opacity-0 transition-opacity duration-300" style={{ opacity: isActive ? 1 : 0 }}></span>
+                          {item.label}
+                        </span>
+                      </Link>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
+            </>
           )}
           </div>
         </div>

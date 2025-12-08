@@ -169,7 +169,7 @@ export default function FAQPage() {
                   key={faq.id} 
                   data-faq-item
                   data-index={index}
-                  className={`group relative bg-white/95 dark:bg-dark-card backdrop-blur-sm rounded-2xl shadow-lg dark:shadow-2xl border border-taupe/10 dark:border-dark-border overflow-hidden transition-all duration-700 ease-out ${
+                  className={`group relative bg-white/95 dark:bg-dark-card backdrop-blur-sm rounded-2xl shadow-lg dark:shadow-2xl border border-taupe/10 dark:border-dark-border overflow-hidden transition-all duration-700 ease-out card-hover touch-ripple ${
                     visibleItems.has(index) 
                       ? 'opacity-100 translate-y-0 scale-100' 
                       : 'opacity-0 translate-y-12 scale-95'
