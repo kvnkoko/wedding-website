@@ -5,6 +5,7 @@ import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import { formatDateRange } from '@/lib/utils'
 import { useDarkMode } from '@/lib/useDarkMode'
+import { Sun, Moon, Heart } from 'phosphor-react'
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -166,17 +167,13 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               {/* Dark Mode Toggle */}
               <button
                 onClick={toggle}
-                className="p-2 rounded-lg transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95 text-charcoal dark:text-dark-text"
+                className="p-2 rounded-lg transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95 text-charcoal dark:text-dark-text group"
                 aria-label="Toggle dark mode"
               >
                 {isDark ? (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
+                  <Sun className="w-5 h-5 transition-transform duration-300 group-hover:rotate-180" weight="duotone" />
                 ) : (
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
+                  <Moon className="w-5 h-5 transition-transform duration-300 group-hover:-rotate-12" weight="duotone" />
                 )}
               </button>
               
@@ -198,7 +195,11 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
       <main>{children}</main>
       <footer className="bg-charcoal dark:bg-dark-surface text-white dark:text-dark-text py-12 mt-20 transition-all duration-600 ease-in-out">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="font-script text-2xl mb-2 animate-fade-in-up">With Love,</p>
+          <div className="flex items-center justify-center gap-2 mb-2 animate-fade-in-up">
+            <Heart className="w-5 h-5 text-white/80 dark:text-dark-text-secondary" weight="fill" />
+            <p className="font-script text-2xl">With Love,</p>
+            <Heart className="w-5 h-5 text-white/80 dark:text-dark-text-secondary" weight="fill" />
+          </div>
           <p className="font-title text-lg mb-2 animate-fade-in-up animate-delay-200">Kevin & Tiffany</p>
           {dateRange && (
             <p className="font-body text-sm text-white/70 dark:text-dark-text-secondary tracking-wider animate-fade-in-up animate-delay-300">{dateRange}</p>

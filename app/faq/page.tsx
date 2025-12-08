@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { usePathname } from 'next/navigation'
+import { Question, Envelope, CheckCircle } from 'phosphor-react'
 
 interface FAQ {
   id: string
@@ -154,9 +155,7 @@ export default function FAQPage() {
         {faqs.length === 0 ? (
           <div className="bg-white/90 dark:bg-dark-card/90 backdrop-blur-sm p-12 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border text-center animate-fade-in-up animate-delay-200 card-hover">
             <div className="w-16 h-16 bg-taupe/10 dark:bg-dark-text/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-charcoal/40 dark:text-dark-text-secondary/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <Question className="w-8 h-8 text-charcoal/40 dark:text-dark-text-secondary/60" weight="duotone" />
             </div>
             <p className="font-body text-lg text-charcoal/70 dark:text-dark-text-secondary transition-colors duration-600" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
               No FAQs available at this time. Please check back later or contact us directly.
@@ -255,9 +254,7 @@ export default function FAQPage() {
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sage to-transparent"></div>
               <div className="relative z-10">
                 <div className="w-20 h-20 bg-sage/10 dark:bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <svg className="w-10 h-10 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
+                  <Envelope className="w-10 h-10 text-sage" weight="duotone" />
                 </div>
                 <h2 className="font-title text-3xl text-charcoal dark:text-dark-text mb-4">Still have questions?</h2>
                 <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>

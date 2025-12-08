@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { formatDate, formatDateRange } from '@/lib/utils'
 import PhotoCarouselSection from '@/components/PhotoCarouselSection'
+import { User, Calendar, UserPlus, Note, CheckCircle, EnvelopeSimple, Phone, X } from 'phosphor-react'
 
 // Parallax scroll effect
 function useParallax() {
@@ -361,7 +362,10 @@ export default function RSVPFormPage() {
             <div className="p-12">
               <div className="space-y-8">
                 <div className="form-section">
-                  <h2 className="form-section-title">Your Details</h2>
+                  <h2 className="form-section-title flex items-center gap-3">
+                    <User className="w-6 h-6 text-sage" weight="duotone" />
+                    Your Details
+                  </h2>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
                       <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Name</p>
@@ -399,7 +403,10 @@ export default function RSVPFormPage() {
                 </div>
 
                 <div className="form-section">
-                  <h2 className="form-section-title">Your Responses</h2>
+                  <h2 className="form-section-title flex items-center gap-3">
+                    <Calendar className="w-6 h-6 text-sage" weight="duotone" />
+                    Your Responses
+                  </h2>
                   <div className="space-y-3">
                     {submissionData.eventResponses?.map((er: any, index: number) => (
                       <div 
@@ -415,16 +422,12 @@ export default function RSVPFormPage() {
                             </p>
                           </div>
                           <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                            er.status === 'YES' ? 'bg-sage/20' : 'bg-taupe/20'
+                            er.status === 'YES' ? 'bg-sage/20 dark:bg-sage/30' : 'bg-taupe/20 dark:bg-dark-surface'
                           }`}>
                             {er.status === 'YES' ? (
-                              <svg className="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                              </svg>
+                              <CheckCircle className="w-6 h-6 text-sage" weight="fill" />
                             ) : (
-                              <svg className="w-6 h-6 text-charcoal/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
+                              <X className="w-6 h-6 text-charcoal/40 dark:text-dark-text-secondary/60" weight="bold" />
                             )}
                           </div>
                         </div>
@@ -435,7 +438,10 @@ export default function RSVPFormPage() {
 
                 {submissionData.notes && (
                   <div className="form-section">
-                    <h2 className="form-section-title">Note for the Bride & Groom</h2>
+                    <h2 className="form-section-title flex items-center gap-3">
+                      <Note className="w-6 h-6 text-sage" weight="duotone" />
+                      Note for the Bride & Groom
+                    </h2>
                     <div className="bg-taupe/5 dark:bg-dark-surface p-6 rounded-xl border border-taupe/20 dark:border-dark-border">
                       <p className="text-base text-charcoal/80 dark:text-dark-text-secondary leading-relaxed italic" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>"{submissionData.notes}"</p>
                     </div>
@@ -472,10 +478,8 @@ export default function RSVPFormPage() {
           {/* Header with gradient accent */}
           <div className="bg-gradient-to-r from-sage/10 dark:from-sage/20 via-taupe/5 dark:via-dark-surface to-transparent px-12 pt-12 pb-8 border-b border-taupe/20 dark:border-dark-border">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-full bg-sage/20 flex items-center justify-center">
-                <svg className="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div className="w-12 h-12 rounded-full bg-sage/20 dark:bg-sage/30 flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-sage" weight="fill" />
               </div>
               <div>
                 <h1 className="font-title text-4xl md:text-5xl text-charcoal dark:text-dark-text mb-2">RSVP</h1>
@@ -494,7 +498,10 @@ export default function RSVPFormPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="p-12">
             {/* Personal Information */}
             <section className="form-section">
-              <h2 className="form-section-title">Personal Information</h2>
+              <h2 className="form-section-title flex items-center gap-3">
+                <User className="w-6 h-6 text-sage" weight="duotone" />
+                Personal Information
+              </h2>
               <div className="grid md:grid-cols-2 gap-6">
                 <div className="form-input-wrapper md:col-span-2">
                   <label className="form-label form-label-required">Full Name</label>
@@ -548,7 +555,10 @@ export default function RSVPFormPage() {
 
             {/* Event Responses */}
             <section className="form-section">
-              <h2 className="form-section-title">Event Responses</h2>
+              <h2 className="form-section-title flex items-center gap-3">
+                <Calendar className="w-6 h-6 text-sage" weight="duotone" />
+                Event Responses
+              </h2>
               {config && config.events && config.events.length > 0 ? (
               <div className="space-y-4">
                 {config.events.map((event, index) => (
@@ -593,7 +603,10 @@ export default function RSVPFormPage() {
 
             {/* Plus One */}
             <section className="form-section">
-              <h2 className="form-section-title">Plus One</h2>
+              <h2 className="form-section-title flex items-center gap-3">
+                <UserPlus className="w-6 h-6 text-sage" weight="duotone" />
+                Plus One
+              </h2>
               <div className="space-y-6">
                 <label className="checkbox-option">
                   <input
@@ -628,7 +641,10 @@ export default function RSVPFormPage() {
 
             {/* Additional Information */}
             <section className="form-section">
-              <h2 className="form-section-title">Additional Information</h2>
+              <h2 className="form-section-title flex items-center gap-3">
+                <Note className="w-6 h-6 text-sage" weight="duotone" />
+                Additional Information
+              </h2>
               <div className="form-input-wrapper">
                 <label className="form-label">Leave a note for the Bride & Groom!</label>
                 <textarea

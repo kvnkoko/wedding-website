@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Layout from '@/components/Layout'
 import DarkModeScript from '@/components/DarkModeScript'
+import FirstVisitIndicator from '@/components/FirstVisitIndicator'
 import { elgraine, laBellaAurore, artica } from '@/lib/fonts'
 import { Suspense } from 'react'
 
@@ -57,8 +58,11 @@ export default function RootLayout({
               (function() {
                 try {
                   var stored = localStorage.getItem('darkMode');
-                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                  var shouldBeDark = stored !== null ? stored === 'true' : prefersDark;
+                  // Default to light mode on first visit
+                  var shouldBeDark = stored !== null ? stored === 'true' : false;
+                  if (stored === null) {
+                    localStorage.setItem('darkMode', 'false');
+                  }
                   var bgColor = shouldBeDark ? '#1A1A1A' : '#FAF8F3';
                   if (shouldBeDark) {
                     document.documentElement.classList.add('dark');
@@ -94,6 +98,7 @@ export default function RootLayout({
           </div>
         }>
           <Layout>{children}</Layout>
+          <FirstVisitIndicator />
         </Suspense>
       </body>
     </html>
