@@ -34,15 +34,16 @@ export default function FirstVisitIndicator() {
   return (
     <div
       ref={indicatorRef}
-      className={`fixed z-50 transition-all duration-300 ease-out ${
+      className={`fixed z-50 transition-all duration-300 ease-out right-[2.125rem] sm:right-[2.625rem] lg:right-[3.125rem] ${
         isAnimating
           ? 'opacity-100 scale-100'
           : 'opacity-0 scale-95'
       }`}
       style={{ 
         top: '4.125rem',
-        right: '3.125rem',
-        transform: isAnimating ? 'translateX(50%)' : 'translateX(calc(50% + 1rem))',
+        transform: isAnimating 
+          ? 'translateX(-50%)' 
+          : 'translateX(calc(-50% + 1rem))',
       }}
     >
       <div className="bg-white dark:bg-dark-card rounded-lg shadow-xl border border-taupe/20 dark:border-dark-border p-2 backdrop-blur-md">
