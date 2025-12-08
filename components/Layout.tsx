@@ -312,18 +312,37 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         </div>
       </nav>
       <main className="relative z-0">{children}</main>
-      <footer className="bg-charcoal dark:bg-dark-surface text-white dark:text-dark-text py-12 mt-20 transition-all duration-600 ease-in-out">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex items-center justify-center gap-2 mb-2 animate-fade-in-up">
-            <Heart className="w-5 h-5 text-white/80 dark:text-dark-text-secondary" weight="fill" />
-            <p className="font-script text-2xl">With Love,</p>
-            <Heart className="w-5 h-5 text-white/80 dark:text-dark-text-secondary" weight="fill" />
+      <footer className="bg-charcoal dark:bg-dark-surface text-white dark:text-dark-text py-16 sm:py-20 mt-20 transition-all duration-600 ease-in-out border-t border-white/10 dark:border-dark-border/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center space-y-6">
+            {/* With Love Section */}
+            <div className="flex items-center justify-center gap-3 mb-4 animate-fade-in-up">
+              <Heart className="w-4 h-4 text-white/60 dark:text-dark-text-secondary/60" weight="fill" />
+              <p className="font-script text-xl sm:text-2xl text-white/90 dark:text-dark-text/90 tracking-wide">With Love,</p>
+            </div>
+            
+            {/* Names */}
+            <p className="font-title text-2xl sm:text-3xl text-white dark:text-dark-text mb-3 animate-fade-in-up animate-delay-200 tracking-tight">Kevin & Tiffany</p>
+            
+            {/* Date Range */}
+            {dateRange && (
+              <p className="font-body text-xs sm:text-sm text-white/60 dark:text-dark-text-secondary/70 tracking-widest uppercase animate-fade-in-up animate-delay-300 letter-spacing-wider">
+                {dateRange}
+              </p>
+            )}
+            
+            {/* Divider */}
+            <div className="flex items-center justify-center gap-4 my-6 animate-fade-in-up animate-delay-350">
+              <div className="h-px w-12 bg-white/20 dark:bg-dark-text-secondary/20"></div>
+              <div className="w-1 h-1 rounded-full bg-white/40 dark:bg-dark-text-secondary/40"></div>
+              <div className="h-px w-12 bg-white/20 dark:bg-dark-text-secondary/20"></div>
+            </div>
+            
+            {/* Hashtag */}
+            <p className="font-script text-sm sm:text-base text-white/50 dark:text-dark-text-secondary/60 mt-6 animate-fade-in-up animate-delay-400 tracking-wide">
+              #tiffandko
+            </p>
           </div>
-          <p className="font-title text-lg mb-2 animate-fade-in-up animate-delay-200">Kevin & Tiffany</p>
-          {dateRange && (
-            <p className="font-body text-sm text-white/70 dark:text-dark-text-secondary tracking-wider animate-fade-in-up animate-delay-300">{dateRange}</p>
-          )}
-          <p className="font-script text-base text-white/60 dark:text-dark-text-secondary mt-4 animate-fade-in-up animate-delay-400">#tiffandko</p>
         </div>
       </footer>
     </div>
