@@ -87,7 +87,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-cream dark:bg-dark-bg transition-colors duration-600 ease-in-out">
-      <nav className="border-b border-taupe/30 dark:border-dark-border bg-white/80 dark:bg-dark-surface/90 backdrop-blur-md sticky top-0 z-50 shadow-sm transition-all duration-600 ease-in-out">
+      <nav className="border-b border-taupe/30 dark:border-dark-border bg-white dark:bg-dark-surface/90 backdrop-blur-md sticky top-0 z-50 shadow-sm transition-all duration-600 ease-in-out">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link 
