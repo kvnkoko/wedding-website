@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Layout from '@/components/Layout'
 import DarkModeScript from '@/components/DarkModeScript'
-import FirstVisitIndicator from '@/components/FirstVisitIndicator'
 import { elgraine, laBellaAurore, artica } from '@/lib/fonts'
 import { Suspense } from 'react'
 
@@ -99,7 +98,6 @@ export default function RootLayout({
           </div>
         }>
           <Layout>{children}</Layout>
-          <FirstVisitIndicator />
         </Suspense>
       </body>
     </html>

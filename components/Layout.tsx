@@ -14,7 +14,28 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const [homeLink, setHomeLink] = useState('/')
   const [faqLink, setFaqLink] = useState('/faq')
   const [dateRange, setDateRange] = useState<string | null>(null) // Start with null - only show on slug pages
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { isDark, toggle } = useDarkMode()
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      if (mobileMenuOpen && !target.closest('nav')) {
+        setMobileMenuOpen(false)
+      }
+    }
+
+    if (mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [mobileMenuOpen])
+
+  // Close mobile menu when route changes
+  useEffect(() => {
+    setMobileMenuOpen(false)
+  }, [pathname])
 
   // Determine navigation links based on current route
   // IMPORTANT: If user is on a slug page, all links should keep them in their slug context
@@ -105,14 +126,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   }}
                 />
               </div>
-              <span className="relative">
+              <span className="relative text-lg sm:text-xl md:text-2xl">
                 <span className="inline-block transition-transform duration-500 group-hover:scale-105">Kevin & Tiffany</span>
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-sage transition-all duration-500 group-hover:w-full"></span>
               </span>
             </Link>
-            <div className="flex items-center gap-6">
-              {/* Navigation Items */}
-              <div className="hidden md:flex space-x-8">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-6">
+              <div className="flex space-x-8">
                 {navItems.map((item) => {
                   // Check if current path matches the nav item
                   let isActive = item.href === pathname || item.href.split('?')[0] === pathname
@@ -176,19 +197,84 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                   <Moon className="w-5 h-5 transition-transform duration-300 group-hover:-rotate-12" weight="duotone" />
                 )}
               </button>
+            </div>
+
+            {/* Mobile Navigation */}
+            <div className="md:hidden flex items-center gap-3">
+              {/* Dark Mode Toggle - Mobile */}
+              <button
+                onClick={toggle}
+                className="p-2 rounded-lg transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95 text-charcoal dark:text-dark-text"
+                aria-label="Toggle dark mode"
+              >
+                {isDark ? (
+                  <Sun className="w-5 h-5" weight="duotone" />
+                ) : (
+                  <Moon className="w-5 h-5" weight="duotone" />
+                )}
+              </button>
               
               {/* Mobile Menu Button */}
-              <div className="md:hidden">
-                <button 
-                  className="text-charcoal dark:text-dark-text p-2 rounded-lg transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95"
-                  aria-label="Menu"
-                >
+              <button 
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="text-charcoal dark:text-dark-text p-2 rounded-lg transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95"
+                aria-label="Menu"
+                aria-expanded={mobileMenuOpen}
+              >
+                {mobileMenuOpen ? (
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                ) : (
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                   </svg>
-                </button>
+                )}
+              </button>
+            </div>
+          </div>
+          
+          {/* Mobile Menu Dropdown */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-taupe/30 dark:border-dark-border bg-white dark:bg-dark-surface/90 backdrop-blur-md transition-all duration-300 ease-out">
+              <div className="px-4 py-4 space-y-4">
+                {navItems.map((item) => {
+                  let isActive = item.href === pathname || item.href.split('?')[0] === pathname
+                  
+                  if (item.label === 'Home') {
+                    if (pathname === '/' || (pathname?.startsWith('/rsvp/') && !searchParams?.get('form'))) {
+                      isActive = true
+                    } else {
+                      isActive = false
+                    }
+                  } else if (item.label === 'RSVP') {
+                    if (pathname === '/rsvp') {
+                      isActive = true
+                    } else if (pathname?.startsWith('/rsvp/')) {
+                      isActive = searchParams?.get('form') === 'true'
+                    }
+                  } else if (item.label === 'FAQ') {
+                    isActive = pathname === '/faq'
+                  }
+                  
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className={`block font-body text-base tracking-wide transition-all duration-300 py-2 px-2 rounded-lg ${
+                        isActive
+                          ? 'text-charcoal dark:text-dark-text bg-taupe/20 dark:bg-dark-border/50'
+                          : 'text-charcoal/70 dark:text-dark-text-secondary hover:text-charcoal dark:hover:text-dark-text hover:bg-taupe/10 dark:hover:bg-dark-border/30'
+                      }`}
+                    >
+                      {item.label}
+                    </Link>
+                  )
+                })}
               </div>
             </div>
+          )}
           </div>
         </div>
       </nav>

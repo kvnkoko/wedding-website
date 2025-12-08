@@ -179,7 +179,7 @@ export default function FAQPage() {
                   {/* Elegant top accent line */}
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sage via-sage/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
-                  <div className="p-10 md:p-12">
+                  <div className="p-6 sm:p-8 md:p-10 lg:p-12">
                     {/* Question with elegant styling */}
                     <div className="flex items-start gap-4 mb-6">
                       <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sage/10 dark:bg-sage/20 flex items-center justify-center mt-1 group-hover:bg-sage/20 dark:group-hover:bg-sage/30 transition-colors duration-300">
@@ -248,7 +248,7 @@ export default function FAQPage() {
 
             {/* Contact card with premium design */}
             <div 
-              className="mt-20 relative bg-gradient-to-br from-white dark:from-dark-card via-white dark:via-dark-card to-taupe/5 dark:to-dark-surface backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border p-12 text-center animate-fade-in-up card-hover overflow-hidden" 
+              className="mt-12 sm:mt-16 md:mt-20 relative bg-gradient-to-br from-white dark:from-dark-card via-white dark:via-dark-card to-taupe/5 dark:to-dark-surface backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border p-6 sm:p-8 md:p-12 text-center animate-fade-in-up card-hover overflow-hidden" 
               style={{ animationDelay: `${(faqs.length + 1) * 0.08}s` }}
             >
               <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sage to-transparent"></div>

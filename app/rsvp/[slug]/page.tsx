@@ -147,14 +147,14 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
               </p>
               
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed">
-                  Kevin Koko
+                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed">
+                  <span className="block sm:inline">Kevin</span> <span className="block sm:inline">Koko</span>
                 </h1>
-                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal dark:text-dark-text mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed">
+                <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed">
                   And
                 </p>
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed">
-                  Tiffany Min
+                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed">
+                  <span className="block sm:inline">Tiffany</span> <span className="block sm:inline">Min</span>
                 </h1>
               </div>
               
@@ -343,11 +343,11 @@ export default function RSVPFormPage() {
 
   if (submitted && submissionData) {
     return (
-      <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg flex items-center transition-colors duration-500">
+      <div className="min-h-screen py-8 sm:py-12 md:py-20 px-4 bg-cream dark:bg-dark-bg flex items-center transition-colors duration-500">
         <div className="max-w-3xl mx-auto w-full">
           <div className="bg-white/95 dark:bg-dark-card backdrop-blur-sm rounded-2xl shadow-2xl dark:shadow-2xl border border-taupe/10 dark:border-dark-border overflow-hidden animate-scale-in-bounce">
             {/* Success Header */}
-            <div className="bg-gradient-to-r from-sage/20 dark:from-sage/30 via-sage/10 dark:via-sage/20 to-transparent px-12 pt-12 pb-8 text-center border-b border-taupe/20 dark:border-dark-border">
+            <div className="bg-gradient-to-r from-sage/20 dark:from-sage/30 via-sage/10 dark:via-sage/20 to-transparent px-6 sm:px-8 md:px-12 pt-8 sm:pt-10 md:pt-12 pb-6 sm:pb-8 text-center border-b border-taupe/20 dark:border-dark-border">
               <div className="w-24 h-24 bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-fade-in-up">
                 <svg className="w-12 h-12 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -359,7 +359,7 @@ export default function RSVPFormPage() {
               </p>
             </div>
             
-            <div className="p-12">
+            <div className="p-6 sm:p-8 md:p-12">
               <div className="space-y-8">
                 <div className="form-section">
                   <h2 className="form-section-title flex items-center gap-3">
@@ -472,11 +472,11 @@ export default function RSVPFormPage() {
   }
 
   return (
-    <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg">
+    <div className="min-h-screen py-8 sm:py-12 md:py-20 px-4 bg-cream dark:bg-dark-bg">
       <div className="max-w-4xl mx-auto">
         <div className="bg-white/95 dark:bg-dark-card backdrop-blur-sm rounded-2xl shadow-2xl dark:shadow-2xl border border-taupe/10 dark:border-dark-border overflow-hidden animate-fade-in-up">
           {/* Header with gradient accent */}
-          <div className="bg-gradient-to-r from-sage/10 dark:from-sage/20 via-taupe/5 dark:via-dark-surface to-transparent px-12 pt-12 pb-8 border-b border-taupe/20 dark:border-dark-border">
+          <div className="bg-gradient-to-r from-sage/10 dark:from-sage/20 via-taupe/5 dark:via-dark-surface to-transparent px-6 sm:px-8 md:px-12 pt-8 sm:pt-10 md:pt-12 pb-6 sm:pb-8 border-b border-taupe/20 dark:border-dark-border">
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 rounded-full bg-sage/20 dark:bg-sage/30 flex items-center justify-center">
                 <CheckCircle className="w-6 h-6 text-sage" weight="fill" />
@@ -495,7 +495,7 @@ export default function RSVPFormPage() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="p-12">
+          <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-8 md:p-12">
             {/* Personal Information */}
             <section className="form-section">
               <h2 className="form-section-title flex items-center gap-3">

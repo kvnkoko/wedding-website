@@ -132,14 +132,14 @@ function HomeContent() {
               
               {/* Main Names - Large Impactful Typography */}
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed">
-                  Kevin Koko
+                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed">
+                  <span className="block sm:inline">Kevin</span> <span className="block sm:inline">Koko</span>
                 </h1>
-                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal dark:text-dark-text mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed">
+                <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed">
                   And
                 </p>
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed">
-                  Tiffany Min
+                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed">
+                  <span className="block sm:inline">Tiffany</span> <span className="block sm:inline">Min</span>
                 </h1>
               </div>
               
