@@ -40,8 +40,8 @@ export default function FirstVisitIndicator() {
           : 'opacity-0 translate-x-4 scale-95'
       }`}
       style={{ 
-        top: '4rem',
-        right: '3.5rem',
+        top: '4.125rem',
+        right: '1.5rem',
       }}
     >
       <div className="bg-white dark:bg-dark-card rounded-lg shadow-xl border border-taupe/20 dark:border-dark-border p-2 backdrop-blur-md">
