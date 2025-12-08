@@ -7,6 +7,7 @@ export default function DarkModeScript() {
     // This runs immediately on mount to prevent flash
     const stored = localStorage.getItem('darkMode')
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    // Default to system preference on first visit
     const shouldBeDark = stored !== null ? stored === 'true' : prefersDark
     const bgColor = shouldBeDark ? '#1A1A1A' : '#FAF8F3'
     

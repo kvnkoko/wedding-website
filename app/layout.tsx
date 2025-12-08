@@ -58,10 +58,11 @@ export default function RootLayout({
               (function() {
                 try {
                   var stored = localStorage.getItem('darkMode');
-                  // Default to light mode on first visit
-                  var shouldBeDark = stored !== null ? stored === 'true' : false;
+                  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                  // Default to system preference on first visit
+                  var shouldBeDark = stored !== null ? stored === 'true' : prefersDark;
                   if (stored === null) {
-                    localStorage.setItem('darkMode', 'false');
+                    localStorage.setItem('darkMode', prefersDark.toString());
                   }
                   var bgColor = shouldBeDark ? '#1A1A1A' : '#FAF8F3';
                   if (shouldBeDark) {
