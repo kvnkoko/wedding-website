@@ -1,13 +1,13 @@
 export default function TravelPage() {
   return (
-    <div className="min-h-screen py-20 px-4 bg-cream">
+    <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg transition-colors duration-600 ease-in-out">
       <div className="max-w-4xl mx-auto">
-        <h1 className="font-serif text-6xl text-charcoal text-center mb-16">Travel Information</h1>
+        <h1 className="font-title text-6xl text-charcoal dark:text-dark-text text-center mb-16 transition-colors duration-600">Travel Information</h1>
         
         <div className="space-y-12">
-          <section className="bg-white p-10 rounded-sm shadow-sm">
-            <h2 className="font-serif text-3xl text-charcoal mb-6">Getting to Myanmar</h2>
-            <div className="space-y-4 font-sans text-base text-charcoal/70 leading-relaxed">
+          <section className="bg-white dark:bg-dark-card p-10 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border transition-all duration-600 ease-in-out">
+            <h2 className="font-title text-3xl text-charcoal dark:text-dark-text mb-6 transition-colors duration-600">Getting to Myanmar</h2>
+            <div className="space-y-4 font-body text-base text-charcoal/70 dark:text-dark-text-secondary leading-relaxed transition-colors duration-600">
               <p>
                 Myanmar is accessible via several international airports. The main entry points are:
               </p>
@@ -21,12 +21,12 @@ export default function TravelPage() {
             </div>
           </section>
 
-          <section className="bg-white p-10 rounded-sm shadow-sm">
-            <h2 className="font-serif text-3xl text-charcoal mb-6">Accommodations</h2>
+          <section className="bg-white dark:bg-dark-card p-10 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border transition-all duration-600 ease-in-out">
+            <h2 className="font-title text-3xl text-charcoal dark:text-dark-text mb-6 transition-colors duration-600">Accommodations</h2>
             <div className="space-y-6">
               <div>
-                <h3 className="font-serif text-xl text-charcoal mb-3">Yangon</h3>
-                <ul className="font-sans text-base text-charcoal/70 space-y-2">
+                <h3 className="font-title text-xl text-charcoal dark:text-dark-text mb-3 transition-colors duration-600">Yangon</h3>
+                <ul className="font-body text-base text-charcoal/70 dark:text-dark-text-secondary space-y-2 transition-colors duration-600">
                   <li>• The Strand Hotel (venue for Civil Signing)</li>
                   <li>• Lotte Hotel Yangon (venue for Yangon Reception)</li>
                   <li>• Sule Shangri-La</li>
@@ -34,8 +34,8 @@ export default function TravelPage() {
                 </ul>
               </div>
               <div>
-                <h3 className="font-serif text-xl text-charcoal mb-3">Mandalay</h3>
-                <ul className="font-sans text-base text-charcoal/70 space-y-2">
+                <h3 className="font-title text-xl text-charcoal dark:text-dark-text mb-3 transition-colors duration-600">Mandalay</h3>
+                <ul className="font-body text-base text-charcoal/70 dark:text-dark-text-secondary space-y-2 transition-colors duration-600">
                   <li>• Mingalar Mandalay Hotel (venue for Mandalay Celebration)</li>
                   <li>• Rupar Mandalar Resort</li>
                   <li>• Mercure Mandalay Hill Resort</li>
@@ -44,9 +44,9 @@ export default function TravelPage() {
             </div>
           </section>
 
-          <section className="bg-white p-10 rounded-sm shadow-sm">
-            <h2 className="font-serif text-3xl text-charcoal mb-6">Transportation Between Cities</h2>
-            <div className="space-y-4 font-sans text-base text-charcoal/70 leading-relaxed">
+          <section className="bg-white dark:bg-dark-card p-10 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border transition-all duration-600 ease-in-out">
+            <h2 className="font-title text-3xl text-charcoal dark:text-dark-text mb-6 transition-colors duration-600">Transportation Between Cities</h2>
+            <div className="space-y-4 font-body text-base text-charcoal/70 dark:text-dark-text-secondary leading-relaxed transition-colors duration-600">
               <p>
                 <strong>By Air:</strong> Domestic flights between Yangon and Mandalay are frequent and take approximately 1.5 hours.
               </p>
@@ -59,9 +59,9 @@ export default function TravelPage() {
             </div>
           </section>
 
-          <section className="bg-white p-10 rounded-sm shadow-sm">
-            <h2 className="font-serif text-3xl text-charcoal mb-6">Local Transportation</h2>
-            <div className="space-y-4 font-sans text-base text-charcoal/70 leading-relaxed">
+          <section className="bg-white dark:bg-dark-card p-10 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border transition-all duration-600 ease-in-out">
+            <h2 className="font-title text-3xl text-charcoal dark:text-dark-text mb-6 transition-colors duration-600">Local Transportation</h2>
+            <div className="space-y-4 font-body text-base text-charcoal/70 dark:text-dark-text-secondary leading-relaxed transition-colors duration-600">
               <p>
                 Taxis and ride-sharing services (Grab) are widely available in both Yangon and Mandalay. 
                 Most hotels can also arrange transportation for you.
@@ -69,9 +69,9 @@ export default function TravelPage() {
             </div>
           </section>
 
-          <section className="bg-white p-10 rounded-sm shadow-sm">
-            <h2 className="font-serif text-3xl text-charcoal mb-6">Visa Requirements</h2>
-            <div className="space-y-4 font-sans text-base text-charcoal/70 leading-relaxed">
+          <section className="bg-white dark:bg-dark-card p-10 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border transition-all duration-600 ease-in-out">
+            <h2 className="font-title text-3xl text-charcoal dark:text-dark-text mb-6 transition-colors duration-600">Visa Requirements</h2>
+            <div className="space-y-4 font-body text-base text-charcoal/70 dark:text-dark-text-secondary leading-relaxed transition-colors duration-600">
               <p>
                 Most visitors to Myanmar require a visa. Please check the current visa requirements for your 
                 nationality and apply well in advance. E-visas are available for many countries through the 
