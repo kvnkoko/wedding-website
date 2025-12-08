@@ -136,8 +136,8 @@ export default function FAQPage() {
     return (
       <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg flex items-center justify-center">
         <div className="flex flex-col items-center gap-4 animate-fade-in-up">
-          <div className="spinner w-8 h-8 border-3 border-charcoal/30 border-t-charcoal rounded-full"></div>
-          <p className="font-sans text-lg text-charcoal/70 animate-fade-in">Loading...</p>
+          <div className="spinner w-8 h-8 border-3 border-charcoal/30 dark:border-dark-text-secondary/30 border-t-charcoal dark:border-t-dark-text rounded-full"></div>
+          <p className="font-body text-lg text-charcoal/70 dark:text-dark-text-secondary animate-fade-in transition-colors duration-600" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Loading...</p>
         </div>
       </div>
     )
@@ -153,12 +153,12 @@ export default function FAQPage() {
         
         {faqs.length === 0 ? (
           <div className="bg-white/90 dark:bg-dark-card/90 backdrop-blur-sm p-12 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border text-center animate-fade-in-up animate-delay-200 card-hover">
-            <div className="w-16 h-16 bg-taupe/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg className="w-8 h-8 text-charcoal/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-16 h-16 bg-taupe/10 dark:bg-dark-text/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-charcoal/40 dark:text-dark-text-secondary/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <p className="font-sans text-lg text-charcoal/70">
+            <p className="font-body text-lg text-charcoal/70 dark:text-dark-text-secondary transition-colors duration-600" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
               No FAQs available at this time. Please check back later or contact us directly.
             </p>
           </div>
@@ -195,7 +195,7 @@ export default function FAQPage() {
                     
                     {/* Answer with beautiful typography */}
                     <div className="ml-14">
-                      <p className="text-base md:text-lg text-charcoal/75 dark:text-dark-text-secondary leading-relaxed whitespace-pre-line mb-8" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                      <p className="text-base md:text-lg text-charcoal/75 dark:text-dark-text leading-relaxed whitespace-pre-line mb-8 transition-colors duration-600" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                         {faq.answer}
                       </p>
                       
