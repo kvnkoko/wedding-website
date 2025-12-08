@@ -162,7 +162,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }
 
   return (
-    <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-cream">
+    <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-cream dark:bg-dark-bg">
       {/* Main Carousel Container */}
       <div 
         className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12"
@@ -212,7 +212,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     marginRight: index < sortedPhotos.length - 1 ? `${gapSize}px` : '0',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg flex items-center justify-center bg-cream">
+                  <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg dark:shadow-2xl flex items-center justify-center bg-cream dark:bg-dark-card card-hover transition-all duration-500">
                     {photo.url && (
                       <>
                         {/* Low-quality blurred placeholder - shows immediately while loading */}
@@ -239,9 +239,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                         <img
                           src={photo.url}
                           alt={photo.alt || `Photo ${index + 1}`}
-                          className={`relative transition-opacity duration-700 ease-in-out ${
+                          className={`relative transition-all duration-700 ease-in-out image-reveal ${
                             loadedImages.has(photo.id)
-                              ? 'opacity-100'
+                              ? 'opacity-100 loaded'
                               : 'opacity-0'
                           } ${
                             imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3 && isVisible
@@ -298,10 +298,10 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`transition-all duration-300 rounded-full ${
+                className={`transition-all duration-500 ease-out rounded-full magnetic ${
                   index === currentIndex
-                    ? 'w-3 h-3 bg-white'
-                    : 'w-2 h-2 bg-white/50 hover:bg-white/75'
+                    ? 'w-3 h-3 bg-white dark:bg-dark-text shadow-lg dark:shadow-2xl scale-110'
+                    : 'w-2 h-2 bg-white/50 dark:bg-dark-text/50 hover:bg-white/75 dark:hover:bg-dark-text/75 hover:scale-110'
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
@@ -314,19 +314,19 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           <>
             <button
               onClick={() => navigatePhotos('prev')}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white text-charcoal p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg backdrop-blur-sm"
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-white/90 dark:bg-dark-card/90 hover:bg-white dark:hover:bg-dark-card text-charcoal dark:text-dark-text p-3 rounded-full transition-all duration-500 hover:scale-110 active:scale-95 shadow-lg dark:shadow-2xl backdrop-blur-md magnetic glass group"
               aria-label="Previous photos"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button
               onClick={() => navigatePhotos('next')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-white/80 hover:bg-white text-charcoal p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg backdrop-blur-sm"
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-white/90 dark:bg-dark-card/90 hover:bg-white dark:hover:bg-dark-card text-charcoal dark:text-dark-text p-3 rounded-full transition-all duration-500 hover:scale-110 active:scale-95 shadow-lg dark:shadow-2xl backdrop-blur-md magnetic glass group"
               aria-label="Next photos"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -335,9 +335,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
 
         {/* Progress Bar */}
         {isAutoPlaying && sortedPhotos.length > photosToShow && (
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 z-20">
+          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 dark:bg-dark-text/20 z-20">
             <div
-              className="h-full bg-white transition-all duration-5000 ease-linear"
+              className="h-full bg-white dark:bg-dark-text transition-all duration-5000 ease-linear"
               style={{
                 width: '100%',
                 animation: 'progress 5s linear infinite',

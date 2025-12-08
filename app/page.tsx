@@ -29,13 +29,13 @@ function HomeContent() {
   // If someone tries to use an edit link, show message to contact directly
   if (editToken) {
     return (
-      <div className="min-h-screen py-20 px-4 bg-cream flex items-center justify-center">
-        <div className="max-w-2xl mx-auto text-center bg-white p-12 rounded-sm shadow-sm">
-          <h1 className="font-serif text-5xl text-charcoal mb-6">RSVP Changes</h1>
-          <p className="font-sans text-lg text-charcoal/70 mb-4 leading-relaxed">
+      <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg flex items-center justify-center">
+        <div className="max-w-2xl mx-auto text-center bg-white dark:bg-dark-card p-12 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border">
+          <h1 className="font-title text-5xl text-charcoal dark:text-dark-text mb-6">RSVP Changes</h1>
+          <p className="font-body text-lg text-charcoal/70 dark:text-dark-text-secondary mb-4 leading-relaxed">
             To make changes to your RSVP, please contact us directly.
           </p>
-          <p className="font-sans text-base text-charcoal/60">
+          <p className="font-body text-base text-charcoal/60 dark:text-dark-text-secondary">
             We'll be happy to help you update your RSVP or answer any questions you may have.
           </p>
         </div>
@@ -47,7 +47,7 @@ function HomeContent() {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Clean Minimal Design Without Arch */}
-      <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
+      <section className="relative min-h-screen flex items-center justify-center bg-cream dark:bg-dark-bg overflow-hidden px-4 sm:px-6 lg:px-8">
         {/* Background Calla Lilies - Filling the space with elegant botanical illustrations */}
         {/* Mobile: Single large calla lily filling entire background */}
         <div 
@@ -124,27 +124,27 @@ function HomeContent() {
         <div className="max-w-7xl mx-auto w-full relative z-10">
           <div className="flex flex-col items-center justify-center">
             {/* Center Content */}
-            <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0 w-full">
+            <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-4 md:py-12 lg:py-20 -mt-16 sm:-mt-8 md:mt-0 w-full">
               {/* Subtitle */}
-              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/50 tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300">
+              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/50 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed">
                 Together with our families
               </p>
               
               {/* Main Names - Large Impactful Typography */}
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-400">
+                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed">
                   Kevin Koko
                 </h1>
-                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal/80 mt-16 md:mt-20 lg:mt-[calc(6rem+30px)] xl:mt-[calc(7rem+30px)] animate-fade-in-up animate-delay-600">
+                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal dark:text-dark-text mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed">
                   And
                 </p>
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-700">
+                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed">
                   Tiffany Min
                 </h1>
               </div>
               
               {/* Invitation Line */}
-              <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 mt-4 md:mt-8 animate-fade-in-up animate-delay-800">
+              <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up animate-delay-800 scale-on-hover hero-float-delayed">
                 Invite you to celebrate with us
               </p>
               
@@ -152,7 +152,7 @@ function HomeContent() {
               {/* Event information is only shown on personalized slug pages */}
               
               {/* Hashtag - Subtle bottom placement, balanced size */}
-              <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/50 mt-12 md:mt-16 animate-fade-in-up animate-delay-1000">
+              <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/50 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up animate-delay-1000 scale-on-hover hero-float-delayed">
                 #tiffandko
               </p>
             </div>
@@ -170,8 +170,8 @@ function HomeContent() {
 export default function HomePage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-cream flex items-center justify-center">
-        <p className="font-sans text-lg text-charcoal/70">Loading...</p>
+      <div className="min-h-screen bg-cream dark:bg-dark-bg flex items-center justify-center">
+        <p className="font-body text-lg text-charcoal/70 dark:text-dark-text-secondary">Loading...</p>
       </div>
     }>
       <HomeContent />

@@ -63,7 +63,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center bg-cream overflow-hidden px-4 sm:px-6 lg:px-8">
+      <section className="relative min-h-screen flex items-center justify-center bg-cream dark:bg-dark-bg overflow-hidden px-4 sm:px-6 lg:px-8">
         {/* Background Calla Lilies - Filling the space with elegant botanical illustrations */}
         {/* Mobile: Single large calla lily filling entire background */}
         <div 
@@ -140,29 +140,29 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
         <div className="max-w-7xl mx-auto w-full relative z-10">
           <div className="flex flex-col items-center justify-center">
             {/* Center Content */}
-            <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-8 md:py-20 lg:py-32 -mt-16 sm:mt-0 w-full">
-              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/50 tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300">
+            <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-4 md:py-12 lg:py-20 -mt-16 sm:-mt-8 md:mt-0 w-full">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/50 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                 Together with our families
               </p>
               
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-400">
+                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed">
                   Kevin Koko
                 </h1>
-                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal/80 mt-16 md:mt-20 lg:mt-[calc(6rem+30px)] xl:mt-[calc(7rem+30px)] animate-fade-in-up animate-delay-600">
+                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal dark:text-dark-text mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed">
                   And
                 </p>
-                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-700">
+                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight whitespace-nowrap animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed">
                   Tiffany Min
                 </h1>
               </div>
               
-              <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 mt-4 md:mt-8 animate-fade-in-up animate-delay-800">
+              <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up animate-delay-800 scale-on-hover hero-float-delayed">
                 Invite you to celebrate with us
               </p>
               
               {/* Date - Reserve space to prevent layout shift */}
-              <div className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 mt-6 md:mt-10 tracking-wide min-h-[1.5em] animate-fade-in-up animate-delay-900">
+              <div className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 dark:text-dark-text-secondary mt-6 md:mt-10 tracking-wide min-h-[1.5em] animate-fade-in-up animate-delay-900 hero-float-delayed">
                 {dateRange ? (
                   <p>{dateRange}</p>
                 ) : (
@@ -170,16 +170,17 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 )}
               </div>
               
-              <div className="mt-8 md:mt-12 animate-fade-in-up animate-delay-1000">
+              <div className="mt-8 md:mt-12 animate-fade-in-up animate-delay-1000 hero-float-delayed">
                 <Link
                   href={`/rsvp/${slug}?form=true`}
-                  className="inline-block bg-charcoal text-white px-8 md:px-12 py-3 md:py-4 rounded-sm font-body text-xs md:text-sm tracking-[0.15em] uppercase btn-hover-lift shadow-lift"
+                  className="inline-block bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-8 md:px-12 py-3 md:py-4 rounded-sm text-xs md:text-sm tracking-[0.15em] uppercase btn-hover-lift btn-glow magnetic shadow-lift ripple transition-all duration-300"
+                  style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}
                 >
                   RSVP
                 </Link>
               </div>
               
-              <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/50 mt-12 md:mt-16 animate-fade-in-up animate-delay-1000">
+              <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/50 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up animate-delay-1000 scale-on-hover hero-float-delayed">
                 #tiffandko
               </p>
             </div>
@@ -277,13 +278,13 @@ export default function RSVPFormPage() {
   const editToken = searchParams.get('edit')
   if (editToken) {
     return (
-      <div className="min-h-screen py-20 px-4 bg-cream flex items-center justify-center">
-        <div className="max-w-2xl mx-auto text-center bg-white p-12 rounded-sm shadow-sm">
-          <h1 className="font-serif text-5xl text-charcoal mb-6">RSVP Changes</h1>
-          <p className="font-sans text-lg text-charcoal/70 mb-4 leading-relaxed">
+      <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg flex items-center justify-center">
+        <div className="max-w-2xl mx-auto text-center bg-white dark:bg-dark-card p-12 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border">
+          <h1 className="font-title text-5xl text-charcoal dark:text-dark-text mb-6">RSVP Changes</h1>
+          <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary mb-4 leading-relaxed" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
             To make changes to your RSVP, please contact us directly.
           </p>
-          <p className="font-sans text-base text-charcoal/60">
+          <p className="text-base text-charcoal/60 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
             We'll be happy to help you update your RSVP or answer any questions you may have.
           </p>
         </div>
@@ -297,15 +298,18 @@ export default function RSVPFormPage() {
     // Don't render until we have config to avoid flash of incorrect content
     if (loading) {
       return (
-        <div className="min-h-screen bg-cream flex items-center justify-center">
-          <p className="font-sans text-lg text-charcoal/70">Loading...</p>
+        <div className="min-h-screen bg-cream dark:bg-dark-bg flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4 animate-fade-in-up">
+            <div className="spinner w-8 h-8 border-3 border-charcoal/30 dark:border-dark-text-secondary/30 border-t-charcoal dark:border-t-dark-text rounded-full"></div>
+            <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Loading...</p>
+          </div>
         </div>
       )
     }
     return (
       <Suspense fallback={
-        <div className="min-h-screen bg-cream flex items-center justify-center">
-          <p className="font-sans text-lg text-charcoal/70">Loading...</p>
+        <div className="min-h-screen bg-cream dark:bg-dark-bg flex items-center justify-center">
+          <p className="font-body text-lg text-charcoal/70 dark:text-dark-text-secondary">Loading...</p>
         </div>
       }>
         <HomeScreenWithCarousel slug={slug} config={config} />
@@ -315,9 +319,12 @@ export default function RSVPFormPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen py-20 px-4 bg-cream flex items-center justify-center">
-        <div className="text-center">
-          <p className="font-sans text-lg text-charcoal/70">Loading...</p>
+      <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg flex items-center justify-center">
+        <div className="text-center animate-fade-in-up">
+          <div className="flex flex-col items-center gap-4">
+            <div className="spinner w-8 h-8 border-3 border-charcoal/30 dark:border-dark-text-secondary/30 border-t-charcoal dark:border-t-dark-text rounded-full"></div>
+            <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Loading...</p>
+          </div>
         </div>
       </div>
     )
@@ -325,9 +332,9 @@ export default function RSVPFormPage() {
 
   if (!config) {
     return (
-      <div className="min-h-screen py-20 px-4 bg-cream flex items-center justify-center">
+      <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg flex items-center justify-center">
         <div className="text-center">
-          <p className="font-sans text-lg text-charcoal/70">Invalid RSVP link</p>
+          <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Invalid RSVP link</p>
         </div>
       </div>
     )
@@ -335,59 +342,122 @@ export default function RSVPFormPage() {
 
   if (submitted && submissionData) {
     return (
-      <div className="min-h-screen py-20 px-4 bg-cream">
-        <div className="max-w-3xl mx-auto">
-          <div className="bg-white p-12 rounded-sm shadow-sm">
-            <h1 className="font-serif text-5xl text-charcoal mb-8 text-center">Thank You!</h1>
-            <p className="font-sans text-lg text-charcoal/70 mb-8 text-center">
-              Your RSVP has been received. We are looking forward to celebrating with you!
-            </p>
-
-            <div className="space-y-6 mb-8">
-              <div>
-                <h2 className="font-serif text-2xl text-charcoal mb-4">Your Details</h2>
-                <div className="space-y-2 font-sans text-base text-charcoal/70">
-                  <p><strong>Name:</strong> {submissionData.name}</p>
-                  <p><strong>Phone:</strong> {submissionData.phone}</p>
-                  {submissionData.email && <p><strong>Email:</strong> {submissionData.email}</p>}
-                  <p><strong>Side:</strong> {submissionData.side}</p>
-                  {submissionData.plusOne && (
-                    <>
-                      <p><strong>Plus One:</strong> {submissionData.plusOneName}</p>
-                      {submissionData.plusOneRelation && (
-                        <p><strong>Relationship:</strong> {submissionData.plusOneRelation}</p>
-                      )}
-                    </>
-                  )}
-                </div>
+      <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg flex items-center transition-colors duration-500">
+        <div className="max-w-3xl mx-auto w-full">
+          <div className="bg-white/95 dark:bg-dark-card backdrop-blur-sm rounded-2xl shadow-2xl dark:shadow-2xl border border-taupe/10 dark:border-dark-border overflow-hidden animate-scale-in-bounce">
+            {/* Success Header */}
+            <div className="bg-gradient-to-r from-sage/20 dark:from-sage/30 via-sage/10 dark:via-sage/20 to-transparent px-12 pt-12 pb-8 text-center border-b border-taupe/20 dark:border-dark-border">
+              <div className="w-24 h-24 bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-6 animate-fade-in-up">
+                <svg className="w-12 h-12 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
               </div>
-
-              <div>
-                <h2 className="font-serif text-2xl text-charcoal mb-4">Your Responses</h2>
-                <div className="space-y-3">
-                  {submissionData.eventResponses?.map((er: any) => (
-                    <div key={er.eventId} className="border-l-4 border-sage pl-4">
-                      <p className="font-sans font-semibold text-charcoal">{er.eventName}</p>
-                      <p className="font-sans text-sm text-charcoal/70">
-                        Status: <span className="uppercase">{er.status}</span>
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {submissionData.notes && (
-                <div>
-                  <h2 className="font-serif text-2xl text-charcoal mb-4">Note for the Bride & Groom</h2>
-                  <p className="font-sans text-base text-charcoal/70">{submissionData.notes}</p>
-                </div>
-              )}
-            </div>
-
-            <div className="bg-beige p-6 rounded-sm">
-              <p className="font-sans text-sm text-charcoal/70">
-                <strong>Need to make changes?</strong> Please contact us directly if you need to update your RSVP or have any questions.
+              <h1 className="font-title text-4xl md:text-5xl text-charcoal dark:text-dark-text mb-4 animate-fade-in-up animate-delay-200">Thank You!</h1>
+              <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary animate-fade-in-up animate-delay-300" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                Your RSVP has been received. We are looking forward to celebrating with you!
               </p>
+            </div>
+            
+            <div className="p-12">
+              <div className="space-y-8">
+                <div className="form-section">
+                  <h2 className="form-section-title">Your Details</h2>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
+                      <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Name</p>
+                      <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.name}</p>
+                    </div>
+                    <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
+                      <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Phone</p>
+                      <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.phone}</p>
+                    </div>
+                    {submissionData.email && (
+                      <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
+                        <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Email</p>
+                        <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.email}</p>
+                      </div>
+                    )}
+                    <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
+                      <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Side</p>
+                      <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.side}</p>
+                    </div>
+                    {submissionData.plusOne && (
+                      <>
+                        <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
+                          <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Plus One</p>
+                          <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.plusOneName}</p>
+                        </div>
+                        {submissionData.plusOneRelation && (
+                          <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
+                            <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Relationship</p>
+                            <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.plusOneRelation}</p>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                <div className="form-section">
+                  <h2 className="form-section-title">Your Responses</h2>
+                  <div className="space-y-3">
+                    {submissionData.eventResponses?.map((er: any, index: number) => (
+                      <div 
+                        key={er.eventId} 
+                        className="event-card"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="event-card-title">{er.eventName}</p>
+                            <p className="text-sm text-charcoal/60 dark:text-dark-text-secondary mt-1">
+                              Status: <span className="font-semibold text-sage uppercase">{er.status}</span>
+                            </p>
+                          </div>
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                            er.status === 'YES' ? 'bg-sage/20' : 'bg-taupe/20'
+                          }`}>
+                            {er.status === 'YES' ? (
+                              <svg className="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              <svg className="w-6 h-6 text-charcoal/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                              </svg>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {submissionData.notes && (
+                  <div className="form-section">
+                    <h2 className="form-section-title">Note for the Bride & Groom</h2>
+                    <div className="bg-taupe/5 dark:bg-dark-surface p-6 rounded-xl border border-taupe/20 dark:border-dark-border">
+                      <p className="text-base text-charcoal/80 dark:text-dark-text-secondary leading-relaxed italic" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>"{submissionData.notes}"</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-12 pt-8 border-t border-taupe/20 dark:border-dark-border bg-gradient-to-r from-sage/5 dark:from-sage/10 via-transparent to-sage/5 dark:to-sage/10 p-6 rounded-xl">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sage/20 dark:bg-sage/30 flex items-center justify-center">
+                    <svg className="w-5 h-5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-charcoal dark:text-dark-text mb-1" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Need to make changes?</p>
+                    <p className="text-sm text-charcoal/70 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                      Please contact us directly if you need to update your RSVP or have any questions.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -396,69 +466,76 @@ export default function RSVPFormPage() {
   }
 
   return (
-    <div className="min-h-screen py-20 px-4 bg-cream">
-      <div className="max-w-3xl mx-auto">
-        <div className="bg-white p-12 rounded-sm shadow-sm">
-          <h1 className="font-serif text-5xl text-charcoal mb-4">RSVP</h1>
-          {config.label && (
-            <p className="font-sans text-sm text-charcoal/60 mb-4 uppercase tracking-wider">
-              Invitation: {config.label.replace(/\s+Only\s*$/i, '')}
+    <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white/95 dark:bg-dark-card backdrop-blur-sm rounded-2xl shadow-2xl dark:shadow-2xl border border-taupe/10 dark:border-dark-border overflow-hidden animate-fade-in-up">
+          {/* Header with gradient accent */}
+          <div className="bg-gradient-to-r from-sage/10 dark:from-sage/20 via-taupe/5 dark:via-dark-surface to-transparent px-12 pt-12 pb-8 border-b border-taupe/20 dark:border-dark-border">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-12 h-12 rounded-full bg-sage/20 flex items-center justify-center">
+                <svg className="w-6 h-6 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="font-title text-4xl md:text-5xl text-charcoal dark:text-dark-text mb-2">RSVP</h1>
+                {config.label && (
+                  <p className="text-sm text-charcoal/60 dark:text-dark-text-secondary uppercase tracking-widest" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                    {config.label.replace(/\s+Only\s*$/i, '')}
+                  </p>
+                )}
+              </div>
+            </div>
+            <p className="text-base text-charcoal/70 dark:text-dark-text-secondary mt-4" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+              Please fill out the form below to RSVP. We can't wait to celebrate with you!
             </p>
-          )}
-          <p className="font-sans text-base text-charcoal/70 mb-8">
-            Please fill out the form below to RSVP.
-          </p>
+          </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={handleSubmit(onSubmit)} className="p-12">
             {/* Personal Information */}
-            <section>
-              <h2 className="font-serif text-2xl text-charcoal mb-6">Personal Information</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                    Full Name <span className="text-red-500">*</span>
-                  </label>
+            <section className="form-section">
+              <h2 className="form-section-title">Personal Information</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="form-input-wrapper md:col-span-2">
+                  <label className="form-label form-label-required">Full Name</label>
                   <input
                     {...register('name', { required: 'Name is required' })}
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
+                    className="form-input"
+                    placeholder="Enter your full name"
                   />
                   {errors.name && (
-                    <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
+                    <p className="error-message">{errors.name.message}</p>
                   )}
                 </div>
 
-                <div>
-                  <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                    Phone <span className="text-red-500">*</span>
-                  </label>
+                <div className="form-input-wrapper">
+                  <label className="form-label form-label-required">Phone</label>
                   <input
                     {...register('phone', { required: 'Phone is required' })}
                     type="tel"
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
+                    className="form-input"
+                    placeholder="(555) 123-4567"
                   />
                   {errors.phone && (
-                    <p className="mt-1 text-sm text-red-500">{errors.phone.message}</p>
+                    <p className="error-message">{errors.phone.message}</p>
                   )}
                 </div>
 
-                <div>
-                  <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                    Email
-                  </label>
+                <div className="form-input-wrapper">
+                  <label className="form-label">Email</label>
                   <input
                     {...register('email')}
                     type="email"
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
+                    className="form-input"
+                    placeholder="your.email@example.com"
                   />
                 </div>
 
-                <div>
-                  <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                    Side
-                  </label>
+                <div className="form-input-wrapper md:col-span-2">
+                  <label className="form-label">Side</label>
                   <select
                     {...register('side')}
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
+                    className="form-select"
                   >
                     <option value="Bride">Bride</option>
                     <option value="Groom">Groom</option>
@@ -470,42 +547,44 @@ export default function RSVPFormPage() {
             </section>
 
             {/* Event Responses */}
-            <section>
-              <h2 className="font-serif text-2xl text-charcoal mb-6">Event Responses</h2>
+            <section className="form-section">
+              <h2 className="form-section-title">Event Responses</h2>
               {config && config.events && config.events.length > 0 ? (
-              <div className="space-y-6">
-                {config.events.map((event) => (
-                  <div key={event.id} className="border border-taupe/30 p-6 rounded-sm">
-                    <h3 className="font-serif text-xl text-charcoal mb-2">{event.name}</h3>
-                    <p className="font-sans text-sm text-charcoal/70 mb-4">
+              <div className="space-y-4">
+                {config.events.map((event, index) => (
+                  <div 
+                    key={event.id} 
+                    className="event-card"
+                    style={{ animationDelay: `${index * 0.08}s` }}
+                  >
+                    <h3 className="event-card-title">{event.name}</h3>
+                    <p className="event-card-details">
                       {formatDate(event.dateTime)} • {event.venueName}, {event.city}
                     </p>
-                    <div className="flex gap-4">
-                      <label className="flex items-center">
+                    <div className="radio-group">
+                      <label className="radio-option">
                         <input
                           type="radio"
                           {...register(`eventResponses.${event.id}`, { required: 'Please select a response' })}
                           value="YES"
-                          className="mr-2"
                         />
-                        <span className="font-sans text-sm text-charcoal">Yes</span>
+                        <span>Yes, I'll be there!</span>
                       </label>
-                      <label className="flex items-center">
+                      <label className="radio-option">
                         <input
                           type="radio"
                           {...register(`eventResponses.${event.id}`)}
                           value="NO"
-                          className="mr-2"
                         />
-                        <span className="font-sans text-sm text-charcoal">No</span>
+                        <span>Sorry, can't make it</span>
                       </label>
                     </div>
                   </div>
                 ))}
               </div>
               ) : (
-                <div className="border border-taupe/30 p-6 rounded-sm">
-                  <p className="font-sans text-sm text-charcoal/70">
+                <div className="border-2 border-taupe/30 border-dashed p-8 rounded-xl text-center bg-taupe/5">
+                  <p className="text-base text-charcoal/70 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                     No events found for this invitation. Please contact the administrator.
                   </p>
                 </div>
@@ -513,76 +592,75 @@ export default function RSVPFormPage() {
             </section>
 
             {/* Plus One */}
-            <section>
-              <h2 className="font-serif text-2xl text-charcoal mb-6">Plus One</h2>
-              <div className="space-y-4">
-                <label className="flex items-center">
+            <section className="form-section">
+              <h2 className="form-section-title">Plus One</h2>
+              <div className="space-y-6">
+                <label className="checkbox-option">
                   <input
                     type="checkbox"
                     {...register('plusOne')}
-                    className="mr-2"
                   />
-                  <span className="font-sans text-sm text-charcoal">I will be bringing a plus-one</span>
+                  <span className="text-base text-charcoal dark:text-dark-text" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>I will be bringing a plus-one</span>
                 </label>
 
                 {plusOne && (
-                  <>
-                    <div>
-                      <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                        Plus-One Name
-                      </label>
+                  <div className="ml-8 space-y-6 animate-fade-in-up bg-taupe/5 dark:bg-dark-surface p-6 rounded-xl border border-taupe/20 dark:border-dark-border">
+                    <div className="form-input-wrapper">
+                      <label className="form-label">Plus-One Name</label>
                       <input
                         {...register('plusOneName')}
-                        className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
+                        className="form-input"
+                        placeholder="Enter their full name"
                       />
                     </div>
-                    <div>
-                      <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                        Relationship
-                      </label>
+                    <div className="form-input-wrapper">
+                      <label className="form-label">Relationship</label>
                       <input
                         {...register('plusOneRelation')}
+                        className="form-input"
                         placeholder="e.g., Spouse, Partner, Friend"
-                        className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white"
                       />
                     </div>
-                  </>
+                  </div>
                 )}
               </div>
             </section>
 
             {/* Additional Information */}
-            <section>
-              <h2 className="font-serif text-2xl text-charcoal mb-6">Additional Information</h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                    Leave a note for the Bride & Groom!
-                  </label>
-                  <textarea
-                    {...register('notes')}
-                    rows={4}
-                    placeholder="Any additional notes or messages..."
-                    className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage input-focus bg-white resize-none"
-                  />
-                </div>
+            <section className="form-section">
+              <h2 className="form-section-title">Additional Information</h2>
+              <div className="form-input-wrapper">
+                <label className="form-label">Leave a note for the Bride & Groom!</label>
+                <textarea
+                  {...register('notes')}
+                  rows={5}
+                  className="form-textarea"
+                  placeholder="Share your excitement, dietary restrictions, or any special requests..."
+                />
               </div>
             </section>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full bg-charcoal text-white px-8 py-4 rounded-sm font-sans text-sm tracking-wider uppercase btn-hover-lift shadow-lift disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none disabled:hover:shadow-none"
-            >
-              {submitting ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="spinner w-4 h-4 border-2 border-white border-t-transparent rounded-full"></span>
-                  Submitting...
-                </span>
-              ) : (
-                'Submit RSVP'
-              )}
-            </button>
+            <div className="mt-12 pt-8 border-t border-taupe/20">
+              <button
+                type="submit"
+                disabled={submitting}
+                className="submit-button"
+              >
+                {submitting ? (
+                  <span className="flex items-center justify-center gap-3">
+                    <span className="spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
+                    <span>Submitting your RSVP...</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Submit RSVP
+                  </span>
+                )}
+              </button>
+            </div>
           </form>
         </div>
       </div>

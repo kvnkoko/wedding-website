@@ -30,3 +30,4 @@ echo "   export DATABASE_URL='your-cloud-database-url'"
 echo "   npm run db:push"
 echo "   npm run db:seed"
 
+

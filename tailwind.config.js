@@ -5,8 +5,12 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
+      transitionDuration: {
+        '600': '600ms',
+      },
       fontFamily: {
         title: ['var(--font-elgraine)', 'Georgia', 'serif'],
         script: ['var(--font-script)', 'Brush Script MT', 'cursive'],
@@ -24,6 +28,13 @@ module.exports = {
         navy: '#2C3E50',
         pink: '#F4C2C2',
         mauve: '#E6B8D3',
+        // Dark mode colors
+        'dark-bg': '#1A1A1A',
+        'dark-surface': '#242424',
+        'dark-card': '#2A2A2A',
+        'dark-text': '#E8E8E8',
+        'dark-text-secondary': '#B8B8B8',
+        'dark-border': '#3A3A3A',
       },
     },
   },

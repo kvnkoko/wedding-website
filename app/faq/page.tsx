@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 
 interface FAQ {
@@ -15,6 +15,32 @@ export default function FAQPage() {
   const pathname = usePathname()
   const [faqs, setFaqs] = useState<FAQ[]>([])
   const [loading, setLoading] = useState(true)
+  const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set())
+
+  // Intersection Observer for scroll animations
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const index = parseInt(entry.target.getAttribute('data-index') || '0')
+            setVisibleItems((prev) => new Set(prev).add(index))
+          }
+        })
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px',
+      }
+    )
+
+    const elements = document.querySelectorAll('[data-faq-item]')
+    elements.forEach((el) => observer.observe(el))
+
+    return () => {
+      elements.forEach((el) => observer.unobserve(el))
+    }
+  }, [faqs])
 
   useEffect(() => {
     // Get slug for FAQ filtering
@@ -108,8 +134,8 @@ export default function FAQPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen py-20 px-4 bg-cream flex items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
+      <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 animate-fade-in-up">
           <div className="spinner w-8 h-8 border-3 border-charcoal/30 border-t-charcoal rounded-full"></div>
           <p className="font-sans text-lg text-charcoal/70 animate-fade-in">Loading...</p>
         </div>
@@ -118,58 +144,126 @@ export default function FAQPage() {
   }
 
   return (
-    <div className="min-h-screen py-20 px-4 bg-cream">
-      <div className="max-w-3xl mx-auto">
-        <h1 className="font-serif text-6xl text-charcoal text-center mb-16 animate-fade-in-up">Frequently Asked Questions</h1>
+    <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-20 animate-fade-in-up">
+          <h1 className="font-title text-5xl sm:text-6xl md:text-7xl text-charcoal dark:text-dark-text mb-4 tracking-tight">Frequently Asked Questions</h1>
+          <div className="w-24 h-1 bg-sage dark:bg-sage/80 mx-auto mt-6 rounded-full"></div>
+        </div>
         
         {faqs.length === 0 ? (
-          <div className="bg-white p-8 rounded-sm shadow-sm text-center animate-fade-in-up animate-delay-200">
-            <p className="font-sans text-base text-charcoal/70">
+          <div className="bg-white/90 dark:bg-dark-card/90 backdrop-blur-sm p-12 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border text-center animate-fade-in-up animate-delay-200 card-hover">
+            <div className="w-16 h-16 bg-taupe/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-charcoal/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="font-sans text-lg text-charcoal/70">
               No FAQs available at this time. Please check back later or contact us directly.
             </p>
           </div>
         ) : (
           <>
-            <div className="space-y-6">
+            <div className="space-y-8">
               {faqs.map((faq, index) => (
-                <div key={faq.id} className="bg-white p-8 rounded-sm shadow-sm animate-fade-in-up shadow-lift" style={{ animationDelay: `${(index + 1) * 0.1}s` }}>
-                  <h2 className="font-serif text-2xl text-charcoal mb-4">{faq.question}</h2>
-                  <p className="font-sans text-base text-charcoal/70 leading-relaxed whitespace-pre-line mb-6">{faq.answer}</p>
-                  {faq.colorHexCodes && faq.colorHexCodes.length > 0 && (
-                    <div className="mt-6 pt-6 border-t border-taupe/20">
-                      <div className="flex items-center gap-6 flex-wrap">
-                        <h3 className="font-sans text-base font-semibold text-charcoal uppercase tracking-wide whitespace-nowrap">
-                          Colors to Wear
-                        </h3>
-                        <div className="flex items-center gap-3">
-                          {faq.colorHexCodes.map((hex, index) => (
-                            <div
-                              key={index}
-                              className="relative w-12 h-12 rounded-full flex-shrink-0"
-                              style={{
-                                backgroundColor: hex,
-                                boxShadow: `
-                                  inset 0 3px 6px rgba(0, 0, 0, 0.15),
-                                  inset 0 -2px 3px rgba(0, 0, 0, 0.1),
-                                  0 2px 6px rgba(0, 0, 0, 0.15)
-                                `,
-                              }}
-                              title={hex}
-                            />
-                          ))}
-                        </div>
+                <div 
+                  key={faq.id} 
+                  data-faq-item
+                  data-index={index}
+                  className={`group relative bg-white/95 dark:bg-dark-card backdrop-blur-sm rounded-2xl shadow-lg dark:shadow-2xl border border-taupe/10 dark:border-dark-border overflow-hidden transition-all duration-700 ease-out ${
+                    visibleItems.has(index) 
+                      ? 'opacity-100 translate-y-0 scale-100' 
+                      : 'opacity-0 translate-y-12 scale-95'
+                  }`}
+                  style={{ transitionDelay: `${index * 0.08}s` }}
+                >
+                  {/* Elegant top accent line */}
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sage via-sage/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  
+                  <div className="p-10 md:p-12">
+                    {/* Question with elegant styling */}
+                    <div className="flex items-start gap-4 mb-6">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sage/10 dark:bg-sage/20 flex items-center justify-center mt-1 group-hover:bg-sage/20 dark:group-hover:bg-sage/30 transition-colors duration-300">
+                        <svg className="w-5 h-5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                       </div>
+                      <h2 className="font-title text-2xl md:text-3xl text-charcoal dark:text-dark-text leading-tight group-hover:text-sage transition-colors duration-300 flex-1">
+                        {faq.question}
+                      </h2>
                     </div>
-                  )}
+                    
+                    {/* Answer with beautiful typography */}
+                    <div className="ml-14">
+                      <p className="text-base md:text-lg text-charcoal/75 dark:text-dark-text-secondary leading-relaxed whitespace-pre-line mb-8" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                        {faq.answer}
+                      </p>
+                      
+                      {/* Color swatches with premium design */}
+                      {faq.colorHexCodes && faq.colorHexCodes.length > 0 && (
+                        <div className="mt-8 pt-8 border-t border-taupe/20 dark:border-dark-border">
+                        <div className="flex items-center gap-6 flex-wrap">
+                          <h3 className="text-sm font-semibold text-charcoal/60 dark:text-dark-text-secondary uppercase tracking-widest whitespace-nowrap flex items-center gap-2" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                            <span className="w-1 h-1 rounded-full bg-sage"></span>
+                            Colors to Wear
+                          </h3>
+                            <div className="flex items-center gap-4">
+                              {faq.colorHexCodes.map((hex, colorIndex) => (
+                                <div
+                                  key={colorIndex}
+                                  className="relative group/color"
+                                >
+                                  <div
+                                    className="relative w-14 h-14 rounded-full flex-shrink-0 cursor-pointer transition-all duration-500 hover:scale-125 hover:z-10 hover:shadow-2xl"
+                                    style={{
+                                      backgroundColor: hex,
+                                      boxShadow: `
+                                        0 4px 12px rgba(0, 0, 0, 0.15),
+                                        inset 0 2px 4px rgba(255, 255, 255, 0.2),
+                                        inset 0 -2px 4px rgba(0, 0, 0, 0.1)
+                                      `,
+                                    }}
+                                    title={hex}
+                                  >
+                                    <div className="absolute inset-0 rounded-full bg-white/0 group-hover/color:bg-white/20 transition-all duration-300"></div>
+                                    <div className="absolute -inset-1 rounded-full border-2 border-transparent group-hover/color:border-sage/30 transition-all duration-300"></div>
+                                  </div>
+                                  {/* Tooltip on hover */}
+                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-charcoal text-white text-xs rounded opacity-0 group-hover/color:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+                                    {hex}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Hover glow effect */}
+                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-sage/0 via-sage/0 to-sage/0 group-hover:from-sage/5 group-hover:via-sage/0 group-hover:to-sage/5 transition-all duration-700 pointer-events-none"></div>
                 </div>
               ))}
             </div>
 
-            <div className="mt-16 bg-white p-8 rounded-sm shadow-sm text-center animate-fade-in-up shadow-lift" style={{ animationDelay: `${(faqs.length + 1) * 0.1}s` }}>
-              <h2 className="font-serif text-2xl text-charcoal mb-4">Still have questions?</h2>
-              <p className="font-sans text-base text-charcoal/70">
-                Please do not hesitate to reach out to us directly. We are happy to help!
-              </p>
+            {/* Contact card with premium design */}
+            <div 
+              className="mt-20 relative bg-gradient-to-br from-white dark:from-dark-card via-white dark:via-dark-card to-taupe/5 dark:to-dark-surface backdrop-blur-sm rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border p-12 text-center animate-fade-in-up card-hover overflow-hidden" 
+              style={{ animationDelay: `${(faqs.length + 1) * 0.08}s` }}
+            >
+              <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-sage to-transparent"></div>
+              <div className="relative z-10">
+                <div className="w-20 h-20 bg-sage/10 dark:bg-sage/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <svg className="w-10 h-10 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <h2 className="font-title text-3xl text-charcoal dark:text-dark-text mb-4">Still have questions?</h2>
+                <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary max-w-2xl mx-auto leading-relaxed" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                  Please do not hesitate to reach out to us directly. We are happy to help!
+                </p>
+              </div>
             </div>
           </>
         )}

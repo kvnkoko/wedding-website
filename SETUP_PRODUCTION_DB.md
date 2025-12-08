@@ -80,3 +80,4 @@ After running `db:seed`, you should see:
 - Run `npm run db:seed` again
 - This creates the admin user
 
+

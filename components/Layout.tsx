@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import { formatDateRange } from '@/lib/utils'
+import { useDarkMode } from '@/lib/useDarkMode'
 
 function LayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
@@ -12,6 +13,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   const [homeLink, setHomeLink] = useState('/')
   const [faqLink, setFaqLink] = useState('/faq')
   const [dateRange, setDateRange] = useState<string | null>(null) // Start with null - only show on slug pages
+  const { isDark, toggle } = useDarkMode()
 
   // Determine navigation links based on current route
   // IMPORTANT: If user is on a slug page, all links should keep them in their slug context
@@ -84,77 +86,124 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   ]
 
   return (
-    <div className="min-h-screen bg-cream">
-      <nav className="border-b border-taupe/30 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+    <div className="min-h-screen bg-cream dark:bg-dark-bg transition-colors duration-600 ease-in-out">
+      <nav className="border-b border-taupe/30 dark:border-dark-border bg-white/80 dark:bg-dark-surface/90 backdrop-blur-md sticky top-0 z-50 shadow-sm transition-all duration-600 ease-in-out">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href={homeLink} className="font-title text-2xl text-charcoal hover:text-sage transition-all duration-300 hover:scale-105">
-              Kevin & Tiffany
+            <Link 
+              href={homeLink} 
+              className="flex items-center gap-3 group font-title text-2xl text-charcoal dark:text-dark-text hover:text-sage dark:hover:text-sage transition-all duration-500 ease-out"
+            >
+              <div className="relative w-8 h-8 md:w-10 md:h-10 flex-shrink-0">
+                <img
+                  src="/favicon.png"
+                  alt=""
+                  className="w-full h-full object-contain transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
+                  style={{
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+                  }}
+                />
+              </div>
+              <span className="relative">
+                <span className="inline-block transition-transform duration-500 group-hover:scale-105">Kevin & Tiffany</span>
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-sage transition-all duration-500 group-hover:w-full"></span>
+              </span>
             </Link>
-            <div className="hidden md:flex space-x-8">
-              {navItems.map((item) => {
-                // Check if current path matches the nav item
-                let isActive = item.href === pathname || item.href.split('?')[0] === pathname
-                
-                if (item.label === 'Home') {
-                  // Home is active if we're on the home page (main or slug)
-                  if (pathname === '/' || (pathname?.startsWith('/rsvp/') && !searchParams?.get('form'))) {
-                    isActive = true
-                  } else {
-                    isActive = false
+            <div className="flex items-center gap-6">
+              {/* Navigation Items */}
+              <div className="hidden md:flex space-x-8">
+                {navItems.map((item) => {
+                  // Check if current path matches the nav item
+                  let isActive = item.href === pathname || item.href.split('?')[0] === pathname
+                  
+                  if (item.label === 'Home') {
+                    // Home is active if we're on the home page (main or slug)
+                    if (pathname === '/' || (pathname?.startsWith('/rsvp/') && !searchParams?.get('form'))) {
+                      isActive = true
+                    } else {
+                      isActive = false
+                    }
+                  } else if (item.label === 'RSVP') {
+                    // Only highlight RSVP if:
+                    // 1. We're on /rsvp (generic page)
+                    // 2. We're on /rsvp/[slug] with ?form=true (form page)
+                    // Don't highlight if we're on /rsvp/[slug] without ?form=true (home screen)
+                    if (pathname === '/rsvp') {
+                      isActive = true
+                    } else if (pathname?.startsWith('/rsvp/')) {
+                      // Check if we have the form parameter
+                      isActive = searchParams?.get('form') === 'true'
+                    }
+                  } else if (item.label === 'FAQ') {
+                    // FAQ is active if we're on /faq
+                    isActive = pathname === '/faq'
                   }
-                } else if (item.label === 'RSVP') {
-                  // Only highlight RSVP if:
-                  // 1. We're on /rsvp (generic page)
-                  // 2. We're on /rsvp/[slug] with ?form=true (form page)
-                  // Don't highlight if we're on /rsvp/[slug] without ?form=true (home screen)
-                  if (pathname === '/rsvp') {
-                    isActive = true
-                  } else if (pathname?.startsWith('/rsvp/')) {
-                    // Check if we have the form parameter
-                    isActive = searchParams?.get('form') === 'true'
-                  }
-                } else if (item.label === 'FAQ') {
-                  // FAQ is active if we're on /faq
-                  isActive = pathname === '/faq'
-                }
-                
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={`font-body text-sm tracking-wide transition-all duration-300 relative ${
-                      isActive
-                        ? 'text-charcoal'
-                        : 'text-charcoal/70 hover:text-charcoal'
-                    }`}
-                  >
-                    <span className="relative z-10">{item.label}</span>
-                    {isActive && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sage transition-all duration-300" />
-                    )}
-                    {!isActive && (
-                      <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sage scale-x-0 transition-transform duration-300 hover:scale-x-100 origin-left" />
-                    )}
-                  </Link>
-                )
-              })}
-            </div>
-            <div className="md:hidden">
-              <button className="text-charcoal">☰</button>
+                  
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`group font-body text-sm tracking-wide transition-all duration-500 ease-out relative py-2 ${
+                        isActive
+                          ? 'text-charcoal dark:text-dark-text'
+                          : 'text-charcoal/70 dark:text-dark-text-secondary hover:text-charcoal dark:hover:text-dark-text'
+                      }`}
+                    >
+                      <span className="relative z-10 inline-block transition-transform duration-300 group-hover:translate-y-[-2px]">
+                        {item.label}
+                      </span>
+                      {isActive && (
+                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sage transition-all duration-500 shadow-[0_0_8px_rgba(156,175,136,0.4)]" />
+                      )}
+                      {!isActive && (
+                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sage scale-x-0 transition-transform duration-500 hover:scale-x-100 origin-left group-hover:shadow-[0_0_8px_rgba(156,175,136,0.4)]" />
+                      )}
+                    </Link>
+                  )
+                })}
+              </div>
+              
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggle}
+                className="p-2 rounded-lg transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95 text-charcoal dark:text-dark-text"
+                aria-label="Toggle dark mode"
+              >
+                {isDark ? (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                )}
+              </button>
+              
+              {/* Mobile Menu Button */}
+              <div className="md:hidden">
+                <button 
+                  className="text-charcoal dark:text-dark-text p-2 rounded-lg transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95"
+                  aria-label="Menu"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </nav>
       <main>{children}</main>
-      <footer className="bg-charcoal text-white py-12 mt-20">
+      <footer className="bg-charcoal dark:bg-dark-surface text-white dark:text-dark-text py-12 mt-20 transition-all duration-600 ease-in-out">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="font-script text-2xl mb-2">With Love,</p>
-          <p className="font-title text-lg mb-2">Kevin & Tiffany</p>
+          <p className="font-script text-2xl mb-2 animate-fade-in-up">With Love,</p>
+          <p className="font-title text-lg mb-2 animate-fade-in-up animate-delay-200">Kevin & Tiffany</p>
           {dateRange && (
-            <p className="font-body text-sm text-white/70 tracking-wider">{dateRange}</p>
+            <p className="font-body text-sm text-white/70 dark:text-dark-text-secondary tracking-wider animate-fade-in-up animate-delay-300">{dateRange}</p>
           )}
-          <p className="font-script text-base text-white/60 mt-4">#tiffandko</p>
+          <p className="font-script text-base text-white/60 dark:text-dark-text-secondary mt-4 animate-fade-in-up animate-delay-400">#tiffandko</p>
         </div>
       </footer>
     </div>
@@ -164,12 +213,19 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-cream">
-        <nav className="border-b border-taupe/30 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+      <div className="min-h-screen bg-cream dark:bg-dark-bg transition-colors duration-500">
+        <nav className="border-b border-taupe/30 dark:border-dark-border bg-white/80 dark:bg-dark-surface/90 backdrop-blur-md sticky top-0 z-50 shadow-sm transition-all duration-500">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
-              <Link href="/" className="font-title text-2xl text-charcoal">
-                Kevin & Tiffany
+              <Link href="/" className="flex items-center gap-3 font-title text-2xl text-charcoal dark:text-dark-text">
+                <div className="relative w-8 h-8 md:w-10 md:h-10 flex-shrink-0">
+                  <img
+                    src="/favicon.png"
+                    alt=""
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <span>Kevin & Tiffany</span>
               </Link>
             </div>
           </div>

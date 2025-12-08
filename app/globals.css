@@ -2,6 +2,87 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent flash of unstyled content - set initial background */
+html {
+  background-color: #FAF8F3 !important;
+}
+
+html.dark {
+  background-color: #1A1A1A !important;
+}
+
+body {
+  background-color: #FAF8F3 !important;
+}
+
+html.dark body {
+  background-color: #1A1A1A !important;
+}
+
+/* Main layout container - only set background on top level */
+body > div {
+  background-color: #FAF8F3 !important;
+}
+
+html.dark body > div {
+  background-color: #1A1A1A !important;
+}
+
+/* Smooth dark mode transitions - but not for initial load */
+html.dark-mode-initialized * {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow, opacity, filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
+}
+
+/* Smooth transitions for specific elements */
+html.dark-mode-initialized body,
+html.dark-mode-initialized body > div,
+html.dark-mode-initialized section,
+html.dark-mode-initialized div[class*="bg-"],
+html.dark-mode-initialized nav,
+html.dark-mode-initialized main {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 600ms;
+}
+
+/* Smooth text color transitions */
+html.dark-mode-initialized h1,
+html.dark-mode-initialized h2,
+html.dark-mode-initialized h3,
+html.dark-mode-initialized p,
+html.dark-mode-initialized span,
+html.dark-mode-initialized label {
+  transition-property: color;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 500ms;
+}
+
+/* Smooth card and surface transitions */
+html.dark-mode-initialized [class*="bg-white"],
+html.dark-mode-initialized [class*="bg-cream"],
+html.dark-mode-initialized [class*="bg-dark"],
+html.dark-mode-initialized [class*="card"] {
+  transition-property: background-color, border-color, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 600ms;
+}
+
+/* Disable transitions on initial load to prevent flash */
+html:not(.dark-mode-initialized) * {
+  transition: none !important;
+}
+
+/* Override for interactive elements - slightly faster for responsiveness */
+html.dark-mode-initialized button,
+html.dark-mode-initialized a,
+html.dark-mode-initialized input,
+html.dark-mode-initialized textarea,
+html.dark-mode-initialized select {
+  transition-duration: 400ms;
+}
+
 @layer base {
   html {
     font-family: var(--font-artica);
@@ -255,5 +336,731 @@ button, a, input, textarea, select {
 
 .shadow-lift:hover {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Advanced scroll-triggered animations */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleInBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(156, 175, 136, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(156, 175, 136, 0.6);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Scroll reveal animations */
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-scale-in-bounce {
+  animation: scaleInBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+  opacity: 0;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Hero float animation - starts after all fade-ins complete (2s delay) */
+/* Combined animation that handles both fade-in and float without conflict */
+.animate-fade-in-up.hero-float-delayed {
+  /* Combine both animations - fade-in first, then float starts after 2s */
+  animation: 
+    fadeInUp 0.8s ease-out forwards,
+    float 3s ease-in-out 2s infinite;
+  /* Keep the initial opacity: 0 for fade-in to work */
+  opacity: 0;
+}
+
+/* Enhanced button effects */
+.btn-glow {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-glow::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.btn-glow:hover::before {
+  left: 100%;
+}
+
+.btn-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Smooth card hover effects */
+.card-hover {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px) rotateX(2deg);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Input focus glow */
+.input-glow:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(156, 175, 136, 0.2), 0 0 20px rgba(156, 175, 136, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Text gradient animation */
+.text-gradient {
+  background: linear-gradient(135deg, #2C2C2C 0%, #9CAF88 50%, #2C2C2C 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 3s ease infinite;
+}
+
+/* Smooth page transitions */
+.page-enter {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Loading skeleton shimmer */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Intersection Observer triggered animations */
+.fade-in-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-in-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Enhanced parallax */
+.parallax-fast {
+  transition: transform 0.1s ease-out;
+}
+
+.parallax-medium {
+  transition: transform 0.2s ease-out;
+}
+
+/* Smooth image reveal */
+.image-reveal {
+  opacity: 0;
+  transform: scale(1.1);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.image-reveal.loaded {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Magnetic button effect */
+.magnetic {
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.magnetic:hover {
+  transform: translateY(-4px) scale(1.02);
+}
+
+/* Ripple effect */
+.ripple {
+  position: relative;
+  overflow: hidden;
+}
+
+.ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.ripple:active::after {
+  width: 300px;
+  height: 300px;
+}
+
+/* Smooth text reveal */
+.text-reveal {
+  overflow: hidden;
+}
+
+.text-reveal span {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(100%);
+  animation: textReveal 0.8s ease-out forwards;
+}
+
+@keyframes textReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Glass morphism effect */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Smooth scale on hover */
+.scale-on-hover {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scale-on-hover:hover {
+  transform: scale(1.05);
+}
+
+/* Elegant underline animation */
+.elegant-underline {
+  position: relative;
+  text-decoration: none;
+}
+
+.elegant-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: currentColor;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.elegant-underline:hover::after {
+  width: 100%;
+}
+
+/* Smooth color transitions */
+.color-transition {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Enhanced focus visible */
+*:focus-visible {
+  outline: 2px solid rgba(156, 175, 136, 0.5);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Premium form input styles */
+.form-input-wrapper {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.form-input {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  background: white;
+  border: 2px solid rgba(232, 227, 216, 0.4);
+  border-radius: 0.5rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #2C2C2C;
+}
+
+.dark .form-input {
+  background: #2A2A2A;
+  border-color: #3A3A3A;
+  color: #E8E8E8;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #9CAF88;
+  box-shadow: 
+    0 0 0 4px rgba(156, 175, 136, 0.1),
+    0 4px 12px rgba(156, 175, 136, 0.15);
+  transform: translateY(-2px);
+}
+
+.form-input:hover:not(:focus) {
+  border-color: rgba(232, 227, 216, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.form-label {
+  display: block;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2C2C2C;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.01em;
+  transition: all 0.3s ease;
+  line-height: 1.5;
+}
+
+.dark .form-label {
+  color: #E8E8E8;
+}
+
+.form-label-required::after {
+  content: ' *';
+  color: #ef4444;
+  font-weight: 500;
+}
+
+/* Premium radio button styles */
+.radio-group {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.75rem;
+}
+
+.radio-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 2px solid transparent;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.radio-option:hover {
+  background: rgba(156, 175, 136, 0.05);
+  border-color: rgba(156, 175, 136, 0.2);
+}
+
+.dark .radio-option {
+  color: #E8E8E8;
+}
+
+.dark .radio-option:hover {
+  background: rgba(156, 175, 136, 0.15);
+  border-color: rgba(156, 175, 136, 0.3);
+}
+
+.radio-option input[type="radio"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.75rem;
+  cursor: pointer;
+  accent-color: #9CAF88;
+  transition: all 0.3s ease;
+}
+
+.radio-option input[type="radio"]:checked + span {
+  color: #9CAF88;
+  font-weight: 600;
+}
+
+.radio-option input[type="radio"]:checked {
+  transform: scale(1.1);
+}
+
+/* Premium checkbox styles */
+.checkbox-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.checkbox-option:hover {
+  background: rgba(156, 175, 136, 0.05);
+}
+
+.dark .checkbox-option {
+  color: #E8E8E8;
+}
+
+.dark .checkbox-option:hover {
+  background: rgba(156, 175, 136, 0.15);
+}
+
+.checkbox-option input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: 0.75rem;
+  cursor: pointer;
+  accent-color: #9CAF88;
+  transition: all 0.3s ease;
+}
+
+.checkbox-option input[type="checkbox"]:checked {
+  transform: scale(1.1);
+}
+
+/* Premium select styles */
+.form-select {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  background: white;
+  border: 2px solid rgba(232, 227, 216, 0.4);
+  border-radius: 0.5rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #2C2C2C;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CAF88'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1.25rem;
+  padding-right: 3rem;
+}
+
+.dark .form-select {
+  background-color: #2A2A2A;
+  border-color: #3A3A3A;
+  color: #E8E8E8;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #9CAF88;
+  box-shadow: 
+    0 0 0 4px rgba(156, 175, 136, 0.1),
+    0 4px 12px rgba(156, 175, 136, 0.15);
+  transform: translateY(-2px);
+}
+
+.form-select:hover:not(:focus) {
+  border-color: rgba(232, 227, 216, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Premium textarea styles */
+.form-textarea {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 1rem;
+  background: white;
+  border: 2px solid rgba(232, 227, 216, 0.4);
+  border-radius: 0.5rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #2C2C2C;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.dark .form-textarea {
+  background: #2A2A2A;
+  border-color: #3A3A3A;
+  color: #E8E8E8;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: #9CAF88;
+  box-shadow: 
+    0 0 0 4px rgba(156, 175, 136, 0.1),
+    0 4px 12px rgba(156, 175, 136, 0.15);
+  transform: translateY(-2px);
+}
+
+.form-textarea:hover:not(:focus) {
+  border-color: rgba(232, 227, 216, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Error message animation */
+.error-message {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  padding-left: 0.25rem;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Form section styling */
+.form-section {
+  margin-bottom: 3rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(232, 227, 216, 0.3);
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+}
+
+.form-section-title {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2C2C2C;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid rgba(156, 175, 136, 0.2);
+  position: relative;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+.dark .form-section-title {
+  color: #E8E8E8;
+  border-bottom-color: rgba(156, 175, 136, 0.3);
+}
+
+.form-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: #9CAF88;
+  transition: width 0.3s ease;
+}
+
+.form-section:hover .form-section-title::after {
+  width: 100px;
+}
+
+/* Event card premium styling */
+.event-card {
+  background: linear-gradient(to bottom, white, rgba(250, 248, 243, 0.5));
+  border: 2px solid rgba(232, 227, 216, 0.3);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .event-card {
+  background: linear-gradient(to bottom, #2A2A2A, #242424);
+  border-color: #3A3A3A;
+}
+
+.event-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, transparent, #9CAF88, transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.event-card:hover {
+  border-color: rgba(156, 175, 136, 0.5);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(156, 175, 136, 0.1);
+  transform: translateY(-4px);
+}
+
+.event-card:hover::before {
+  opacity: 1;
+}
+
+.event-card-title {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #2C2C2C;
+  margin-bottom: 0.5rem;
+}
+
+.dark .event-card-title {
+  color: #E8E8E8;
+}
+
+.event-card-details {
+  font-size: 0.875rem;
+  color: rgba(44, 44, 44, 0.7);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.dark .event-card-details {
+  color: rgba(232, 232, 232, 0.7);
+}
+
+.event-card-details::before {
+  content: '📍';
+  font-size: 1rem;
+}
+
+/* Submit button premium styling */
+.submit-button {
+  width: 100%;
+  padding: 1.25rem 2rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, #2C2C2C 0%, #1a1a1a 100%);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.submit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.submit-button:hover::before {
+  left: 100%;
+}
+
+.submit-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.submit-button:active {
+  transform: translateY(0);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.submit-button:disabled:hover {
+  transform: none;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
