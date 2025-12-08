@@ -82,8 +82,15 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         setRsvpLink('/rsvp')
         setDateRange(null) // No dates on main page
         localStorage.removeItem('rsvpSlug') // Clear only on main page
+      } else if (pathname === '/faq' || pathname === '/rsvp') {
+        // On FAQ or RSVP pages - always go to main homepage, not slug pages
+        setHomeLink('/')
+        setFaqLink('/faq')
+        setRsvpLink('/rsvp')
+        setDateRange(null)
+        // Don't clear localStorage here - keep it for slug page navigation
       } else if (storedSlug) {
-        // Other pages (like /faq) but we have a stored slug - keep slug context
+        // Other pages (like /travel) but we have a stored slug - keep slug context
         setHomeLink(storedSlug) // Home goes to slug home page
         setFaqLink('/faq') // FAQ stays as /faq (will use localStorage)
         setRsvpLink(`${storedSlug}?form=true`) // RSVP goes to slug form
@@ -250,14 +257,16 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           
           {/* Mobile Menu Dropdown with Backdrop */}
           {mobileMenuOpen && (
-            <>
+            <div className="md:hidden fixed inset-0 z-50 pointer-events-none">
+              {/* Backdrop */}
               <div 
-                className="md:hidden fixed inset-0 bg-black/40 backdrop-blur-sm z-40 mobile-menu-backdrop"
+                className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
                 onClick={() => setMobileMenuOpen(false)}
                 aria-hidden="true"
               />
-              <div className="md:hidden border-t border-taupe/30 dark:border-dark-border bg-white/95 dark:bg-dark-surface/95 backdrop-blur-xl mobile-menu-container relative z-50 shadow-2xl">
-                <div className="px-4 py-6 space-y-2">
+              {/* Menu Container */}
+              <div className="absolute top-16 left-0 right-0 bg-white/98 dark:bg-dark-surface/98 backdrop-blur-xl border-b border-taupe/30 dark:border-dark-border shadow-2xl pointer-events-auto mobile-menu-container">
+                <div className="px-4 py-4 space-y-1">
                   {navItems.map((item, index) => {
                     let isActive = item.href === pathname || item.href.split('?')[0] === pathname
                     
@@ -282,23 +291,23 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                         key={item.href}
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
-                        className={`mobile-menu-item block font-body text-lg tracking-wide transition-all duration-300 py-4 px-4 rounded-xl touch-ripple mobile-touch-glow ${
+                        className={`mobile-menu-item block font-body text-base tracking-wide transition-all duration-200 py-3.5 px-4 rounded-lg touch-ripple ${
                           isActive
-                            ? 'text-charcoal dark:text-dark-text bg-gradient-to-r from-sage/20 to-sage/10 dark:from-sage/30 dark:to-sage/20 border-l-4 border-sage shadow-sm'
-                            : 'text-charcoal/70 dark:text-dark-text-secondary active:text-charcoal dark:active:text-dark-text active:bg-taupe/20 dark:active:bg-dark-border/40'
+                            ? 'text-charcoal dark:text-dark-text bg-sage/15 dark:bg-sage/25 border-l-[3px] border-sage'
+                            : 'text-charcoal/80 dark:text-dark-text-secondary active:text-charcoal dark:active:text-dark-text active:bg-taupe/10 dark:active:bg-dark-border/30'
                         }`}
-                        style={{ animationDelay: `${index * 0.05}s` }}
+                        style={{ animationDelay: `${index * 0.04}s` }}
                       >
                         <span className="flex items-center gap-3">
-                          <span className="w-1.5 h-1.5 rounded-full bg-sage opacity-0 transition-opacity duration-300" style={{ opacity: isActive ? 1 : 0 }}></span>
-                          {item.label}
+                          <span className={`w-1.5 h-1.5 rounded-full bg-sage transition-all duration-200 ${isActive ? 'opacity-100' : 'opacity-0'}`}></span>
+                          <span className="font-medium">{item.label}</span>
                         </span>
                       </Link>
                     )
                   })}
                 </div>
               </div>
-            </>
+            </div>
           )}
         </div>
       </nav>
