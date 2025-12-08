@@ -1103,6 +1103,30 @@ button, a, input, textarea, select {
 /* Mobile menu container */
 .mobile-menu-container {
   animation: slideInFromTop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  isolation: isolate;
+}
+
+/* Ensure mobile menu is always on top */
+@media (max-width: 768px) {
+  nav {
+    position: relative;
+    z-index: 100 !important;
+  }
+  
+  /* Mobile menu overlay */
+  [class*="mobile-menu"] {
+    z-index: 9999 !important;
+  }
+  
+  /* Ensure no content overlaps the menu */
+  main,
+  section,
+  div[class*="container"],
+  div[class*="max-w"] {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 /* Stagger animation for menu items */

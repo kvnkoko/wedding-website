@@ -115,8 +115,8 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
   ]
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-dark-bg transition-colors duration-600 ease-in-out">
-      <nav className="border-b border-taupe/30 dark:border-dark-border bg-white dark:bg-dark-surface/90 backdrop-blur-md sticky top-0 z-50 shadow-sm transition-all duration-600 ease-in-out">
+    <div className="min-h-screen bg-cream dark:bg-dark-bg transition-colors duration-600 ease-in-out relative">
+      <nav className="border-b border-taupe/30 dark:border-dark-border bg-white dark:bg-dark-surface/90 backdrop-blur-md sticky top-0 z-[100] shadow-sm transition-all duration-600 ease-in-out relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link 
@@ -257,7 +257,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           
           {/* Mobile Menu Dropdown with Backdrop */}
           {mobileMenuOpen && (
-            <div className="md:hidden fixed inset-0 z-50 pointer-events-none">
+            <div className="md:hidden fixed inset-0 z-[9999] pointer-events-none">
               {/* Backdrop */}
               <div 
                 className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
@@ -265,7 +265,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 aria-hidden="true"
               />
               {/* Menu Container */}
-              <div className="absolute top-16 left-0 right-0 bg-white/98 dark:bg-dark-surface/98 backdrop-blur-xl border-b border-taupe/30 dark:border-dark-border shadow-2xl pointer-events-auto mobile-menu-container">
+              <div className="fixed top-16 left-0 right-0 bg-white/98 dark:bg-dark-surface/98 backdrop-blur-xl border-b border-taupe/30 dark:border-dark-border shadow-2xl pointer-events-auto mobile-menu-container z-[10000]">
                 <div className="px-4 py-4 space-y-1">
                   {navItems.map((item, index) => {
                     let isActive = item.href === pathname || item.href.split('?')[0] === pathname
@@ -311,7 +311,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           )}
         </div>
       </nav>
-      <main>{children}</main>
+      <main className="relative z-0">{children}</main>
       <footer className="bg-charcoal dark:bg-dark-surface text-white dark:text-dark-text py-12 mt-20 transition-all duration-600 ease-in-out">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-2 mb-2 animate-fade-in-up">
