@@ -300,7 +300,6 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               </div>
             </>
           )}
-          </div>
         </div>
       </nav>
       <main>{children}</main>
