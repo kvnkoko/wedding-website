@@ -41,7 +41,7 @@ export default function FirstVisitIndicator() {
       }`}
       style={{ 
         top: '4.125rem',
-        right: '4rem',
+        right: '6.5rem',
       }}
     >
       <div className="bg-white dark:bg-dark-card rounded-lg shadow-xl border border-taupe/20 dark:border-dark-border p-2 backdrop-blur-md">
