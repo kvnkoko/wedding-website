@@ -1127,6 +1127,22 @@ button, a, input, textarea, select {
     position: relative;
     z-index: 1;
   }
+  
+  /* Prevent body scroll when menu is open */
+  body:has([class*="mobile-menu-container"]) {
+    overflow: hidden;
+  }
+  
+  /* Ensure menu appears above all content */
+  .mobile-menu-container {
+    position: fixed !important;
+    top: 4rem !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 9999 !important;
+    max-height: calc(100vh - 4rem);
+    overflow-y: auto;
+  }
 }
 
 /* Stagger animation for menu items */

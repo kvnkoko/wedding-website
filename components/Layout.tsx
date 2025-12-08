@@ -257,16 +257,16 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
           
           {/* Mobile Menu Dropdown with Backdrop */}
           {mobileMenuOpen && (
-            <div className="md:hidden fixed inset-0 z-[9999] pointer-events-none">
-              {/* Backdrop */}
+            <div className="md:hidden fixed inset-0 z-[9999]">
+              {/* Backdrop - covers entire screen */}
               <div 
-                className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
+                className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
                 onClick={() => setMobileMenuOpen(false)}
                 aria-hidden="true"
               />
-              {/* Menu Container */}
-              <div className="fixed top-16 left-0 right-0 bg-white/98 dark:bg-dark-surface/98 backdrop-blur-xl border-b border-taupe/30 dark:border-dark-border shadow-2xl pointer-events-auto mobile-menu-container z-[10000]">
-                <div className="px-4 py-4 space-y-1">
+              {/* Menu Container - positioned below nav */}
+              <div className="absolute top-16 left-0 right-0 bg-white dark:bg-dark-surface backdrop-blur-xl border-b border-taupe/30 dark:border-dark-border shadow-2xl mobile-menu-container">
+                <div className="px-4 py-3 space-y-0.5">
                   {navItems.map((item, index) => {
                     let isActive = item.href === pathname || item.href.split('?')[0] === pathname
                     
