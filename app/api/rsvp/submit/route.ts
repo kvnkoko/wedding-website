@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
     const editToken = generateEditToken()
 
     // Check if migration has been applied - try to query the column directly
+    // Default to false (old schema) to be safe
     let useNewSchema = false
     try {
       // Try a simple query that will fail if column doesn't exist
@@ -68,15 +69,9 @@ export async function POST(request: NextRequest) {
       console.log('Schema check: Migration applied (new schema)')
     } catch (schemaCheckError: any) {
       // If query fails, column doesn't exist - use old schema
-      const errorMsg = schemaCheckError?.message || String(schemaCheckError)
-      if (errorMsg.includes('column') || errorMsg.includes('plus_one') || errorMsg.includes('does not exist')) {
-        console.log('Schema check: Migration not applied (old schema)')
-        useNewSchema = false
-      } else {
-        // Some other error - log it but assume old schema
-        console.error('Unexpected error checking schema:', errorMsg)
-        useNewSchema = false
-      }
+      // This is expected if migration hasn't been applied
+      useNewSchema = false
+      console.log('Schema check: Using old schema (migration not applied or check failed)')
     }
 
     // Prepare event responses data
@@ -139,9 +134,14 @@ export async function POST(request: NextRequest) {
         },
       })
     } catch (createError: any) {
-      // If creation fails and we were using new schema, try again without plusOne fields
+      // If creation fails, try again without plusOne fields (migration might not be applied)
       const errorMsg = createError?.message || String(createError)
-      if (useNewSchema && (errorMsg.includes('column') || errorMsg.includes('plus_one') || errorMsg.includes('does not exist'))) {
+      const isColumnError = errorMsg.includes('column') || 
+                           errorMsg.includes('plus_one') || 
+                           errorMsg.includes('does not exist') ||
+                           errorMsg.includes('Unknown column')
+      
+      if (isColumnError) {
         console.log('Retrying RSVP creation without plusOne fields (migration not applied)')
         // Retry with old schema format
         const oldSchemaData = Object.entries(eventResponses || {}).map(([eventId, response]) => {
@@ -152,31 +152,38 @@ export async function POST(request: NextRequest) {
           }
         })
         
-        rsvp = await prisma.rsvp.create({
-          data: {
-            inviteLinkConfigId,
-            name,
-            phone,
-            email: email || null,
-            side,
-            plusOne: hasAnyPlusOne,
-            plusOneName: null,
-            plusOneRelation: null,
-            dietaryRequirements: dietaryRequirements || null,
-            notes: notes || null,
-            editToken,
-            eventResponses: {
-              create: oldSchemaData,
-            },
-          },
-          include: {
-            eventResponses: {
-              include: {
-                event: true,
+        try {
+          rsvp = await prisma.rsvp.create({
+            data: {
+              inviteLinkConfigId,
+              name,
+              phone,
+              email: email || null,
+              side,
+              plusOne: hasAnyPlusOne,
+              plusOneName: null,
+              plusOneRelation: null,
+              dietaryRequirements: dietaryRequirements || null,
+              notes: notes || null,
+              editToken,
+              eventResponses: {
+                create: oldSchemaData,
               },
             },
-          },
-        })
+            include: {
+              eventResponses: {
+                include: {
+                  event: true,
+                },
+              },
+            },
+          })
+          console.log('RSVP created successfully with old schema')
+        } catch (retryError: any) {
+          // If retry also fails, throw the original error
+          console.error('Retry also failed:', retryError?.message)
+          throw createError
+        }
       } else {
         // Re-throw if it's a different error
         throw createError
@@ -214,22 +221,8 @@ export async function POST(request: NextRequest) {
       cause: error?.cause,
     })
     
-    // Check if it's a Prisma error about missing columns
-    const errorMessage = error?.message || String(error)
-    const isColumnError = errorMessage.includes('column') || 
-                         errorMessage.includes('plus_one') || 
-                         errorMessage.includes('does not exist') ||
-                         error?.code === 'P2021' // Prisma table/column doesn't exist
-    
-    if (isColumnError) {
-      return NextResponse.json(
-        { 
-          error: 'Database schema mismatch. Please contact administrator.',
-          details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
-        },
-        { status: 500 }
-      )
-    }
+    // Don't show schema mismatch error - the retry should have handled it
+    // If we get here, it's a different error
     
     return NextResponse.json(
       { 

@@ -133,6 +133,15 @@ export async function PUT(request: NextRequest) {
       },
     })
 
+    // Check if migration has been applied
+    let useNewSchema = false
+    try {
+      await prisma.$queryRaw`SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0`
+      useNewSchema = true
+    } catch {
+      useNewSchema = false
+    }
+
     // Update event responses
     if (eventResponses) {
       // Delete existing responses
@@ -140,13 +149,15 @@ export async function PUT(request: NextRequest) {
         where: { rsvpId: rsvp.id },
       })
 
-      // Create new responses with plus one data
-      await prisma.rsvpEventResponse.createMany({
-        data: Object.entries(eventResponses).map(([eventId, response]) => {
-          // Handle both old format (string) and new format (object)
-          const responseData = typeof response === 'string' 
-            ? { status: response, plusOne: false, plusOneName: null, plusOneRelation: null }
-            : response as any
+      // Prepare event responses data
+      const eventResponsesData = Object.entries(eventResponses).map(([eventId, response]) => {
+        // Handle both old format (string) and new format (object)
+        const responseData = typeof response === 'string' 
+          ? { status: response, plusOne: false, plusOneName: null, plusOneRelation: null }
+          : response as any
+        
+        // Only include plus one fields if migration has been applied
+        if (useNewSchema) {
           return {
             rsvpId: rsvp.id,
             eventId,
@@ -155,8 +166,40 @@ export async function PUT(request: NextRequest) {
             plusOneName: responseData.plusOne ? (responseData.plusOneName || null) : null,
             plusOneRelation: responseData.plusOne ? (responseData.plusOneRelation || null) : null,
           }
-        }),
+        } else {
+          return {
+            rsvpId: rsvp.id,
+            eventId,
+            status: responseData.status,
+          }
+        }
       })
+
+      // Create new responses - try with new schema, fallback to old if it fails
+      try {
+        await prisma.rsvpEventResponse.createMany({
+          data: eventResponsesData,
+        })
+      } catch (createError: any) {
+        // If creation fails and we were using new schema, try again without plusOne fields
+        const errorMsg = createError?.message || String(createError)
+        if (useNewSchema && (errorMsg.includes('column') || errorMsg.includes('plus_one') || errorMsg.includes('does not exist'))) {
+          console.log('Retrying event responses creation without plusOne fields')
+          const oldSchemaData = Object.entries(eventResponses).map(([eventId, response]) => {
+            const responseData = typeof response === 'string' ? response : (response as any).status
+            return {
+              rsvpId: rsvp.id,
+              eventId,
+              status: responseData,
+            }
+          })
+          await prisma.rsvpEventResponse.createMany({
+            data: oldSchemaData,
+          })
+        } else {
+          throw createError
+        }
+      }
     }
 
     const updatedRsvp = await prisma.rsvp.findUnique({
