@@ -68,8 +68,10 @@ export async function GET(request: NextRequest) {
           LIMIT 1
         `
         useNewSchema = Array.isArray(columnCheck) && columnCheck.length > 0
-      } catch (checkError) {
+        console.log('Dashboard schema check:', { useNewSchema, hasColumn: columnCheck?.length > 0 })
+      } catch (checkError: any) {
         // If check fails, assume old schema
+        console.log('Schema check failed, using old schema:', checkError?.message)
         useNewSchema = false
       }
     } catch (queryError: any) {
@@ -98,16 +100,22 @@ export async function GET(request: NextRequest) {
       // Count plus-ones based on schema version
       let plusOnes = 0
       if (useNewSchema) {
-        // New schema: count per-event plus ones
-        plusOnes = (event.rsvpResponses || []).filter((r: any) => r.status === 'YES' && r.plusOne === true).length
+        // New schema: count per-event plus ones from rsvpResponses
+        // Each rsvpResponse is a RsvpEventResponse record
+        plusOnes = responses.filter((r: any) => {
+          return r.status === 'YES' && (r.plusOne === true || r.plus_one === true)
+        }).length
       } else {
         // Old schema: count from RSVP level
-        const yesRsvps = allRsvps.filter((rsvp: any) =>
-          (rsvp.eventResponses || []).some(
+        // Find all RSVPs that have a YES response for this event
+        const yesRsvps = allRsvps.filter((rsvp: any) => {
+          const eventResponse = (rsvp.eventResponses || []).find(
             (er: any) => er.eventId === event.id && er.status === 'YES'
           )
-        )
-        plusOnes = yesRsvps.filter((r: any) => r.plusOne === true).length
+          return !!eventResponse
+        })
+        // Count how many of those RSVPs have plusOne = true
+        plusOnes = yesRsvps.filter((rsvp: any) => rsvp.plusOne === true).length
       }
       const totalAttendees = yesCount + plusOnes
 
@@ -126,10 +134,16 @@ export async function GET(request: NextRequest) {
     // Count total plus ones based on schema version
     let totalPlusOnes = 0
     if (useNewSchema) {
+      // New schema: count all per-event plus ones across all events
       totalPlusOnes = events.reduce((sum: number, event: any) => {
-        return sum + (event.rsvpResponses || []).filter((r: any) => r.status === 'YES' && r.plusOne === true).length
+        const eventPlusOnes = (event.rsvpResponses || []).filter((r: any) => {
+          return r.status === 'YES' && (r.plusOne === true || r.plus_one === true)
+        }).length
+        return sum + eventPlusOnes
       }, 0)
     } else {
+      // Old schema: count unique RSVPs that have plusOne = true
+      // (Each RSVP can only have one plus one in old schema)
       totalPlusOnes = allRsvps.filter((r: any) => r.plusOne === true).length
     }
 

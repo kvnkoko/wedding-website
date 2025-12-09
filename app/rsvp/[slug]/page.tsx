@@ -281,13 +281,18 @@ export default function RSVPFormPage() {
         }),
       })
 
-      if (!res.ok) throw new Error('Submission failed')
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        console.error('RSVP submission failed:', res.status, errorData)
+        throw new Error(errorData.error || errorData.details || 'Submission failed')
+      }
 
       const result = await res.json()
       setSubmissionData(result)
       setSubmitted(true)
-    } catch (error) {
-      alert('There was an error submitting your RSVP. Please try again.')
+    } catch (error: any) {
+      console.error('RSVP submission error:', error)
+      alert(error?.message || 'There was an error submitting your RSVP. Please try again.')
     } finally {
       setSubmitting(false)
     }

@@ -70,9 +70,41 @@ export async function POST(request: NextRequest) {
         LIMIT 1
       `
       useNewSchema = Array.isArray(columnCheck) && columnCheck.length > 0
-    } catch {
+      console.log('Schema check result:', { useNewSchema, columnCheckLength: columnCheck?.length })
+    } catch (schemaCheckError: any) {
+      console.log('Schema check failed, using old schema:', schemaCheckError?.message)
       useNewSchema = false
     }
+
+    // Prepare event responses data
+    const eventResponsesData = Object.entries(eventResponses || {}).map(([eventId, response]) => {
+      // Handle both old format (string) and new format (object)
+      const responseData = typeof response === 'string' 
+        ? { status: response, plusOne: false, plusOneName: null, plusOneRelation: null }
+        : response as any
+      
+      // Only include plus one fields if migration has been applied
+      if (useNewSchema) {
+        return {
+          eventId,
+          status: responseData.status,
+          plusOne: responseData.plusOne || false,
+          plusOneName: responseData.plusOne ? (responseData.plusOneName || null) : null,
+          plusOneRelation: responseData.plusOne ? (responseData.plusOneRelation || null) : null,
+        }
+      } else {
+        return {
+          eventId,
+          status: responseData.status,
+        }
+      }
+    })
+
+    console.log('Creating RSVP with:', {
+      useNewSchema,
+      eventResponsesCount: eventResponsesData.length,
+      firstResponse: eventResponsesData[0],
+    })
 
     // Create RSVP
     const rsvp = await prisma.rsvp.create({
@@ -89,28 +121,7 @@ export async function POST(request: NextRequest) {
         notes: notes || null,
         editToken,
         eventResponses: {
-          create: Object.entries(eventResponses || {}).map(([eventId, response]) => {
-            // Handle both old format (string) and new format (object)
-            const responseData = typeof response === 'string' 
-              ? { status: response, plusOne: false, plusOneName: null, plusOneRelation: null }
-              : response as any
-            
-            // Only include plus one fields if migration has been applied
-            if (useNewSchema) {
-              return {
-                eventId,
-                status: responseData.status,
-                plusOne: responseData.plusOne || false,
-                plusOneName: responseData.plusOne ? (responseData.plusOneName || null) : null,
-                plusOneRelation: responseData.plusOne ? (responseData.plusOneRelation || null) : null,
-              }
-            } else {
-              return {
-                eventId,
-                status: responseData.status,
-              }
-            }
-          }),
+          create: eventResponsesData,
         },
       },
       include: {
