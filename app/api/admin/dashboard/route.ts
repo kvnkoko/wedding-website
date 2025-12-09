@@ -58,13 +58,19 @@ export async function GET(request: NextRequest) {
         },
       })
 
-      // Check if plus_one column exists by trying to access it on first response
-      if (events.length > 0 && events[0].rsvpResponses && events[0].rsvpResponses.length > 0) {
-        const firstResponse = events[0].rsvpResponses[0] as any
-        // Check if plusOne property exists (will be undefined if column doesn't exist)
-        if ('plusOne' in firstResponse || firstResponse.plusOne !== undefined) {
-          useNewSchema = true
-        }
+      // Check if plus_one column exists by trying a raw query
+      try {
+        const columnCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
+          SELECT column_name 
+          FROM information_schema.columns 
+          WHERE table_name = 'rsvp_event_responses' 
+          AND column_name = 'plus_one'
+          LIMIT 1
+        `
+        useNewSchema = Array.isArray(columnCheck) && columnCheck.length > 0
+      } catch (checkError) {
+        // If check fails, assume old schema
+        useNewSchema = false
       }
     } catch (queryError: any) {
       console.error('Error querying database:', queryError?.message)

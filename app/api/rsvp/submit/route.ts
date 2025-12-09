@@ -59,6 +59,21 @@ export async function POST(request: NextRequest) {
 
     const editToken = generateEditToken()
 
+    // Check if migration has been applied
+    let useNewSchema = false
+    try {
+      const columnCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'rsvp_event_responses' 
+        AND column_name = 'plus_one'
+        LIMIT 1
+      `
+      useNewSchema = Array.isArray(columnCheck) && columnCheck.length > 0
+    } catch {
+      useNewSchema = false
+    }
+
     // Create RSVP
     const rsvp = await prisma.rsvp.create({
       data: {
@@ -79,12 +94,21 @@ export async function POST(request: NextRequest) {
             const responseData = typeof response === 'string' 
               ? { status: response, plusOne: false, plusOneName: null, plusOneRelation: null }
               : response as any
-            return {
-              eventId,
-              status: responseData.status,
-              plusOne: responseData.plusOne || false,
-              plusOneName: responseData.plusOne ? (responseData.plusOneName || null) : null,
-              plusOneRelation: responseData.plusOne ? (responseData.plusOneRelation || null) : null,
+            
+            // Only include plus one fields if migration has been applied
+            if (useNewSchema) {
+              return {
+                eventId,
+                status: responseData.status,
+                plusOne: responseData.plusOne || false,
+                plusOneName: responseData.plusOne ? (responseData.plusOneName || null) : null,
+                plusOneRelation: responseData.plusOne ? (responseData.plusOneRelation || null) : null,
+              }
+            } else {
+              return {
+                eventId,
+                status: responseData.status,
+              }
             }
           }),
         },
@@ -119,10 +143,19 @@ export async function POST(request: NextRequest) {
         plusOneRelation: er.plusOneRelation || null,
       })),
     })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error submitting RSVP:', error)
+    console.error('Error details:', {
+      message: error?.message,
+      stack: error?.stack,
+      code: error?.code,
+      meta: error?.meta,
+    })
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error?.message : undefined,
+      },
       { status: 500 }
     )
   }
