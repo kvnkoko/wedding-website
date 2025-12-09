@@ -40,7 +40,11 @@ export async function GET(request: NextRequest) {
 
     const events = await prisma.event.findMany({
       include: {
-        rsvpResponses: true,
+        rsvpResponses: {
+          include: {
+            rsvp: true,
+          },
+        },
       },
     })
 
@@ -55,13 +59,20 @@ export async function GET(request: NextRequest) {
       const yesCount = responses.filter((r) => r.status === 'YES').length
       const noCount = responses.filter((r) => r.status === 'NO').length
 
-      // Count plus-ones for YES responses
-      const yesRsvps = allRsvps.filter((rsvp) =>
-        rsvp.eventResponses.some(
-          (er) => er.eventId === event.id && er.status === 'YES'
+      // Count plus-ones for YES responses (per-event plus ones)
+      // Handle both old schema (no plusOne field) and new schema (with plusOne field)
+      let plusOnes = 0
+      try {
+        plusOnes = event.rsvpResponses.filter((r) => r.status === 'YES' && (r as any).plusOne === true).length
+      } catch {
+        // Fallback: if plusOne field doesn't exist, count from RSVP level (old behavior)
+        const yesRsvps = allRsvps.filter((rsvp) =>
+          rsvp.eventResponses.some(
+            (er) => er.eventId === event.id && er.status === 'YES'
+          )
         )
-      )
-      const plusOnes = yesRsvps.filter((r) => r.plusOne).length
+        plusOnes = yesRsvps.filter((r) => (r as any).plusOne === true).length
+      }
       const totalAttendees = yesCount + plusOnes
 
       return {
@@ -76,7 +87,16 @@ export async function GET(request: NextRequest) {
     })
 
     const totalRsvps = allRsvps.length
-    const totalPlusOnes = allRsvps.filter((r) => r.plusOne).length
+    // Count total plus ones across all events
+    let totalPlusOnes = 0
+    try {
+      totalPlusOnes = events.reduce((sum, event) => {
+        return sum + event.rsvpResponses.filter((r) => r.status === 'YES' && (r as any).plusOne === true).length
+      }, 0)
+    } catch {
+      // Fallback: use old RSVP-level plusOne field
+      totalPlusOnes = allRsvps.filter((r) => (r as any).plusOne === true).length
+    }
 
     return NextResponse.json({
       stats,
@@ -85,7 +105,7 @@ export async function GET(request: NextRequest) {
         totalPlusOnes,
       },
     })
-  } catch (error) {
+  } catch (error: any) {
     // During build, catch any errors and return empty data
     if (!process.env.DATABASE_URL) {
       return NextResponse.json({ 
@@ -94,8 +114,17 @@ export async function GET(request: NextRequest) {
       })
     }
     console.error('Error fetching dashboard stats:', error)
+    console.error('Error details:', {
+      message: error?.message,
+      stack: error?.stack,
+      name: error?.name,
+    })
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? error?.message : undefined,
+        hint: error?.message?.includes('prisma') ? 'Database connection issue. Check DATABASE_URL and ensure migrations are applied.' : undefined
+      },
       { status: 500 }
     )
   }
