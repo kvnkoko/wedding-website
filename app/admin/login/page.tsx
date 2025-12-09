@@ -20,18 +20,23 @@ export default function AdminLoginPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Ensure cookies are sent
       })
 
       if (!res.ok) {
         const data = await res.json()
         setError(data.error || 'Login failed')
+        setLoading(false)
         return
       }
 
-      router.push('/admin')
+      const data = await res.json()
+      
+      // Use window.location for a full page reload to ensure cookie is available
+      // This ensures the cookie is properly set before the admin layout checks auth
+      window.location.href = '/admin'
     } catch (err) {
       setError('An error occurred. Please try again.')
-    } finally {
       setLoading(false)
     }
   }

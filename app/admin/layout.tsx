@@ -19,7 +19,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     async function checkAuth() {
       try {
-        const res = await fetch('/api/admin/dashboard')
+        const res = await fetch('/api/admin/dashboard', {
+          credentials: 'include', // Ensure cookies are sent
+        })
         if (res.ok) {
           setAuthenticated(true)
         } else {
