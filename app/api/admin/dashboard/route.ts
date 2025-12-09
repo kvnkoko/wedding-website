@@ -38,53 +38,35 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Try to query with new schema first (per-event plus ones)
-    // If that fails (migration not applied), fall back to old schema
-    let events: any[]
-    let allRsvps: any[]
-    let useNewSchema = true
-    
+    // Check if migration has been applied by testing if columns exist
+    let useNewSchema = false
     try {
-      // Try querying with new schema (includes plusOne on RsvpEventResponse)
-      events = await prisma.event.findMany({
-        include: {
-          rsvpResponses: true,
-        },
-      })
-      
-      allRsvps = await prisma.rsvp.findMany({
-        include: {
-          eventResponses: true,
-        },
-      })
-      
-      // Test if plusOne field exists by checking first response
-      if (events.length > 0 && events[0].rsvpResponses.length > 0) {
-        const testResponse = events[0].rsvpResponses[0]
-        if (typeof (testResponse as any).plusOne === 'undefined') {
-          useNewSchema = false
-        }
-      }
-    } catch (schemaError: any) {
-      // If query fails due to missing columns, use old schema approach
-      if (schemaError?.message?.includes('column') || schemaError?.message?.includes('plusOne')) {
-        useNewSchema = false
-        // Re-query without the new fields
-        events = await prisma.event.findMany({
-          include: {
-            rsvpResponses: true,
-          },
-        })
-        
-        allRsvps = await prisma.rsvp.findMany({
-          include: {
-            eventResponses: true,
-          },
-        })
-      } else {
-        throw schemaError
-      }
+      const columnCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'rsvp_event_responses' 
+        AND column_name = 'plus_one'
+        LIMIT 1
+      `
+      useNewSchema = columnCheck.length > 0
+    } catch (checkError) {
+      // If check fails, assume old schema
+      console.log('Column check failed, using old schema:', checkError)
+      useNewSchema = false
     }
+
+    // Query events and RSVPs
+    const events = await prisma.event.findMany({
+      include: {
+        rsvpResponses: true,
+      },
+    })
+    
+    const allRsvps = await prisma.rsvp.findMany({
+      include: {
+        eventResponses: true,
+      },
+    })
 
     const stats = events.map((event) => {
       const responses = event.rsvpResponses
