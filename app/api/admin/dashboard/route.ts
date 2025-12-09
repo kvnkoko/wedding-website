@@ -38,34 +38,66 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const events = await prisma.event.findMany({
-      include: {
-        rsvpResponses: {
-          include: {
-            rsvp: true,
-          },
+    // Try to query with new schema first (per-event plus ones)
+    // If that fails (migration not applied), fall back to old schema
+    let events: any[]
+    let allRsvps: any[]
+    let useNewSchema = true
+    
+    try {
+      // Try querying with new schema (includes plusOne on RsvpEventResponse)
+      events = await prisma.event.findMany({
+        include: {
+          rsvpResponses: true,
         },
-      },
-    })
-
-    const allRsvps = await prisma.rsvp.findMany({
-      include: {
-        eventResponses: true,
-      },
-    })
+      })
+      
+      allRsvps = await prisma.rsvp.findMany({
+        include: {
+          eventResponses: true,
+        },
+      })
+      
+      // Test if plusOne field exists by checking first response
+      if (events.length > 0 && events[0].rsvpResponses.length > 0) {
+        const testResponse = events[0].rsvpResponses[0]
+        if (typeof (testResponse as any).plusOne === 'undefined') {
+          useNewSchema = false
+        }
+      }
+    } catch (schemaError: any) {
+      // If query fails due to missing columns, use old schema approach
+      if (schemaError?.message?.includes('column') || schemaError?.message?.includes('plusOne')) {
+        useNewSchema = false
+        // Re-query without the new fields
+        events = await prisma.event.findMany({
+          include: {
+            rsvpResponses: true,
+          },
+        })
+        
+        allRsvps = await prisma.rsvp.findMany({
+          include: {
+            eventResponses: true,
+          },
+        })
+      } else {
+        throw schemaError
+      }
+    }
 
     const stats = events.map((event) => {
       const responses = event.rsvpResponses
       const yesCount = responses.filter((r) => r.status === 'YES').length
       const noCount = responses.filter((r) => r.status === 'NO').length
 
-      // Count plus-ones for YES responses (per-event plus ones)
-      // Handle both old schema (no plusOne field) and new schema (with plusOne field)
+      // Count plus-ones based on schema version
       let plusOnes = 0
-      try {
+      if (useNewSchema) {
+        // New schema: count per-event plus ones
         plusOnes = event.rsvpResponses.filter((r) => r.status === 'YES' && (r as any).plusOne === true).length
-      } catch {
-        // Fallback: if plusOne field doesn't exist, count from RSVP level (old behavior)
+      } else {
+        // Old schema: count from RSVP level
         const yesRsvps = allRsvps.filter((rsvp) =>
           rsvp.eventResponses.some(
             (er) => er.eventId === event.id && er.status === 'YES'
@@ -87,14 +119,13 @@ export async function GET(request: NextRequest) {
     })
 
     const totalRsvps = allRsvps.length
-    // Count total plus ones across all events
+    // Count total plus ones based on schema version
     let totalPlusOnes = 0
-    try {
+    if (useNewSchema) {
       totalPlusOnes = events.reduce((sum, event) => {
         return sum + event.rsvpResponses.filter((r) => r.status === 'YES' && (r as any).plusOne === true).length
       }, 0)
-    } catch {
-      // Fallback: use old RSVP-level plusOne field
+    } else {
       totalPlusOnes = allRsvps.filter((r) => (r as any).plusOne === true).length
     }
 
