@@ -48,10 +48,10 @@ export async function GET(request: NextRequest) {
         AND column_name = 'plus_one'
         LIMIT 1
       `
-      useNewSchema = columnCheck.length > 0
-    } catch (checkError) {
+      useNewSchema = Array.isArray(columnCheck) && columnCheck.length > 0
+    } catch (checkError: any) {
       // If check fails, assume old schema
-      console.log('Column check failed, using old schema:', checkError)
+      console.log('Column check failed, using old schema:', checkError?.message || checkError)
       useNewSchema = false
     }
 
@@ -131,12 +131,20 @@ export async function GET(request: NextRequest) {
       message: error?.message,
       stack: error?.stack,
       name: error?.name,
+      code: (error as any)?.code,
     })
+    
+    // Return a more helpful error in development, generic in production
+    const errorMessage = error?.message || 'Unknown error'
+    const isDevelopment = process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'development'
+    
     return NextResponse.json(
       { 
         error: 'Internal server error',
-        details: process.env.NODE_ENV === 'development' ? error?.message : undefined,
-        hint: error?.message?.includes('prisma') ? 'Database connection issue. Check DATABASE_URL and ensure migrations are applied.' : undefined
+        details: isDevelopment ? errorMessage : undefined,
+        hint: errorMessage?.includes('prisma') || errorMessage?.includes('column') 
+          ? 'Database schema mismatch. Run migrations: npx prisma migrate deploy' 
+          : undefined
       },
       { status: 500 }
     )
