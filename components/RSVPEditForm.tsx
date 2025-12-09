@@ -27,12 +27,14 @@ interface FormData {
   phone: string
   email: string
   side: string
-  plusOne: boolean
-  plusOneName: string
-  plusOneRelation: string
   dietaryRequirements: string
   notes: string
   eventResponses: Record<string, string>
+  eventPlusOnes: Record<string, {
+    plusOne: boolean
+    plusOneName: string
+    plusOneRelation: string
+  }>
 }
 
 export default function RSVPEditForm({ editToken }: { editToken: string }) {
@@ -50,9 +52,12 @@ export default function RSVPEditForm({ editToken }: { editToken: string }) {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<FormData>()
-
-  const plusOne = watch('plusOne')
+  } = useForm<FormData>({
+    defaultValues: {
+      eventResponses: {},
+      eventPlusOnes: {},
+    },
+  })
 
   useEffect(() => {
     async function fetchRsvp() {
@@ -71,17 +76,23 @@ export default function RSVPEditForm({ editToken }: { editToken: string }) {
         setValue('phone', data.rsvp.phone)
         setValue('email', data.rsvp.email || '')
         setValue('side', data.rsvp.side)
-        setValue('plusOne', data.rsvp.plusOne)
-        setValue('plusOneName', data.rsvp.plusOneName || '')
-        setValue('plusOneRelation', data.rsvp.plusOneRelation || '')
         setValue('notes', data.rsvp.notes || '')
 
-        // Set event responses
+        // Set event responses and plus ones
         const responses: Record<string, string> = {}
+        const plusOnes: Record<string, any> = {}
         data.eventResponses.forEach((er: any) => {
           responses[er.eventId] = er.status
+          if (er.plusOne) {
+            plusOnes[er.eventId] = {
+              plusOne: true,
+              plusOneName: er.plusOneName || '',
+              plusOneRelation: er.plusOneRelation || '',
+            }
+          }
         })
         setValue('eventResponses', responses)
+        setValue('eventPlusOnes', plusOnes)
       } catch (error) {
         router.push('/')
       } finally {
@@ -94,11 +105,29 @@ export default function RSVPEditForm({ editToken }: { editToken: string }) {
   const onSubmit = async (data: FormData) => {
     setSubmitting(true)
     try {
+      // Prepare event responses with plus one data
+      const eventResponsesWithPlusOnes: Record<string, any> = {}
+      Object.entries(data.eventResponses || {}).forEach(([eventId, status]) => {
+        const plusOneData = data.eventPlusOnes?.[eventId]
+        eventResponsesWithPlusOnes[eventId] = {
+          status,
+          plusOne: plusOneData?.plusOne || false,
+          plusOneName: plusOneData?.plusOneName || null,
+          plusOneRelation: plusOneData?.plusOneRelation || null,
+        }
+      })
+
       const res = await fetch('/api/rsvp/edit', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...data,
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+          side: data.side,
+          dietaryRequirements: data.dietaryRequirements,
+          notes: data.notes,
+          eventResponses: eventResponsesWithPlusOnes,
           editToken,
         }),
       })
@@ -153,14 +182,6 @@ export default function RSVPEditForm({ editToken }: { editToken: string }) {
                   <p><strong>Phone:</strong> {submissionData.phone}</p>
                   {submissionData.email && <p><strong>Email:</strong> {submissionData.email}</p>}
                   <p><strong>Side:</strong> {submissionData.side}</p>
-                  {submissionData.plusOne && (
-                    <>
-                      <p><strong>Plus One:</strong> {submissionData.plusOneName}</p>
-                      {submissionData.plusOneRelation && (
-                        <p><strong>Relationship:</strong> {submissionData.plusOneRelation}</p>
-                      )}
-                    </>
-                  )}
                 </div>
               </div>
 
@@ -170,9 +191,23 @@ export default function RSVPEditForm({ editToken }: { editToken: string }) {
                   {submissionData.eventResponses?.map((er: any) => (
                     <div key={er.eventId} className="border-l-4 border-sage pl-4">
                       <p className="font-sans font-semibold text-charcoal">{er.eventName}</p>
-                      <p className="font-sans text-sm text-charcoal/70">
+                      <p className="font-sans text-sm text-charcoal/70 mb-2">
                         Status: <span className="uppercase">{er.status}</span>
                       </p>
+                      {/* Show plus one info for this event if attending with plus one */}
+                      {er.status === 'YES' && er.plusOne && (
+                        <div className="mt-2 pt-2 border-t border-taupe/20">
+                          <p className="font-sans text-xs text-charcoal/50 uppercase tracking-wide mb-1">Plus One</p>
+                          <p className="font-sans text-sm text-charcoal font-medium">
+                            {er.plusOneName || 'Name not provided'}
+                          </p>
+                          {er.plusOneRelation && (
+                            <p className="font-sans text-xs text-charcoal/60 mt-1">
+                              {er.plusOneRelation}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -293,47 +328,47 @@ export default function RSVPEditForm({ editToken }: { editToken: string }) {
                         <span className="font-sans text-sm text-charcoal">No</span>
                       </label>
                     </div>
+                    
+                    {/* Plus One for this event - only show if attending */}
+                    {watch(`eventResponses.${event.id}`) === 'YES' && (
+                      <div className="mt-6 pt-6 border-t border-taupe/30">
+                        <label className="flex items-center mb-4">
+                          <input
+                            type="checkbox"
+                            {...register(`eventPlusOnes.${event.id}.plusOne`)}
+                            className="mr-2"
+                          />
+                          <span className="font-sans text-sm text-charcoal">I will be bringing a plus-one to this event</span>
+                        </label>
+
+                        {watch(`eventPlusOnes.${event.id}.plusOne`) && (
+                          <div className="ml-6 space-y-4">
+                            <div>
+                              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                                Plus-One Name
+                              </label>
+                              <input
+                                {...register(`eventPlusOnes.${event.id}.plusOneName`)}
+                                className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                                placeholder="Enter their full name"
+                              />
+                            </div>
+                            <div>
+                              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                                Relationship
+                              </label>
+                              <input
+                                {...register(`eventPlusOnes.${event.id}.plusOneRelation`)}
+                                className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                                placeholder="e.g., Spouse, Partner, Friend"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
-              </div>
-            </section>
-
-            {/* Plus One */}
-            <section>
-              <h2 className="font-serif text-2xl text-charcoal mb-6">Plus One</h2>
-              <div className="space-y-4">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    {...register('plusOne')}
-                    className="mr-2"
-                  />
-                  <span className="font-sans text-sm text-charcoal">I will be bringing a plus-one</span>
-                </label>
-
-                {plusOne && (
-                  <>
-                    <div>
-                      <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                        Plus-One Name
-                      </label>
-                      <input
-                        {...register('plusOneName')}
-                        className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                        Relationship
-                      </label>
-                      <input
-                        {...register('plusOneRelation')}
-                        placeholder="e.g., Spouse, Partner, Friend"
-                        className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
-                      />
-                    </div>
-                  </>
-                )}
               </div>
             </section>
 

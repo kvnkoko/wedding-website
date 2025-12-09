@@ -61,6 +61,9 @@ export async function GET(request: NextRequest) {
       eventResponses: rsvp.eventResponses.map((er) => ({
         eventId: er.eventId,
         status: er.status,
+        plusOne: er.plusOne || false,
+        plusOneName: er.plusOneName || null,
+        plusOneRelation: er.plusOneRelation || null,
       })),
     })
   } catch (error) {
