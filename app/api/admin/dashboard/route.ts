@@ -85,23 +85,23 @@ export async function GET(request: NextRequest) {
     }
 
     const stats = events.map((event) => {
-      const responses = event.rsvpResponses
-      const yesCount = responses.filter((r) => r.status === 'YES').length
-      const noCount = responses.filter((r) => r.status === 'NO').length
+      const responses = event.rsvpResponses || []
+      const yesCount = responses.filter((r: any) => r.status === 'YES').length
+      const noCount = responses.filter((r: any) => r.status === 'NO').length
 
       // Count plus-ones based on schema version
       let plusOnes = 0
       if (useNewSchema) {
         // New schema: count per-event plus ones
-        plusOnes = event.rsvpResponses.filter((r) => r.status === 'YES' && (r as any).plusOne === true).length
+        plusOnes = (event.rsvpResponses || []).filter((r: any) => r.status === 'YES' && r.plusOne === true).length
       } else {
         // Old schema: count from RSVP level
-        const yesRsvps = allRsvps.filter((rsvp) =>
-          rsvp.eventResponses.some(
-            (er) => er.eventId === event.id && er.status === 'YES'
+        const yesRsvps = allRsvps.filter((rsvp: any) =>
+          (rsvp.eventResponses || []).some(
+            (er: any) => er.eventId === event.id && er.status === 'YES'
           )
         )
-        plusOnes = yesRsvps.filter((r) => (r as any).plusOne === true).length
+        plusOnes = yesRsvps.filter((r: any) => r.plusOne === true).length
       }
       const totalAttendees = yesCount + plusOnes
 
@@ -120,11 +120,11 @@ export async function GET(request: NextRequest) {
     // Count total plus ones based on schema version
     let totalPlusOnes = 0
     if (useNewSchema) {
-      totalPlusOnes = events.reduce((sum, event) => {
-        return sum + event.rsvpResponses.filter((r) => r.status === 'YES' && (r as any).plusOne === true).length
+      totalPlusOnes = events.reduce((sum: number, event: any) => {
+        return sum + (event.rsvpResponses || []).filter((r: any) => r.status === 'YES' && r.plusOne === true).length
       }, 0)
     } else {
-      totalPlusOnes = allRsvps.filter((r) => (r as any).plusOne === true).length
+      totalPlusOnes = allRsvps.filter((r: any) => r.plusOne === true).length
     }
 
     return NextResponse.json({
