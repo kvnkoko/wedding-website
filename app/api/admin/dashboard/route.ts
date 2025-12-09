@@ -38,40 +38,51 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Check if migration has been applied by testing if columns exist
-    // Use a safe approach that won't fail if query has issues
+    // Query events and RSVPs - use try-catch for each query
+    let events: any[] = []
+    let allRsvps: any[] = []
     let useNewSchema = false
+
     try {
-      // Try a simple query that will fail if column doesn't exist
-      const testQuery = await prisma.$queryRaw<Array<any>>`
-        SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0
-      `
-      useNewSchema = true
-    } catch (checkError: any) {
-      // If query fails, column doesn't exist - use old schema
-      const errorMsg = checkError?.message || String(checkError)
-      if (errorMsg.includes('column') || errorMsg.includes('plus_one') || errorMsg.includes('does not exist')) {
-        console.log('Migration not applied, using old schema')
+      // Try to query events with rsvpResponses
+      events = await prisma.event.findMany({
+        include: {
+          rsvpResponses: true,
+        },
+      })
+      
+      // Try to query RSVPs with eventResponses
+      allRsvps = await prisma.rsvp.findMany({
+        include: {
+          eventResponses: true,
+        },
+      })
+
+      // Check if plus_one column exists by trying to access it on first response
+      if (events.length > 0 && events[0].rsvpResponses && events[0].rsvpResponses.length > 0) {
+        const firstResponse = events[0].rsvpResponses[0] as any
+        // Check if plusOne property exists (will be undefined if column doesn't exist)
+        if ('plusOne' in firstResponse || firstResponse.plusOne !== undefined) {
+          useNewSchema = true
+        }
+      }
+    } catch (queryError: any) {
+      console.error('Error querying database:', queryError?.message)
+      // If query fails, try without includes
+      try {
+        events = await prisma.event.findMany()
+        allRsvps = await prisma.rsvp.findMany()
         useNewSchema = false
-      } else {
-        // Some other error - log it but still try old schema
-        console.error('Unexpected error checking schema:', errorMsg)
-        useNewSchema = false
+      } catch (fallbackError: any) {
+        console.error('Fallback query also failed:', fallbackError?.message)
+        // Return empty data if queries fail
+        return NextResponse.json({
+          stats: [],
+          totals: { totalRsvps: 0, totalPlusOnes: 0 },
+          error: 'Database query failed',
+        })
       }
     }
-
-    // Query events and RSVPs
-    const events = await prisma.event.findMany({
-      include: {
-        rsvpResponses: true,
-      },
-    })
-    
-    const allRsvps = await prisma.rsvp.findMany({
-      include: {
-        eventResponses: true,
-      },
-    })
 
     const stats = events.map((event) => {
       const responses = event.rsvpResponses
