@@ -81,9 +81,6 @@ export async function PUT(request: NextRequest) {
       phone,
       email,
       side,
-      plusOne,
-      plusOneName,
-      plusOneRelation,
       dietaryRequirements,
       notes,
       eventResponses,
@@ -112,6 +109,11 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid token' }, { status: 404 })
     }
 
+    // Determine if there's any plus one (for backward compatibility)
+    const hasAnyPlusOne = Object.values(eventResponses || {}).some((response: any) => 
+      typeof response === 'object' && response?.plusOne === true
+    )
+
     // Update RSVP
     const rsvp = await prisma.rsvp.update({
       where: { editToken },
@@ -120,9 +122,9 @@ export async function PUT(request: NextRequest) {
         phone,
         email: email || null,
         side,
-        plusOne: plusOne || false,
-        plusOneName: plusOne ? plusOneName || null : null,
-        plusOneRelation: plusOne ? plusOneRelation || null : null,
+        plusOne: hasAnyPlusOne, // Keep for backward compatibility
+        plusOneName: null, // No longer used at RSVP level
+        plusOneRelation: null, // No longer used at RSVP level
         dietaryRequirements: dietaryRequirements || null,
         notes: notes || null,
       },
@@ -135,13 +137,22 @@ export async function PUT(request: NextRequest) {
         where: { rsvpId: rsvp.id },
       })
 
-      // Create new responses
+      // Create new responses with plus one data
       await prisma.rsvpEventResponse.createMany({
-        data: Object.entries(eventResponses).map(([eventId, status]) => ({
-          rsvpId: rsvp.id,
-          eventId,
-          status: status as string,
-        })),
+        data: Object.entries(eventResponses).map(([eventId, response]) => {
+          // Handle both old format (string) and new format (object)
+          const responseData = typeof response === 'string' 
+            ? { status: response, plusOne: false, plusOneName: null, plusOneRelation: null }
+            : response as any
+          return {
+            rsvpId: rsvp.id,
+            eventId,
+            status: responseData.status,
+            plusOne: responseData.plusOne || false,
+            plusOneName: responseData.plusOne ? (responseData.plusOneName || null) : null,
+            plusOneRelation: responseData.plusOne ? (responseData.plusOneRelation || null) : null,
+          }
+        }),
       })
     }
 
@@ -171,6 +182,9 @@ export async function PUT(request: NextRequest) {
         eventId: er.eventId,
         eventName: er.event.name,
         status: er.status,
+        plusOne: er.plusOne || false,
+        plusOneName: er.plusOneName || null,
+        plusOneRelation: er.plusOneRelation || null,
       })),
     })
   } catch (error) {

@@ -11,9 +11,6 @@ export async function POST(request: NextRequest) {
       phone,
       email,
       side,
-      plusOne,
-      plusOneName,
-      plusOneRelation,
       dietaryRequirements,
       notes,
       eventResponses,
@@ -54,6 +51,11 @@ export async function POST(request: NextRequest) {
         )
       }
     }
+    
+    // Determine if there's any plus one (for backward compatibility)
+    const hasAnyPlusOne = Object.values(eventResponses || {}).some((response: any) => 
+      typeof response === 'object' && response?.plusOne === true
+    )
 
     const editToken = generateEditToken()
 
@@ -65,17 +67,26 @@ export async function POST(request: NextRequest) {
         phone,
         email: email || null,
         side,
-        plusOne: plusOne || false,
-        plusOneName: plusOne ? plusOneName || null : null,
-        plusOneRelation: plusOne ? plusOneRelation || null : null,
+        plusOne: hasAnyPlusOne, // Keep for backward compatibility
+        plusOneName: null, // No longer used at RSVP level
+        plusOneRelation: null, // No longer used at RSVP level
         dietaryRequirements: dietaryRequirements || null,
         notes: notes || null,
         editToken,
         eventResponses: {
-          create: Object.entries(eventResponses || {}).map(([eventId, status]) => ({
-            eventId,
-            status: status as string,
-          })),
+          create: Object.entries(eventResponses || {}).map(([eventId, response]) => {
+            // Handle both old format (string) and new format (object)
+            const responseData = typeof response === 'string' 
+              ? { status: response, plusOne: false, plusOneName: null, plusOneRelation: null }
+              : response as any
+            return {
+              eventId,
+              status: responseData.status,
+              plusOne: responseData.plusOne || false,
+              plusOneName: responseData.plusOne ? (responseData.plusOneName || null) : null,
+              plusOneRelation: responseData.plusOne ? (responseData.plusOneRelation || null) : null,
+            }
+          }),
         },
       },
       include: {
@@ -103,6 +114,9 @@ export async function POST(request: NextRequest) {
         eventId: er.eventId,
         eventName: er.event.name,
         status: er.status,
+        plusOne: er.plusOne || false,
+        plusOneName: er.plusOneName || null,
+        plusOneRelation: er.plusOneRelation || null,
       })),
     })
   } catch (error) {

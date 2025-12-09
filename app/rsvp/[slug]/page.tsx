@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { formatDate, formatDateRange } from '@/lib/utils'
 import PhotoCarouselSection from '@/components/PhotoCarouselSection'
-import { User, Calendar, UserPlus, Note, CheckCircle, EnvelopeSimple, Phone, X } from 'phosphor-react'
+import { User, Calendar, Note, CheckCircle, EnvelopeSimple, Phone, X } from 'phosphor-react'
 
 // Parallax scroll effect
 function useParallax() {
@@ -45,12 +45,14 @@ interface FormData {
   phone: string
   email: string
   side: string
-  plusOne: boolean
-  plusOneName: string
-  plusOneRelation: string
   dietaryRequirements: string
   notes: string
   eventResponses: Record<string, string>
+  eventPlusOnes: Record<string, {
+    plusOne: boolean
+    plusOneName: string
+    plusOneRelation: string
+  }>
 }
 
 
@@ -213,13 +215,11 @@ export default function RSVPFormPage() {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      plusOne: false,
       side: 'Both',
       eventResponses: {},
+      eventPlusOnes: {},
     },
   })
-
-  const plusOne = watch('plusOne')
 
   // Fetch config when page loads
   useEffect(() => {
@@ -254,11 +254,29 @@ export default function RSVPFormPage() {
   const onSubmit = async (data: FormData) => {
     setSubmitting(true)
     try {
+      // Prepare event responses with plus one data
+      const eventResponsesWithPlusOnes: Record<string, any> = {}
+      Object.entries(data.eventResponses || {}).forEach(([eventId, status]) => {
+        const plusOneData = data.eventPlusOnes?.[eventId]
+        eventResponsesWithPlusOnes[eventId] = {
+          status,
+          plusOne: plusOneData?.plusOne || false,
+          plusOneName: plusOneData?.plusOneName || null,
+          plusOneRelation: plusOneData?.plusOneRelation || null,
+        }
+      })
+
       const res = await fetch('/api/rsvp/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...data,
+          name: data.name,
+          phone: data.phone,
+          email: data.email,
+          side: data.side,
+          dietaryRequirements: data.dietaryRequirements,
+          notes: data.notes,
+          eventResponses: eventResponsesWithPlusOnes,
           inviteLinkConfigId: config?.id,
         }),
       })
@@ -385,20 +403,6 @@ export default function RSVPFormPage() {
                       <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Side</p>
                       <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.side}</p>
                     </div>
-                    {submissionData.plusOne && (
-                      <>
-                        <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
-                          <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Plus One</p>
-                          <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.plusOneName}</p>
-                        </div>
-                        {submissionData.plusOneRelation && (
-                          <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
-                            <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Relationship</p>
-                            <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.plusOneRelation}</p>
-                          </div>
-                        )}
-                      </>
-                    )}
                   </div>
                 </div>
 
@@ -414,7 +418,7 @@ export default function RSVPFormPage() {
                         className="event-card"
                         style={{ animationDelay: `${index * 0.1}s` }}
                       >
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between mb-3">
                           <div>
                             <p className="event-card-title">{er.eventName}</p>
                             <p className="text-sm text-charcoal/60 dark:text-dark-text-secondary mt-1">
@@ -431,6 +435,22 @@ export default function RSVPFormPage() {
                             )}
                           </div>
                         </div>
+                        {/* Show plus one info for this event if attending with plus one */}
+                        {er.status === 'YES' && er.plusOne && (
+                          <div className="mt-4 pt-4 border-t border-taupe/20 dark:border-dark-border">
+                            <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-2">Plus One</p>
+                            <div className="space-y-2">
+                              <p className="text-sm text-charcoal dark:text-dark-text font-medium" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                                {er.plusOneName || 'Name not provided'}
+                              </p>
+                              {er.plusOneRelation && (
+                                <p className="text-xs text-charcoal/60 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                                  {er.plusOneRelation}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -589,6 +609,42 @@ export default function RSVPFormPage() {
                         <span>Sorry, can't make it</span>
                       </label>
                     </div>
+                    
+                    {/* Plus One for this event - only show if attending */}
+                    {watch(`eventResponses.${event.id}`) === 'YES' && (
+                      <div className="mt-6 pt-6 border-t border-taupe/20 dark:border-dark-border animate-fade-in-up">
+                        <label className="checkbox-option mb-4">
+                          <input
+                            type="checkbox"
+                            {...register(`eventPlusOnes.${event.id}.plusOne`)}
+                          />
+                          <span className="text-base text-charcoal dark:text-dark-text" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                            I will be bringing a plus-one to this event
+                          </span>
+                        </label>
+
+                        {watch(`eventPlusOnes.${event.id}.plusOne`) && (
+                          <div className="ml-8 space-y-4 animate-fade-in-up bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl border border-taupe/20 dark:border-dark-border">
+                            <div className="form-input-wrapper">
+                              <label className="form-label">Plus-One Name</label>
+                              <input
+                                {...register(`eventPlusOnes.${event.id}.plusOneName`)}
+                                className="form-input touch-ripple"
+                                placeholder="Enter their full name"
+                              />
+                            </div>
+                            <div className="form-input-wrapper">
+                              <label className="form-label">Relationship</label>
+                              <input
+                                {...register(`eventPlusOnes.${event.id}.plusOneRelation`)}
+                                className="form-input touch-ripple"
+                                placeholder="e.g., Spouse, Partner, Friend"
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -599,44 +655,6 @@ export default function RSVPFormPage() {
                   </p>
                 </div>
               )}
-            </section>
-
-            {/* Plus One */}
-            <section className="form-section">
-              <h2 className="form-section-title flex items-center gap-3">
-                <UserPlus className="w-6 h-6 text-sage" weight="duotone" />
-                Plus One
-              </h2>
-              <div className="space-y-6">
-                <label className="checkbox-option">
-                  <input
-                    type="checkbox"
-                    {...register('plusOne')}
-                  />
-                  <span className="text-base text-charcoal dark:text-dark-text" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>I will be bringing a plus-one</span>
-                </label>
-
-                {plusOne && (
-                  <div className="ml-8 space-y-6 animate-fade-in-up bg-taupe/5 dark:bg-dark-surface p-6 rounded-xl border border-taupe/20 dark:border-dark-border">
-                    <div className="form-input-wrapper">
-                      <label className="form-label">Plus-One Name</label>
-                      <input
-                        {...register('plusOneName')}
-                        className="form-input touch-ripple"
-                        placeholder="Enter their full name"
-                      />
-                    </div>
-                    <div className="form-input-wrapper">
-                      <label className="form-label">Relationship</label>
-                      <input
-                        {...register('plusOneRelation')}
-                        className="form-input touch-ripple"
-                        placeholder="e.g., Spouse, Partner, Friend"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
             </section>
 
             {/* Additional Information */}
