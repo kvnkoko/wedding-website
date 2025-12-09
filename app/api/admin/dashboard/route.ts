@@ -39,20 +39,25 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if migration has been applied by testing if columns exist
+    // Use a safe approach that won't fail if query has issues
     let useNewSchema = false
     try {
-      const columnCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
-        SELECT column_name 
-        FROM information_schema.columns 
-        WHERE table_name = 'rsvp_event_responses' 
-        AND column_name = 'plus_one'
-        LIMIT 1
+      // Try a simple query that will fail if column doesn't exist
+      const testQuery = await prisma.$queryRaw<Array<any>>`
+        SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0
       `
-      useNewSchema = Array.isArray(columnCheck) && columnCheck.length > 0
+      useNewSchema = true
     } catch (checkError: any) {
-      // If check fails, assume old schema
-      console.log('Column check failed, using old schema:', checkError?.message || checkError)
-      useNewSchema = false
+      // If query fails, column doesn't exist - use old schema
+      const errorMsg = checkError?.message || String(checkError)
+      if (errorMsg.includes('column') || errorMsg.includes('plus_one') || errorMsg.includes('does not exist')) {
+        console.log('Migration not applied, using old schema')
+        useNewSchema = false
+      } else {
+        // Some other error - log it but still try old schema
+        console.error('Unexpected error checking schema:', errorMsg)
+        useNewSchema = false
+      }
     }
 
     // Query events and RSVPs
