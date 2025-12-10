@@ -585,10 +585,78 @@ export default function RSVPFormPage() {
 
             {/* Event Responses */}
             <section className="form-section">
-              <h2 className="form-section-title flex items-center gap-3">
-                <Calendar className="w-6 h-6 text-sage" weight="duotone" />
-                Event Responses
-              </h2>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="form-section-title flex items-center gap-3">
+                  <Calendar className="w-6 h-6 text-sage" weight="duotone" />
+                  Event Responses
+                </h2>
+                {/* Copy Plus One Button - Show at top if conditions are met */}
+                {config && config.events && config.events.length > 1 && (() => {
+                  const eventResponses = watch('eventResponses') || {}
+                  const eventPlusOnes = watch('eventPlusOnes') || {}
+                  
+                  // Find events where user is attending (YES)
+                  const attendingEvents = config.events.filter(event => eventResponses[event.id] === 'YES')
+                  
+                  // Find the first event with complete plus one info
+                  const sourceEvent = config.events.find(event => {
+                    const plusOne = eventPlusOnes[event.id]
+                    return plusOne?.plusOne && plusOne?.plusOneName && plusOne.plusOneName.trim()
+                  })
+                  
+                  // Check if there are other attending events that don't have the same plus one info
+                  const needsCopy = sourceEvent && attendingEvents.some(event => {
+                    if (event.id === sourceEvent.id) return false
+                    const targetPlusOne = eventPlusOnes[event.id]
+                    const sourcePlusOne = eventPlusOnes[sourceEvent.id]
+                    return !targetPlusOne?.plusOne || 
+                           targetPlusOne.plusOneName !== sourcePlusOne?.plusOneName ||
+                           targetPlusOne.plusOneRelation !== sourcePlusOne?.plusOneRelation
+                  })
+                  
+                  const handleCopyPlusOne = () => {
+                    if (!sourceEvent) return
+                    
+                    const sourcePlusOne = eventPlusOnes[sourceEvent.id]
+                    if (!sourcePlusOne?.plusOneName) return
+                    
+                    // Copy to all other attending events
+                    attendingEvents.forEach(event => {
+                      if (event.id !== sourceEvent.id && eventResponses[event.id] === 'YES') {
+                        setValue(`eventPlusOnes.${event.id}.plusOne`, true)
+                        setValue(`eventPlusOnes.${event.id}.plusOneName`, sourcePlusOne.plusOneName)
+                        setValue(`eventPlusOnes.${event.id}.plusOneRelation`, sourcePlusOne.plusOneRelation || '')
+                      }
+                    })
+                    
+                    setPlusOneCopied(true)
+                    setTimeout(() => setPlusOneCopied(false), 3000)
+                  }
+                  
+                  if (needsCopy) {
+                    return (
+                      <button
+                        type="button"
+                        onClick={handleCopyPlusOne}
+                        className="flex items-center gap-2 px-4 py-2 bg-sage/10 dark:bg-sage/20 hover:bg-sage/20 dark:hover:bg-sage/30 text-sage dark:text-sage/90 rounded-lg text-sm font-medium transition-all duration-200 border border-sage/30 dark:border-sage/40 shadow-sm hover:shadow-md touch-ripple"
+                      >
+                        {plusOneCopied ? (
+                          <>
+                            <Check className="w-4 h-4" weight="bold" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="w-4 h-4" weight="duotone" />
+                            <span>Copy Plus One to All</span>
+                          </>
+                        )}
+                      </button>
+                    )
+                  }
+                  return null
+                })()}
+              </div>
               {config && config.events && config.events.length > 0 ? (
               <div className="space-y-4">
                 {config.events.map((event, index) => (
@@ -665,88 +733,6 @@ export default function RSVPFormPage() {
                   </p>
                 </div>
               )}
-
-              {/* Copy Plus One Button */}
-              {config && config.events && config.events.length > 1 && (() => {
-                const eventResponses = watch('eventResponses') || {}
-                const eventPlusOnes = watch('eventPlusOnes') || {}
-                
-                // Find events where user is attending (YES)
-                const attendingEvents = config.events.filter(event => eventResponses[event.id] === 'YES')
-                
-                // Find the first event with complete plus one info
-                const sourceEvent = config.events.find(event => {
-                  const plusOne = eventPlusOnes[event.id]
-                  return plusOne?.plusOne && plusOne?.plusOneName && plusOne.plusOneName.trim()
-                })
-                
-                // Check if there are other attending events that don't have the same plus one info
-                const needsCopy = sourceEvent && attendingEvents.some(event => {
-                  if (event.id === sourceEvent.id) return false
-                  const targetPlusOne = eventPlusOnes[event.id]
-                  const sourcePlusOne = eventPlusOnes[sourceEvent.id]
-                  return !targetPlusOne?.plusOne || 
-                         targetPlusOne.plusOneName !== sourcePlusOne?.plusOneName ||
-                         targetPlusOne.plusOneRelation !== sourcePlusOne?.plusOneRelation
-                })
-                
-                const handleCopyPlusOne = () => {
-                  if (!sourceEvent) return
-                  
-                  const sourcePlusOne = eventPlusOnes[sourceEvent.id]
-                  if (!sourcePlusOne?.plusOneName) return
-                  
-                  // Copy to all other attending events
-                  attendingEvents.forEach(event => {
-                    if (event.id !== sourceEvent.id && eventResponses[event.id] === 'YES') {
-                      setValue(`eventPlusOnes.${event.id}.plusOne`, true)
-                      setValue(`eventPlusOnes.${event.id}.plusOneName`, sourcePlusOne.plusOneName)
-                      setValue(`eventPlusOnes.${event.id}.plusOneRelation`, sourcePlusOne.plusOneRelation || '')
-                    }
-                  })
-                  
-                  setPlusOneCopied(true)
-                  setTimeout(() => setPlusOneCopied(false), 3000)
-                }
-                
-                if (needsCopy) {
-                  return (
-                    <div className="mt-6 p-4 bg-sage/10 dark:bg-sage/20 border border-sage/30 dark:border-sage/40 rounded-xl animate-fade-in-up">
-                      <div className="flex items-start gap-3">
-                        <div className="flex-shrink-0 mt-0.5">
-                          <Copy className="w-5 h-5 text-sage dark:text-sage/90" weight="duotone" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-charcoal dark:text-dark-text mb-1" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                            Same plus-one for all events?
-                          </p>
-                          <p className="text-xs text-charcoal/60 dark:text-dark-text-secondary mb-3" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                            Copy the plus-one information to all events you're attending
-                          </p>
-                          <button
-                            type="button"
-                            onClick={handleCopyPlusOne}
-                            className="flex items-center gap-2 px-4 py-2 bg-sage text-white rounded-lg text-sm font-medium hover:bg-sage/90 transition-all duration-200 shadow-sm hover:shadow-md touch-ripple"
-                          >
-                            {plusOneCopied ? (
-                              <>
-                                <Check className="w-4 h-4" weight="bold" />
-                                <span>Copied!</span>
-                              </>
-                            ) : (
-                              <>
-                                <Copy className="w-4 h-4" weight="duotone" />
-                                <span>Copy to All Events</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                }
-                return null
-              })()}
             </section>
 
             {/* Additional Information */}

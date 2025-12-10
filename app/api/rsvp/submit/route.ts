@@ -66,24 +66,32 @@ export async function POST(request: NextRequest) {
 
     const editToken = generateEditToken()
 
-    // Use old schema only (no per-event plus one fields) to ensure it works
-    // This will work regardless of whether migration has been applied
+    // Prepare event responses data with plus one information
     const eventResponsesData = Object.entries(eventResponses || {}).map(([eventId, response]) => {
       // Handle both old format (string) and new format (object)
       let status: string
+      let plusOne = false
+      let plusOneName: string | null = null
+      let plusOneRelation: string | null = null
+      
       if (typeof response === 'string') {
         status = response
       } else if (response && typeof response === 'object' && 'status' in response) {
         status = (response as any).status
+        plusOne = (response as any).plusOne || false
+        plusOneName = (response as any).plusOneName || null
+        plusOneRelation = (response as any).plusOneRelation || null
       } else {
         console.error('Invalid response format:', response)
         throw new Error(`Invalid event response format for event ${eventId}`)
       }
       
-      // Only include status - no plusOne fields
       return {
         eventId,
         status: status,
+        plusOne,
+        plusOneName,
+        plusOneRelation,
       }
     })
 
@@ -197,9 +205,9 @@ export async function POST(request: NextRequest) {
               rsvpId: newRsvp.id,
               eventId: responseData.eventId,
               status: responseData.status,
-              plusOne: false,
-              plusOneName: null,
-              plusOneRelation: null,
+              plusOne: responseData.plusOne || false,
+              plusOneName: responseData.plusOneName || null,
+              plusOneRelation: responseData.plusOneRelation || null,
             })),
           })
         } else {
@@ -208,14 +216,42 @@ export async function POST(request: NextRequest) {
             throw new Error('Could not determine actual column names for rsvp_event_responses table')
           }
           
+          // Check if plus_one columns exist in old schema
+          let hasPlusOneColumns = false
+          try {
+            const plusOneCheck = await tx.$queryRaw<Array<{ column_name: string }>>`
+              SELECT column_name 
+              FROM information_schema.columns 
+              WHERE table_name = 'rsvp_event_responses' 
+              AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation')
+              LIMIT 3
+            `
+            hasPlusOneColumns = Array.isArray(plusOneCheck) && plusOneCheck.length === 3
+          } catch {
+            hasPlusOneColumns = false
+          }
+          
           for (const responseData of eventResponsesData) {
-            // Use the actual column names we detected
-            await tx.$executeRawUnsafe(
-              `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
-              newRsvp.id,
-              responseData.eventId,
-              responseData.status
-            )
+            if (hasPlusOneColumns) {
+              // Include plus one fields if columns exist
+              await tx.$executeRawUnsafe(
+                `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", plus_one, plus_one_name, plus_one_relation, "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, NOW(), NOW())`,
+                newRsvp.id,
+                responseData.eventId,
+                responseData.status,
+                responseData.plusOne || false,
+                responseData.plusOneName || null,
+                responseData.plusOneRelation || null
+              )
+            } else {
+              // Use the actual column names we detected (no plus one columns)
+              await tx.$executeRawUnsafe(
+                `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
+                newRsvp.id,
+                responseData.eventId,
+                responseData.status
+              )
+            }
           }
         }
 
