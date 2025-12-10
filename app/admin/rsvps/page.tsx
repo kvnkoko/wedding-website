@@ -542,20 +542,32 @@ export default function AdminRSVPsPage() {
                             {getStatusBadge(er.status)}
                           </div>
                           {/* Per-Event Plus One */}
-                          {er.status === 'YES' && er.plusOne && (
+                          {er.status === 'YES' && er.plusOne ? (
                             <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
-                              <div className="flex items-center gap-2 text-xs text-charcoal/70 dark:text-dark-text-secondary">
-                                <UserPlus className="w-3.5 h-3.5 text-sage" weight="duotone" />
-                                <span className="font-medium">Plus One:</span>
-                                <span>{er.plusOneName || 'Guest'}</span>
-                                {er.plusOneRelation && (
-                                  <span className="text-charcoal/50 dark:text-dark-text-secondary">
-                                    ({er.plusOneRelation})
-                                  </span>
-                                )}
+                              <div className="flex items-start gap-2">
+                                <UserPlus className="w-4 h-4 text-sage flex-shrink-0 mt-0.5" weight="duotone" />
+                                <div className="flex-1">
+                                  <div className="text-xs font-semibold text-charcoal dark:text-dark-text mb-1">
+                                    Plus One
+                                  </div>
+                                  <div className="text-sm text-charcoal dark:text-dark-text font-medium">
+                                    {er.plusOneName || 'Name not provided'}
+                                  </div>
+                                  {er.plusOneRelation && (
+                                    <div className="text-xs text-charcoal/60 dark:text-dark-text-secondary mt-1">
+                                      {er.plusOneRelation}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          )}
+                          ) : er.status === 'YES' ? (
+                            <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
+                              <div className="text-xs text-charcoal/40 dark:text-dark-text-secondary italic">
+                                No plus one
+                              </div>
+                            </div>
+                          ) : null}
                         </div>
                       ))}
                     </div>

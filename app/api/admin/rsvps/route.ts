@@ -128,17 +128,53 @@ export async function GET(request: NextRequest) {
         } else {
           // Old schema - use raw SQL with actual column names
           if (actualColumnNames) {
-            const responses = await prisma.$queryRawUnsafe<Array<{
-              id: string;
-              rsvpId: string;
-              eventId: string;
-              status: string;
-            }>>(
-              `SELECT id, "${actualColumnNames.rsvpId}" as "rsvpId", "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status
-               FROM rsvp_event_responses
-               WHERE "${actualColumnNames.rsvpId}" = $1`,
-              rsvp.id
-            )
+            // Try to check if plus_one column exists
+            let hasPlusOneColumn = false
+            try {
+              const plusOneCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
+                SELECT column_name 
+                FROM information_schema.columns 
+                WHERE table_name = 'rsvp_event_responses' 
+                AND column_name IN ('plus_one', 'plusOne', 'plus_one_name', 'plusOneName')
+                LIMIT 1
+              `
+              hasPlusOneColumn = Array.isArray(plusOneCheck) && plusOneCheck.length > 0
+            } catch {
+              hasPlusOneColumn = false
+            }
+
+            let responses: any[]
+            if (hasPlusOneColumn) {
+              // Query with plus one fields
+              responses = await prisma.$queryRawUnsafe<Array<{
+                id: string;
+                rsvpId: string;
+                eventId: string;
+                status: string;
+                plusOne?: boolean;
+                plusOneName?: string | null;
+                plusOneRelation?: string | null;
+              }>>(
+                `SELECT id, "${actualColumnNames.rsvpId}" as "rsvpId", "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status,
+                        plus_one as "plusOne", plus_one_name as "plusOneName", plus_one_relation as "plusOneRelation"
+                 FROM rsvp_event_responses
+                 WHERE "${actualColumnNames.rsvpId}" = $1`,
+                rsvp.id
+              )
+            } else {
+              // Query without plus one fields
+              responses = await prisma.$queryRawUnsafe<Array<{
+                id: string;
+                rsvpId: string;
+                eventId: string;
+                status: string;
+              }>>(
+                `SELECT id, "${actualColumnNames.rsvpId}" as "rsvpId", "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status
+                 FROM rsvp_event_responses
+                 WHERE "${actualColumnNames.rsvpId}" = $1`,
+                rsvp.id
+              )
+            }
             
             const eventIds = responses.map(r => r.eventId)
             const events = eventIds.length > 0 ? await prisma.event.findMany({
@@ -148,9 +184,9 @@ export async function GET(request: NextRequest) {
             
             ;(rsvp as any).eventResponses = responses.map(r => ({
               ...r,
-              plusOne: false,
-              plusOneName: null,
-              plusOneRelation: null,
+              plusOne: r.plusOne || false,
+              plusOneName: r.plusOneName || null,
+              plusOneRelation: r.plusOneRelation || null,
               event: events.find(e => e.id === r.eventId) || { id: r.eventId, name: 'Unknown Event' },
             }))
           } else {
