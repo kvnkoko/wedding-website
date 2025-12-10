@@ -38,6 +38,15 @@ export async function GET(request: NextRequest) {
       ]
     }
 
+    // Check if new schema exists to avoid querying non-existent columns
+    let hasNewSchema = false
+    try {
+      await prisma.$queryRaw`SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0`
+      hasNewSchema = true
+    } catch {
+      hasNewSchema = false
+    }
+
     const rsvps = await prisma.rsvp.findMany({
       where,
       include: {
@@ -47,21 +56,52 @@ export async function GET(request: NextRequest) {
             label: true,
           },
         },
-        eventResponses: {
-          include: {
-            event: {
-              select: {
-                id: true,
-                name: true,
+        // Only include eventResponses if we can query them safely
+        ...(hasNewSchema ? {
+          eventResponses: {
+            include: {
+              event: {
+                select: {
+                  id: true,
+                  name: true,
+                },
               },
             },
           },
-        },
+        } : {}),
       },
       orderBy: {
         createdAt: 'desc',
       },
     })
+
+    // If old schema, manually fetch event responses
+    if (!hasNewSchema) {
+      for (const rsvp of rsvps) {
+        const responses = await prisma.$queryRawUnsafe<Array<{
+          id: string;
+          rsvpId: string;
+          eventId: string;
+          status: string;
+        }>>(
+          `SELECT id, rsvp_id as "rsvpId", event_id as "eventId", status
+           FROM rsvp_event_responses
+           WHERE rsvp_id = $1`,
+          rsvp.id
+        )
+        
+        const eventIds = responses.map(r => r.eventId)
+        const events = eventIds.length > 0 ? await prisma.event.findMany({
+          where: { id: { in: eventIds } },
+          select: { id: true, name: true },
+        }) : []
+        
+        ;(rsvp as any).eventResponses = responses.map(r => ({
+          ...r,
+          event: events.find(e => e.id === r.eventId) || { id: r.eventId, name: 'Unknown Event' },
+        }))
+      }
+    }
 
     return NextResponse.json(rsvps)
   } catch (error) {

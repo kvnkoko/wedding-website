@@ -238,22 +238,23 @@ export async function POST(request: NextRequest) {
             where: { id: newRsvp.id },
           })
           
-          // Manually fetch event responses without plusOne fields
-          const responses = await tx.$queryRaw<Array<{
+          // Manually fetch event responses without plusOne fields using raw SQL with actual column names
+          const responses = await tx.$queryRawUnsafe<Array<{
             id: string;
             rsvpId: string;
             eventId: string;
             status: string;
             createdAt: Date;
             updatedAt: Date;
-          }>>`
-            SELECT id, ${actualColumnNames!.rsvpId} as "rsvpId", ${actualColumnNames!.eventId} as "eventId", 
-                   ${actualColumnNames!.status} as status, 
-                   ${actualColumnNames!.createdAt} as "createdAt", 
-                   ${actualColumnNames!.updatedAt} as "updatedAt"
-            FROM rsvp_event_responses
-            WHERE ${actualColumnNames!.rsvpId} = ${newRsvp.id}
-          `
+          }>>(
+            `SELECT id, "${actualColumnNames!.rsvpId}" as "rsvpId", "${actualColumnNames!.eventId}" as "eventId", 
+                    "${actualColumnNames!.status}" as status, 
+                    "${actualColumnNames!.createdAt}" as "createdAt", 
+                    "${actualColumnNames!.updatedAt}" as "updatedAt"
+             FROM rsvp_event_responses
+             WHERE "${actualColumnNames!.rsvpId}" = $1`,
+            newRsvp.id
+          )
           
           // Fetch events for each response
           const eventIds = responses.map(r => r.eventId)
