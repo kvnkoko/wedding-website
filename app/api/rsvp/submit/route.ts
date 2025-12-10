@@ -113,6 +113,17 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // Check if the new schema columns exist
+      let hasNewSchema = false
+      try {
+        await prisma.$queryRaw`SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0`
+        hasNewSchema = true
+        console.log('Database has new schema (with plus_one columns)')
+      } catch (schemaCheckError: any) {
+        hasNewSchema = false
+        console.log('Database has old schema (no plus_one columns)')
+      }
+
       // Try to create RSVP - use a transaction to ensure atomicity
       rsvp = await prisma.$transaction(async (tx) => {
         // First create the RSVP
@@ -132,26 +143,29 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        // Then create event responses one by one to avoid schema issues
-        const createdResponses = []
-        for (const responseData of eventResponsesData) {
-          try {
-            const response = await tx.rsvpEventResponse.create({
+        // Create event responses using raw SQL to avoid schema mismatch
+        // This works regardless of whether the migration has been applied
+        if (hasNewSchema) {
+          // New schema - use Prisma normally
+          for (const responseData of eventResponsesData) {
+            await tx.rsvpEventResponse.create({
               data: {
                 rsvpId: newRsvp.id,
                 eventId: responseData.eventId,
                 status: responseData.status,
+                plusOne: false,
+                plusOneName: null,
+                plusOneRelation: null,
               },
             })
-            createdResponses.push(response)
-          } catch (responseError: any) {
-            console.error('Error creating event response:', {
-              eventId: responseData.eventId,
-              status: responseData.status,
-              error: responseError?.message,
-              code: responseError?.code,
-            })
-            throw responseError
+          }
+        } else {
+          // Old schema - use raw SQL to insert only the fields that exist
+          for (const responseData of eventResponsesData) {
+            await tx.$executeRaw`
+              INSERT INTO rsvp_event_responses (id, rsvp_id, event_id, status, created_at, updated_at)
+              VALUES (gen_random_uuid()::text, ${newRsvp.id}, ${responseData.eventId}, ${responseData.status}, NOW(), NOW())
+            `
           }
         }
 
@@ -182,11 +196,12 @@ export async function POST(request: NextRequest) {
         eventResponsesData: eventResponsesData,
       })
       
-      // If it's a Prisma error about missing columns, provide a helpful message
-      if (createError?.code === 'P2021' || createError?.message?.includes('column') || createError?.message?.includes('does not exist')) {
-        console.error('Database schema mismatch detected. Migration may not be applied.')
-        throw new Error('Database schema mismatch. Please contact support.')
-      }
+      // Log the error but don't throw a generic message - let the actual error through
+      console.error('RSVP creation error details:', {
+        code: createError?.code,
+        message: createError?.message,
+        meta: createError?.meta,
+      })
       
       throw createError
     }
