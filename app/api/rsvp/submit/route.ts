@@ -103,6 +103,13 @@ export async function POST(request: NextRequest) {
       side,
       eventResponsesCount: eventResponsesData.length,
       sampleResponse: eventResponsesData[0],
+      allEventResponses: eventResponsesData.map(r => ({
+        eventId: r.eventId,
+        status: r.status,
+        plusOne: r.plusOne,
+        plusOneName: r.plusOneName,
+        plusOneRelation: r.plusOneRelation,
+      })),
     })
 
     // Create RSVP
