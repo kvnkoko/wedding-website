@@ -100,6 +100,19 @@ export async function POST(request: NextRequest) {
     // Create RSVP
     let rsvp
     try {
+      // Ensure all event response data is valid
+      if (!eventResponsesData || eventResponsesData.length === 0) {
+        throw new Error('No event responses provided')
+      }
+
+      // Validate all statuses are valid
+      const validStatuses = ['YES', 'NO', 'MAYBE']
+      for (const response of eventResponsesData) {
+        if (!validStatuses.includes(response.status)) {
+          throw new Error(`Invalid status: ${response.status} for event ${response.eventId}`)
+        }
+      }
+
       rsvp = await prisma.rsvp.create({
         data: {
           inviteLinkConfigId,
@@ -132,7 +145,15 @@ export async function POST(request: NextRequest) {
         code: createError?.code,
         meta: createError?.meta,
         stack: createError?.stack,
+        eventResponsesData: eventResponsesData,
       })
+      
+      // If it's a Prisma error about missing columns, provide a helpful message
+      if (createError?.code === 'P2021' || createError?.message?.includes('column') || createError?.message?.includes('does not exist')) {
+        console.error('Database schema mismatch detected. Migration may not be applied.')
+        throw new Error('Database schema mismatch. Please contact support.')
+      }
+      
       throw createError
     }
 
