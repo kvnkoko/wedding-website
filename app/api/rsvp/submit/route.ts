@@ -113,51 +113,18 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Check if the new schema columns exist and get actual column names
+      // Check if the new schema columns exist BEFORE the transaction
       let hasNewSchema = false
-      let columnNames: { rsvpId: string; eventId: string; status: string; createdAt: string; updatedAt: string } | null = null
-      
       try {
-        // Try to query the new schema column
         await prisma.$queryRaw`SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0`
         hasNewSchema = true
         console.log('Database has new schema (with plus_one columns)')
       } catch (schemaCheckError: any) {
         hasNewSchema = false
         console.log('Database has old schema (no plus_one columns)')
-        
-        // Query actual column names from information_schema
-        try {
-          const columns = await prisma.$queryRaw<Array<{ column_name: string }>>`
-            SELECT column_name 
-            FROM information_schema.columns 
-            WHERE table_name = 'rsvp_event_responses'
-            ORDER BY ordinal_position
-          `
-          
-          // Find the actual column names
-          const rsvpIdCol = columns.find(c => c.column_name.toLowerCase().includes('rsvp') && c.column_name.toLowerCase().includes('id'))?.column_name
-          const eventIdCol = columns.find(c => c.column_name.toLowerCase().includes('event') && c.column_name.toLowerCase().includes('id'))?.column_name
-          const statusCol = columns.find(c => c.column_name.toLowerCase() === 'status')?.column_name
-          const createdAtCol = columns.find(c => c.column_name.toLowerCase().includes('created'))?.column_name
-          const updatedAtCol = columns.find(c => c.column_name.toLowerCase().includes('updated'))?.column_name
-          
-          if (rsvpIdCol && eventIdCol && statusCol && createdAtCol && updatedAtCol) {
-            columnNames = {
-              rsvpId: rsvpIdCol,
-              eventId: eventIdCol,
-              status: statusCol,
-              createdAt: createdAtCol,
-              updatedAt: updatedAtCol,
-            }
-            console.log('Found column names:', columnNames)
-          }
-        } catch (columnCheckError: any) {
-          console.error('Could not query column names:', columnCheckError?.message)
-        }
       }
 
-      // Try to create RSVP - use a transaction to ensure atomicity
+      // Create RSVP and event responses in a transaction
       rsvp = await prisma.$transaction(async (tx) => {
         // First create the RSVP
         const newRsvp = await tx.rsvp.create({
@@ -176,70 +143,30 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        // Create event responses
-        // Use Prisma's createMany - it handles column mapping automatically
-        // If schema doesn't match, we'll catch and handle it
-        try {
-          if (hasNewSchema) {
-            // New schema - include plus one fields
-            await tx.rsvpEventResponse.createMany({
-              data: eventResponsesData.map((responseData) => ({
-                rsvpId: newRsvp.id,
-                eventId: responseData.eventId,
-                status: responseData.status,
-                plusOne: false,
-                plusOneName: null,
-                plusOneRelation: null,
-              })),
-            })
-          } else {
-            // Old schema - only include basic fields
-            // Prisma will map camelCase to snake_case automatically
-            await tx.rsvpEventResponse.createMany({
-              data: eventResponsesData.map((responseData) => ({
-                rsvpId: newRsvp.id,
-                eventId: responseData.eventId,
-                status: responseData.status,
-              })),
-            })
-          }
-        } catch (createError: any) {
-          // If createMany fails, try creating one by one to see which one fails
-          console.error('createMany failed, trying individual creates:', createError?.message)
-          
+        // Create event responses - use the schema we detected
+        if (hasNewSchema) {
+          // New schema - include plus one fields
+          await tx.rsvpEventResponse.createMany({
+            data: eventResponsesData.map((responseData) => ({
+              rsvpId: newRsvp.id,
+              eventId: responseData.eventId,
+              status: responseData.status,
+              plusOne: false,
+              plusOneName: null,
+              plusOneRelation: null,
+            })),
+          })
+        } else {
+          // Old schema - only include fields that exist
+          // Create one by one to handle any errors gracefully
           for (const responseData of eventResponsesData) {
-            try {
-              if (hasNewSchema) {
-                await tx.rsvpEventResponse.create({
-                  data: {
-                    rsvpId: newRsvp.id,
-                    eventId: responseData.eventId,
-                    status: responseData.status,
-                    plusOne: false,
-                    plusOneName: null,
-                    plusOneRelation: null,
-                  },
-                })
-              } else {
-                // For old schema, Prisma should still work - it just won't set the plusOne fields
-                // But we need to make sure we're not including them
-                await tx.rsvpEventResponse.create({
-                  data: {
-                    rsvpId: newRsvp.id,
-                    eventId: responseData.eventId,
-                    status: responseData.status,
-                  },
-                })
-              }
-            } catch (individualError: any) {
-              console.error('Individual create failed:', {
+            await tx.rsvpEventResponse.create({
+              data: {
+                rsvpId: newRsvp.id,
                 eventId: responseData.eventId,
-                error: individualError?.message,
-                code: individualError?.code,
-                meta: individualError?.meta,
-              })
-              throw individualError
-            }
+                status: responseData.status,
+              },
+            })
           }
         }
 
