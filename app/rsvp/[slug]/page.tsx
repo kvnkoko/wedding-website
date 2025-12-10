@@ -284,7 +284,10 @@ export default function RSVPFormPage() {
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}))
         console.error('RSVP submission failed:', res.status, errorData)
-        throw new Error(errorData.error || errorData.details || 'Submission failed')
+        // Show more detailed error message
+        const errorMsg = errorData.details || errorData.error || 'Submission failed'
+        console.error('Full error details:', JSON.stringify(errorData, null, 2))
+        throw new Error(errorMsg)
       }
 
       const result = await res.json()

@@ -254,12 +254,16 @@ export async function POST(request: NextRequest) {
       )
     }
     
-    // Return detailed error in development, generic in production
+    // Return detailed error - include more info to help debug
+    const isDevelopment = process.env.NODE_ENV === 'development' || process.env.VERCEL_ENV === 'development'
+    
     return NextResponse.json(
       { 
         error: 'Internal server error',
-        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
-        code: process.env.NODE_ENV === 'development' ? errorCode : undefined,
+        details: isDevelopment ? errorMessage : errorMessage.substring(0, 200), // Show first 200 chars even in production
+        code: isDevelopment ? errorCode : undefined,
+        // Include error code if it's a Prisma error
+        prismaCode: errorCode?.startsWith('P') ? errorCode : undefined,
       },
       { status: 500 }
     )
