@@ -169,14 +169,21 @@ export async function POST(request: NextRequest) {
       dietaryRequirements: rsvp.dietaryRequirements,
       notes: rsvp.notes,
       editToken: rsvp.editToken,
-      eventResponses: rsvp.eventResponses.map((er: any) => ({
-        eventId: er.eventId,
-        eventName: er.event.name,
-        status: er.status,
-        plusOne: (er.plusOne || er.plus_one) || false,
-        plusOneName: (er.plusOneName || er.plus_one_name) || null,
-        plusOneRelation: (er.plusOneRelation || er.plus_one_relation) || null,
-      })),
+      eventResponses: rsvp.eventResponses.map((er: any) => {
+        // Safely access plus one fields - they may not exist if migration hasn't been applied
+        const plusOne = er.plusOne !== undefined ? er.plusOne : (er.plus_one !== undefined ? er.plus_one : false)
+        const plusOneName = er.plusOneName !== undefined ? er.plusOneName : (er.plus_one_name !== undefined ? er.plus_one_name : null)
+        const plusOneRelation = er.plusOneRelation !== undefined ? er.plusOneRelation : (er.plus_one_relation !== undefined ? er.plus_one_relation : null)
+        
+        return {
+          eventId: er.eventId,
+          eventName: er.event.name,
+          status: er.status,
+          plusOne,
+          plusOneName,
+          plusOneRelation,
+        }
+      }),
     })
   } catch (error: any) {
     console.error('Error submitting RSVP:', error)
