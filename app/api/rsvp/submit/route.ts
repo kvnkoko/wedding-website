@@ -176,61 +176,45 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        // Create event responses
-        if (hasNewSchema) {
-          // New schema - use Prisma normally
-          for (const responseData of eventResponsesData) {
-            await tx.rsvpEventResponse.create({
-              data: {
-                rsvpId: newRsvp.id,
-                eventId: responseData.eventId,
-                status: responseData.status,
+        // Create event responses - try Prisma first, fallback to raw SQL
+        try {
+          // Try using Prisma - it will work if schema matches
+          await tx.rsvpEventResponse.createMany({
+            data: eventResponsesData.map((responseData) => ({
+              rsvpId: newRsvp.id,
+              eventId: responseData.eventId,
+              status: responseData.status,
+              ...(hasNewSchema ? {
                 plusOne: false,
                 plusOneName: null,
                 plusOneRelation: null,
-              },
-            })
-          }
-        } else {
-          // Old schema - use raw SQL with actual column names
-          if (columnNames) {
-            // Use the actual column names we found
-            for (const responseData of eventResponsesData) {
+              } : {}),
+            })),
+            skipDuplicates: true,
+          })
+        } catch (prismaError: any) {
+          // If Prisma fails (schema mismatch), use raw SQL
+          console.log('Prisma createMany failed, using raw SQL:', prismaError?.message)
+          
+          // Use raw SQL with Prisma's actual column mapping
+          // Prisma maps camelCase to snake_case, so rsvpId -> rsvp_id
+          for (const responseData of eventResponsesData) {
+            if (columnNames) {
+              // Use detected column names
               await tx.$executeRawUnsafe(
                 `INSERT INTO rsvp_event_responses (id, "${columnNames.rsvpId}", "${columnNames.eventId}", "${columnNames.status}", "${columnNames.createdAt}", "${columnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
                 newRsvp.id,
                 responseData.eventId,
                 responseData.status
               )
-            }
-          } else {
-            // Fallback: try common column name variations
-            for (const responseData of eventResponsesData) {
-              try {
-                // Try snake_case first
-                await tx.$executeRawUnsafe(
-                  `INSERT INTO rsvp_event_responses (id, rsvp_id, event_id, status, created_at, updated_at) VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
-                  newRsvp.id,
-                  responseData.eventId,
-                  responseData.status
-                )
-              } catch (snakeCaseError: any) {
-                // Try camelCase
-                try {
-                  await tx.$executeRawUnsafe(
-                    `INSERT INTO rsvp_event_responses (id, "rsvpId", "eventId", status, "createdAt", "updatedAt") VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
-                    newRsvp.id,
-                    responseData.eventId,
-                    responseData.status
-                  )
-                } catch (camelCaseError: any) {
-                  console.error('Both column name attempts failed:', {
-                    snakeCase: snakeCaseError?.message,
-                    camelCase: camelCaseError?.message,
-                  })
-                  throw camelCaseError
-                }
-              }
+            } else {
+              // Try Prisma's default mapping (camelCase -> snake_case)
+              await tx.$executeRawUnsafe(
+                `INSERT INTO rsvp_event_responses (id, rsvp_id, event_id, status, created_at, updated_at) VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW()) ON CONFLICT DO NOTHING`,
+                newRsvp.id,
+                responseData.eventId,
+                responseData.status
+              )
             }
           }
         }
