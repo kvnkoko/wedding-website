@@ -40,13 +40,50 @@ export async function GET(request: NextRequest) {
 
     // Check if new schema exists to avoid querying non-existent columns
     let hasNewSchema = false
+    let actualColumnNames: { rsvpId: string; eventId: string; status: string } | null = null
+    
     try {
       await prisma.$queryRaw`SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0`
       hasNewSchema = true
     } catch {
       hasNewSchema = false
+      
+      // Get actual column names for old schema
+      try {
+        const columns = await prisma.$queryRaw<Array<{ column_name: string }>>`
+          SELECT column_name 
+          FROM information_schema.columns 
+          WHERE table_name = 'rsvp_event_responses'
+          ORDER BY ordinal_position
+        `
+        
+        const rsvpIdCol = columns.find(c => 
+          c.column_name.toLowerCase() === 'rsvpid' || 
+          c.column_name.toLowerCase() === 'rsvp_id' ||
+          c.column_name === 'rsvpId'
+        )?.column_name
+        
+        const eventIdCol = columns.find(c => 
+          c.column_name.toLowerCase() === 'eventid' || 
+          c.column_name.toLowerCase() === 'event_id' ||
+          c.column_name === 'eventId'
+        )?.column_name
+        
+        const statusCol = columns.find(c => c.column_name.toLowerCase() === 'status')?.column_name
+        
+        if (rsvpIdCol && eventIdCol && statusCol) {
+          actualColumnNames = {
+            rsvpId: rsvpIdCol,
+            eventId: eventIdCol,
+            status: statusCol,
+          }
+        }
+      } catch (columnError: any) {
+        console.error('Could not query column names:', columnError?.message)
+      }
     }
 
+    // Fetch RSVPs without eventResponses first to avoid schema issues
     const rsvps = await prisma.rsvp.findMany({
       where,
       include: {
@@ -56,9 +93,19 @@ export async function GET(request: NextRequest) {
             label: true,
           },
         },
-        // Only include eventResponses if we can query them safely
-        ...(hasNewSchema ? {
-          eventResponses: {
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    // Now fetch event responses for each RSVP based on schema
+    for (const rsvp of rsvps) {
+      try {
+        if (hasNewSchema) {
+          // New schema - use Prisma normally
+          const responses = await prisma.rsvpEventResponse.findMany({
+            where: { rsvpId: rsvp.id },
             include: {
               event: {
                 select: {
@@ -67,39 +114,67 @@ export async function GET(request: NextRequest) {
                 },
               },
             },
-          },
-        } : {}),
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
-
-    // If old schema, manually fetch event responses
-    if (!hasNewSchema) {
-      for (const rsvp of rsvps) {
-        const responses = await prisma.$queryRawUnsafe<Array<{
-          id: string;
-          rsvpId: string;
-          eventId: string;
-          status: string;
-        }>>(
-          `SELECT id, rsvp_id as "rsvpId", event_id as "eventId", status
-           FROM rsvp_event_responses
-           WHERE rsvp_id = $1`,
-          rsvp.id
-        )
-        
-        const eventIds = responses.map(r => r.eventId)
-        const events = eventIds.length > 0 ? await prisma.event.findMany({
-          where: { id: { in: eventIds } },
-          select: { id: true, name: true },
-        }) : []
-        
-        ;(rsvp as any).eventResponses = responses.map(r => ({
-          ...r,
-          event: events.find(e => e.id === r.eventId) || { id: r.eventId, name: 'Unknown Event' },
-        }))
+          })
+          ;(rsvp as any).eventResponses = responses
+        } else {
+          // Old schema - use raw SQL with actual column names
+          if (actualColumnNames) {
+            const responses = await prisma.$queryRawUnsafe<Array<{
+              id: string;
+              rsvpId: string;
+              eventId: string;
+              status: string;
+            }>>(
+              `SELECT id, "${actualColumnNames.rsvpId}" as "rsvpId", "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status
+               FROM rsvp_event_responses
+               WHERE "${actualColumnNames.rsvpId}" = $1`,
+              rsvp.id
+            )
+            
+            const eventIds = responses.map(r => r.eventId)
+            const events = eventIds.length > 0 ? await prisma.event.findMany({
+              where: { id: { in: eventIds } },
+              select: { id: true, name: true },
+            }) : []
+            
+            ;(rsvp as any).eventResponses = responses.map(r => ({
+              ...r,
+              event: events.find(e => e.id === r.eventId) || { id: r.eventId, name: 'Unknown Event' },
+            }))
+          } else {
+            // Fallback: try common column names
+            try {
+              const responses = await prisma.$queryRawUnsafe<Array<{
+                id: string;
+                rsvpId: string;
+                eventId: string;
+                status: string;
+              }>>(
+                `SELECT id, rsvp_id as "rsvpId", event_id as "eventId", status
+                 FROM rsvp_event_responses
+                 WHERE rsvp_id = $1`,
+                rsvp.id
+              )
+              
+              const eventIds = responses.map(r => r.eventId)
+              const events = eventIds.length > 0 ? await prisma.event.findMany({
+                where: { id: { in: eventIds } },
+                select: { id: true, name: true },
+              }) : []
+              
+              ;(rsvp as any).eventResponses = responses.map(r => ({
+                ...r,
+                event: events.find(e => e.id === r.eventId) || { id: r.eventId, name: 'Unknown Event' },
+              }))
+            } catch (fallbackError: any) {
+              console.error('Fallback query failed:', fallbackError?.message)
+              ;(rsvp as any).eventResponses = []
+            }
+          }
+        }
+      } catch (responseError: any) {
+        console.error(`Error fetching event responses for RSVP ${rsvp.id}:`, responseError?.message)
+        ;(rsvp as any).eventResponses = []
       }
     }
 
