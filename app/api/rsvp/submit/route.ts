@@ -16,6 +16,13 @@ export async function POST(request: NextRequest) {
       eventResponses,
     } = body
 
+    console.log('RSVP submission received:', {
+      hasInviteLinkConfigId: !!inviteLinkConfigId,
+      hasName: !!name,
+      hasPhone: !!phone,
+      eventResponsesKeys: Object.keys(eventResponses || {}),
+    })
+
     if (!inviteLinkConfigId || !name || !phone) {
       return NextResponse.json(
         { error: 'Missing required fields' },
