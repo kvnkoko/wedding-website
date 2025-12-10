@@ -113,31 +113,65 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      rsvp = await prisma.rsvp.create({
-        data: {
-          inviteLinkConfigId,
-          name,
-          phone,
-          email: email || null,
-          side,
-          plusOne: hasAnyPlusOne || false, // Keep for backward compatibility
-          plusOneName: null,
-          plusOneRelation: null,
-          dietaryRequirements: dietaryRequirements || null,
-          notes: notes || null,
-          editToken,
-          eventResponses: {
-            create: eventResponsesData,
+      // Try to create RSVP - use a transaction to ensure atomicity
+      rsvp = await prisma.$transaction(async (tx) => {
+        // First create the RSVP
+        const newRsvp = await tx.rsvp.create({
+          data: {
+            inviteLinkConfigId,
+            name,
+            phone,
+            email: email || null,
+            side,
+            plusOne: hasAnyPlusOne || false,
+            plusOneName: null,
+            plusOneRelation: null,
+            dietaryRequirements: dietaryRequirements || null,
+            notes: notes || null,
+            editToken,
           },
-        },
-        include: {
-          eventResponses: {
-            include: {
-              event: true,
+        })
+
+        // Then create event responses one by one to avoid schema issues
+        const createdResponses = []
+        for (const responseData of eventResponsesData) {
+          try {
+            const response = await tx.rsvpEventResponse.create({
+              data: {
+                rsvpId: newRsvp.id,
+                eventId: responseData.eventId,
+                status: responseData.status,
+              },
+            })
+            createdResponses.push(response)
+          } catch (responseError: any) {
+            console.error('Error creating event response:', {
+              eventId: responseData.eventId,
+              status: responseData.status,
+              error: responseError?.message,
+              code: responseError?.code,
+            })
+            throw responseError
+          }
+        }
+
+        // Fetch the complete RSVP with relations
+        return await tx.rsvp.findUnique({
+          where: { id: newRsvp.id },
+          include: {
+            eventResponses: {
+              include: {
+                event: true,
+              },
             },
           },
-        },
+        })
       })
+      
+      if (!rsvp) {
+        throw new Error('Failed to create RSVP')
+      }
+      
       console.log('RSVP created successfully:', rsvp.id)
     } catch (createError: any) {
       console.error('RSVP creation failed:', {
