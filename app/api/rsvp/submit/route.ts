@@ -59,130 +59,52 @@ export async function POST(request: NextRequest) {
 
     const editToken = generateEditToken()
 
-    // Always start with old schema to be safe - we'll detect and retry if needed
-    // This prevents errors if the schema check itself fails
-    let useNewSchema = false
-
-    // Prepare event responses data - start with old schema (no plusOne fields)
-    // We'll try new schema first, then fallback if it fails
-    const prepareEventResponsesData = (includePlusOne: boolean) => {
-      return Object.entries(eventResponses || {}).map(([eventId, response]) => {
-        // Handle both old format (string) and new format (object)
-        const responseData = typeof response === 'string' 
-          ? { status: response, plusOne: false, plusOneName: null, plusOneRelation: null }
-          : response as any
-        
-        if (includePlusOne) {
-          return {
-            eventId,
-            status: responseData.status,
-            plusOne: responseData.plusOne || false,
-            plusOneName: responseData.plusOne ? (responseData.plusOneName || null) : null,
-            plusOneRelation: responseData.plusOne ? (responseData.plusOneRelation || null) : null,
-          }
-        } else {
-          // Old schema - only include status
-          return {
-            eventId,
-            status: responseData.status,
-          }
-        }
-      })
-    }
-
-    // Try to create RSVP - first with new schema, then fallback to old
-    let rsvp
-    let createAttempted = false
-    
-    // First, try with new schema (per-event plus ones)
-    try {
-      const newSchemaData = prepareEventResponsesData(true)
-      console.log('Attempting RSVP creation with new schema (per-event plus ones)')
+    // Use old schema only (no per-event plus one fields) to ensure it works
+    // This will work regardless of whether migration has been applied
+    const eventResponsesData = Object.entries(eventResponses || {}).map(([eventId, response]) => {
+      // Handle both old format (string) and new format (object)
+      const responseData = typeof response === 'string' 
+        ? response 
+        : (response as any).status
       
-      rsvp = await prisma.rsvp.create({
-        data: {
-          inviteLinkConfigId,
-          name,
-          phone,
-          email: email || null,
-          side,
-          plusOne: hasAnyPlusOne,
-          plusOneName: null,
-          plusOneRelation: null,
-          dietaryRequirements: dietaryRequirements || null,
-          notes: notes || null,
-          editToken,
-          eventResponses: {
-            create: newSchemaData,
-          },
-        },
-        include: {
-          eventResponses: {
-            include: {
-              event: true,
-            },
-          },
-        },
-      })
-      createAttempted = true
-      console.log('RSVP created successfully with new schema')
-    } catch (createError: any) {
-      // If creation fails, try again without plusOne fields
-      const errorMsg = createError?.message || String(createError)
-      const isColumnError = errorMsg.includes('column') || 
-                           errorMsg.includes('plus_one') || 
-                           errorMsg.includes('does not exist') ||
-                           errorMsg.includes('Unknown column') ||
-                           errorMsg.includes('P2021') // Prisma error code for missing column
-      
-      if (isColumnError) {
-        console.log('New schema failed, retrying with old schema (no per-event plus ones)')
-        // Retry with old schema format (no plusOne fields)
-        const oldSchemaData = prepareEventResponsesData(false)
-        
-        try {
-          rsvp = await prisma.rsvp.create({
-            data: {
-              inviteLinkConfigId,
-              name,
-              phone,
-              email: email || null,
-              side,
-              plusOne: hasAnyPlusOne,
-              plusOneName: null,
-              plusOneRelation: null,
-              dietaryRequirements: dietaryRequirements || null,
-              notes: notes || null,
-              editToken,
-              eventResponses: {
-                create: oldSchemaData,
-              },
-            },
-            include: {
-              eventResponses: {
-                include: {
-                  event: true,
-                },
-              },
-            },
-          })
-          createAttempted = true
-          console.log('RSVP created successfully with old schema')
-        } catch (retryError: any) {
-          // If retry also fails, log and throw
-          console.error('Both schema attempts failed. Retry error:', retryError?.message)
-          throw retryError
-        }
-      } else {
-        // Different error - throw it
-        console.error('RSVP creation failed with non-column error:', errorMsg)
-        throw createError
+      // Only include status - no plusOne fields
+      return {
+        eventId,
+        status: responseData,
       }
-    }
-    
-    if (!createAttempted || !rsvp) {
-      throw new Error('Failed to create RSVP after all attempts')
-    }
+    })
+
+    console.log('Creating RSVP with event responses:', {
+      count: eventResponsesData.length,
+      sample: eventResponsesData[0],
+    })
+
+    // Create RSVP
+    const rsvp = await prisma.rsvp.create({
+      data: {
+        inviteLinkConfigId,
+        name,
+        phone,
+        email: email || null,
+        side,
+        plusOne: hasAnyPlusOne, // Keep for backward compatibility
+        plusOneName: null,
+        plusOneRelation: null,
+        dietaryRequirements: dietaryRequirements || null,
+        notes: notes || null,
+        editToken,
+        eventResponses: {
+          create: eventResponsesData,
+        },
+      },
+      include: {
+        eventResponses: {
+          include: {
+            event: true,
+          },
+        },
+      },
+    })
 
     return NextResponse.json({
       id: rsvp.id,
