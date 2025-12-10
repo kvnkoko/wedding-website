@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
 
         // Create event responses - use the schema we detected
         if (hasNewSchema) {
-          // New schema - include plus one fields
+          // New schema - include plus one fields using Prisma
           await tx.rsvpEventResponse.createMany({
             data: eventResponsesData.map((responseData) => ({
               rsvpId: newRsvp.id,
@@ -157,16 +157,13 @@ export async function POST(request: NextRequest) {
             })),
           })
         } else {
-          // Old schema - only include fields that exist
-          // Create one by one to handle any errors gracefully
+          // Old schema - use raw SQL because Prisma Client expects plusOne column
+          // Prisma maps camelCase to snake_case: rsvpId -> rsvp_id, eventId -> event_id
           for (const responseData of eventResponsesData) {
-            await tx.rsvpEventResponse.create({
-              data: {
-                rsvpId: newRsvp.id,
-                eventId: responseData.eventId,
-                status: responseData.status,
-              },
-            })
+            await tx.$executeRaw`
+              INSERT INTO rsvp_event_responses (id, rsvp_id, event_id, status, created_at, updated_at)
+              VALUES (gen_random_uuid()::text, ${newRsvp.id}, ${responseData.eventId}, ${responseData.status}, NOW(), NOW())
+            `
           }
         }
 
