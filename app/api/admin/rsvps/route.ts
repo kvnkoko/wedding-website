@@ -116,15 +116,27 @@ export async function GET(request: NextRequest) {
             },
           })
           // Map to include plus one fields
-          ;(rsvp as any).eventResponses = responses.map((r: any) => ({
-            id: r.id,
-            eventId: r.eventId,
-            status: r.status,
-            plusOne: r.plusOne || false,
-            plusOneName: r.plusOneName || null,
-            plusOneRelation: r.plusOneRelation || null,
-            event: r.event,
-          }))
+          ;(rsvp as any).eventResponses = responses.map((r: any) => {
+            const mapped = {
+              id: r.id,
+              eventId: r.eventId,
+              status: r.status,
+              plusOne: r.plusOne || false,
+              plusOneName: r.plusOneName || null,
+              plusOneRelation: r.plusOneRelation || null,
+              event: r.event,
+            }
+            // Debug logging for first response
+            if (responses.indexOf(r) === 0) {
+              console.log(`[Admin RSVPs] Event response for RSVP ${rsvp.id}:`, {
+                raw: r,
+                mapped: mapped,
+                hasPlusOne: !!r.plusOne,
+                plusOneName: r.plusOneName,
+              })
+            }
+            return mapped
+          })
         } else {
           // Old schema - use raw SQL with actual column names
           if (actualColumnNames) {
