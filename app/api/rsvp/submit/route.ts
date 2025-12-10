@@ -207,15 +207,23 @@ export async function POST(request: NextRequest) {
         // Create event responses - use the schema we detected
         if (hasNewSchema) {
           // New schema - include plus one fields using Prisma
+          const eventResponseData = eventResponsesData.map((responseData) => ({
+            rsvpId: newRsvp.id,
+            eventId: responseData.eventId,
+            status: responseData.status,
+            plusOne: responseData.plusOne || false,
+            plusOneName: responseData.plusOneName || null,
+            plusOneRelation: responseData.plusOneRelation || null,
+          }))
+          
+          console.log('Creating event responses with plus one data:', {
+            count: eventResponseData.length,
+            sample: eventResponseData[0],
+            allWithPlusOne: eventResponseData.filter(r => r.plusOne),
+          })
+          
           await tx.rsvpEventResponse.createMany({
-            data: eventResponsesData.map((responseData) => ({
-              rsvpId: newRsvp.id,
-              eventId: responseData.eventId,
-              status: responseData.status,
-              plusOne: responseData.plusOne || false,
-              plusOneName: responseData.plusOneName || null,
-              plusOneRelation: responseData.plusOneRelation || null,
-            })),
+            data: eventResponseData,
           })
         } else {
           // Old schema - use raw SQL with actual column names
@@ -238,9 +246,17 @@ export async function POST(request: NextRequest) {
             hasPlusOneColumns = false
           }
           
+          console.log('Old schema path - hasPlusOneColumns:', hasPlusOneColumns)
           for (const responseData of eventResponsesData) {
             if (hasPlusOneColumns) {
               // Include plus one fields if columns exist
+              console.log('Inserting with plus one data:', {
+                eventId: responseData.eventId,
+                status: responseData.status,
+                plusOne: responseData.plusOne,
+                plusOneName: responseData.plusOneName,
+                plusOneRelation: responseData.plusOneRelation,
+              })
               await tx.$executeRawUnsafe(
                 `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", plus_one, plus_one_name, plus_one_relation, "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, NOW(), NOW())`,
                 newRsvp.id,
@@ -252,6 +268,10 @@ export async function POST(request: NextRequest) {
               )
             } else {
               // Use the actual column names we detected (no plus one columns)
+              console.log('Inserting without plus one columns (old schema):', {
+                eventId: responseData.eventId,
+                status: responseData.status,
+              })
               await tx.$executeRawUnsafe(
                 `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
                 newRsvp.id,

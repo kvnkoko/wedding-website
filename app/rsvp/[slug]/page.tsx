@@ -271,6 +271,17 @@ export default function RSVPFormPage() {
       console.log('Submitting RSVP with event responses:', {
         eventResponses: eventResponsesWithPlusOnes,
         sampleEvent: Object.entries(eventResponsesWithPlusOnes)[0],
+        allEvents: Object.entries(eventResponsesWithPlusOnes).map(([id, resp]: [string, any]) => ({
+          eventId: id,
+          status: resp.status,
+          plusOne: resp.plusOne,
+          plusOneName: resp.plusOneName,
+          plusOneRelation: resp.plusOneRelation,
+        })),
+        rawFormData: {
+          eventResponses: data.eventResponses,
+          eventPlusOnes: data.eventPlusOnes,
+        },
       })
 
       const res = await fetch('/api/rsvp/submit', {
@@ -628,6 +639,75 @@ export default function RSVPFormPage() {
                     {/* Plus One for this event - only show if attending */}
                     {watch(`eventResponses.${event.id}`) === 'YES' && (
                       <div className="mt-6 pt-6 border-t border-taupe/20 dark:border-dark-border animate-fade-in-up">
+                        {/* Show "Add Same Plus One" button if there's a previous event with plus one info */}
+                        {(() => {
+                          const eventResponses = watch('eventResponses') || {}
+                          const eventPlusOnes = watch('eventPlusOnes') || {}
+                          
+                          // Find a previous event (earlier in the list) with complete plus one info
+                          const currentEventIndex = config.events.findIndex(e => e.id === event.id)
+                          const previousEventWithPlusOne = config.events
+                            .slice(0, currentEventIndex)
+                            .find(prevEvent => {
+                              const prevResponse = eventResponses[prevEvent.id]
+                              const prevPlusOne = eventPlusOnes[prevEvent.id]
+                              return prevResponse === 'YES' && 
+                                     prevPlusOne?.plusOne && 
+                                     prevPlusOne?.plusOneName && 
+                                     prevPlusOne.plusOneName.trim()
+                            })
+                          
+                          // Check if current event doesn't already have the same plus one info
+                          const currentPlusOne = eventPlusOnes[event.id]
+                          const currentResponse = eventResponses[event.id]
+                          const needsCopy = previousEventWithPlusOne && 
+                                           currentResponse === 'YES' && (
+                            !currentPlusOne?.plusOne || 
+                            !currentPlusOne?.plusOneName ||
+                            currentPlusOne.plusOneName.trim() === '' ||
+                            currentPlusOne.plusOneName !== eventPlusOnes[previousEventWithPlusOne.id]?.plusOneName
+                          )
+                          
+                          const handleCopyFromPrevious = () => {
+                            if (!previousEventWithPlusOne) return
+                            
+                            const sourcePlusOne = eventPlusOnes[previousEventWithPlusOne.id]
+                            if (!sourcePlusOne?.plusOneName) return
+                            
+                            setValue(`eventPlusOnes.${event.id}.plusOne`, true)
+                            setValue(`eventPlusOnes.${event.id}.plusOneName`, sourcePlusOne.plusOneName)
+                            setValue(`eventPlusOnes.${event.id}.plusOneRelation`, sourcePlusOne.plusOneRelation || '')
+                            
+                            setPlusOneCopied(true)
+                            setTimeout(() => setPlusOneCopied(false), 2000)
+                          }
+                          
+                          if (needsCopy) {
+                            return (
+                              <div className="mb-4">
+                                <button
+                                  type="button"
+                                  onClick={handleCopyFromPrevious}
+                                  className="flex items-center gap-2 px-3 py-2 bg-sage/10 dark:bg-sage/20 hover:bg-sage/20 dark:hover:bg-sage/30 text-sage dark:text-sage/90 rounded-lg text-sm font-medium transition-all duration-200 border border-sage/30 dark:border-sage/40 shadow-sm hover:shadow-md touch-ripple w-full sm:w-auto"
+                                >
+                                  {plusOneCopied ? (
+                                    <>
+                                      <Check className="w-4 h-4" weight="bold" />
+                                      <span>Added!</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Copy className="w-4 h-4" weight="duotone" />
+                                      <span>Add Same Plus One to This Event</span>
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            )
+                          }
+                          return null
+                        })()}
+                        
                         <label className="checkbox-option mb-4">
                           <input
                             type="checkbox"
