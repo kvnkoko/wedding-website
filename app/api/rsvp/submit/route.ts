@@ -141,13 +141,13 @@ export async function POST(request: NextRequest) {
       dietaryRequirements: rsvp.dietaryRequirements,
       notes: rsvp.notes,
       editToken: rsvp.editToken,
-      eventResponses: rsvp.eventResponses.map((er) => ({
+      eventResponses: rsvp.eventResponses.map((er: any) => ({
         eventId: er.eventId,
         eventName: er.event.name,
         status: er.status,
-        plusOne: er.plusOne || false,
-        plusOneName: er.plusOneName || null,
-        plusOneRelation: er.plusOneRelation || null,
+        plusOne: (er.plusOne || er.plus_one) || false,
+        plusOneName: (er.plusOneName || er.plus_one_name) || null,
+        plusOneRelation: (er.plusOneRelation || er.plus_one_relation) || null,
       })),
     })
   } catch (error: any) {
@@ -158,16 +158,39 @@ export async function POST(request: NextRequest) {
       code: error?.code,
       meta: error?.meta,
       cause: error?.cause,
+      name: error?.name,
     })
     
-    // Don't show schema mismatch error - the retry should have handled it
-    // If we get here, it's a different error
     const errorMessage = error?.message || String(error)
+    const errorCode = error?.code
     
+    // Check for specific Prisma errors
+    if (errorCode === 'P2002') {
+      return NextResponse.json(
+        { 
+          error: 'A record with this information already exists',
+          details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        },
+        { status: 400 }
+      )
+    }
+    
+    if (errorCode === 'P2003') {
+      return NextResponse.json(
+        { 
+          error: 'Invalid reference - please check your event responses',
+          details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        },
+        { status: 400 }
+      )
+    }
+    
+    // Return detailed error in development, generic in production
     return NextResponse.json(
       { 
         error: 'Internal server error',
         details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
+        code: process.env.NODE_ENV === 'development' ? errorCode : undefined,
       },
       { status: 500 }
     )
