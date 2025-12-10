@@ -113,8 +113,10 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Check if the new schema columns exist BEFORE the transaction
+      // Check if the new schema columns exist AND get actual column names
       let hasNewSchema = false
+      let actualColumnNames: { rsvpId: string; eventId: string; status: string; createdAt: string; updatedAt: string } | null = null
+      
       try {
         await prisma.$queryRaw`SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0`
         hasNewSchema = true
@@ -122,6 +124,50 @@ export async function POST(request: NextRequest) {
       } catch (schemaCheckError: any) {
         hasNewSchema = false
         console.log('Database has old schema (no plus_one columns)')
+        
+        // Get actual column names from the database
+        try {
+          const columns = await prisma.$queryRaw<Array<{ column_name: string }>>`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'rsvp_event_responses'
+            ORDER BY ordinal_position
+          `
+          
+          console.log('Actual columns in rsvp_event_responses:', columns.map(c => c.column_name))
+          
+          // Find columns - try different naming conventions
+          const rsvpIdCol = columns.find(c => 
+            c.column_name.toLowerCase() === 'rsvpid' || 
+            c.column_name.toLowerCase() === 'rsvp_id' ||
+            c.column_name === 'rsvpId'
+          )?.column_name
+          
+          const eventIdCol = columns.find(c => 
+            c.column_name.toLowerCase() === 'eventid' || 
+            c.column_name.toLowerCase() === 'event_id' ||
+            c.column_name === 'eventId'
+          )?.column_name
+          
+          const statusCol = columns.find(c => c.column_name.toLowerCase() === 'status')?.column_name
+          const createdAtCol = columns.find(c => c.column_name.toLowerCase().includes('created'))?.column_name
+          const updatedAtCol = columns.find(c => c.column_name.toLowerCase().includes('updated'))?.column_name
+          
+          if (rsvpIdCol && eventIdCol && statusCol && createdAtCol && updatedAtCol) {
+            actualColumnNames = {
+              rsvpId: rsvpIdCol,
+              eventId: eventIdCol,
+              status: statusCol,
+              createdAt: createdAtCol,
+              updatedAt: updatedAtCol,
+            }
+            console.log('Using column names:', actualColumnNames)
+          } else {
+            console.error('Could not find all required columns. Found:', { rsvpIdCol, eventIdCol, statusCol, createdAtCol, updatedAtCol })
+          }
+        } catch (columnCheckError: any) {
+          console.error('Could not query column names:', columnCheckError?.message)
+        }
       }
 
       // Create RSVP and event responses in a transaction
@@ -157,13 +203,19 @@ export async function POST(request: NextRequest) {
             })),
           })
         } else {
-          // Old schema - use raw SQL because Prisma Client expects plusOne column
-          // Prisma maps camelCase to snake_case: rsvpId -> rsvp_id, eventId -> event_id
+          // Old schema - use raw SQL with actual column names
+          if (!actualColumnNames) {
+            throw new Error('Could not determine actual column names for rsvp_event_responses table')
+          }
+          
           for (const responseData of eventResponsesData) {
-            await tx.$executeRaw`
-              INSERT INTO rsvp_event_responses (id, rsvp_id, event_id, status, created_at, updated_at)
-              VALUES (gen_random_uuid()::text, ${newRsvp.id}, ${responseData.eventId}, ${responseData.status}, NOW(), NOW())
-            `
+            // Use the actual column names we detected
+            await tx.$executeRawUnsafe(
+              `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
+              newRsvp.id,
+              responseData.eventId,
+              responseData.status
+            )
           }
         }
 
