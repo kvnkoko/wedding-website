@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { formatDate, formatDateRange } from '@/lib/utils'
 import PhotoCarouselSection from '@/components/PhotoCarouselSection'
-import { User, Calendar, Note, CheckCircle, EnvelopeSimple, Phone, X } from 'phosphor-react'
+import { User, Calendar, Note, CheckCircle, EnvelopeSimple, Phone, X, Copy, Check } from 'phosphor-react'
 
 // Parallax scroll effect
 function useParallax() {
@@ -207,11 +207,13 @@ export default function RSVPFormPage() {
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [submissionData, setSubmissionData] = useState<any>(null)
+  const [plusOneCopied, setPlusOneCopied] = useState(false)
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
@@ -381,8 +383,8 @@ export default function RSVPFormPage() {
               </div>
               <h1 className="font-title text-4xl md:text-5xl text-charcoal dark:text-dark-text mb-4 animate-fade-in-up animate-delay-200">Thank You!</h1>
               <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary animate-fade-in-up animate-delay-300" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                Your RSVP has been received. We are looking forward to celebrating with you!
-              </p>
+              Your RSVP has been received. We are looking forward to celebrating with you!
+            </p>
             </div>
             
             <div className="p-6 sm:p-8 md:p-12">
@@ -411,8 +413,8 @@ export default function RSVPFormPage() {
                       <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Side</p>
                       <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.side}</p>
                     </div>
-                  </div>
                 </div>
+              </div>
 
                 <div className="form-section">
                   <h2 className="form-section-title flex items-center gap-3">
@@ -427,7 +429,7 @@ export default function RSVPFormPage() {
                         style={{ animationDelay: `${index * 0.1}s` }}
                       >
                         <div className="flex items-center justify-between mb-3">
-                          <div>
+              <div>
                             <p className="event-card-title">{er.eventName}</p>
                             <p className="text-sm text-charcoal/60 dark:text-dark-text-secondary mt-1">
                               Status: <span className="font-semibold text-sage uppercase">{er.status}</span>
@@ -459,12 +461,12 @@ export default function RSVPFormPage() {
                             </div>
                           </div>
                         )}
-                      </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
+              </div>
 
-                {submissionData.notes && (
+              {submissionData.notes && (
                   <div className="form-section">
                     <h2 className="form-section-title flex items-center gap-3">
                       <Note className="w-6 h-6 text-sage" weight="duotone" />
@@ -473,9 +475,9 @@ export default function RSVPFormPage() {
                     <div className="bg-taupe/5 dark:bg-dark-surface p-6 rounded-xl border border-taupe/20 dark:border-dark-border">
                       <p className="text-base text-charcoal/80 dark:text-dark-text-secondary leading-relaxed italic" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>"{submissionData.notes}"</p>
                     </div>
-                  </div>
-                )}
-              </div>
+                </div>
+              )}
+            </div>
 
               <div className="mt-12 pt-8 border-t border-taupe/20 dark:border-dark-border bg-gradient-to-r from-sage/5 dark:from-sage/10 via-transparent to-sage/5 dark:to-sage/10 p-6 rounded-xl">
                 <div className="flex items-start gap-4">
@@ -511,11 +513,11 @@ export default function RSVPFormPage() {
               </div>
               <div>
                 <h1 className="font-title text-4xl md:text-5xl text-charcoal dark:text-dark-text mb-2">RSVP</h1>
-                {config.label && (
+          {config.label && (
                   <p className="text-sm text-charcoal/60 dark:text-dark-text-secondary uppercase tracking-widest" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                     {config.label.replace(/\s+Only\s*$/i, '')}
-                  </p>
-                )}
+            </p>
+          )}
               </div>
             </div>
             <p className="text-base text-charcoal/70 dark:text-dark-text-secondary mt-4" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
@@ -663,6 +665,88 @@ export default function RSVPFormPage() {
                   </p>
                 </div>
               )}
+
+              {/* Copy Plus One Button */}
+              {config && config.events && config.events.length > 1 && (() => {
+                const eventResponses = watch('eventResponses') || {}
+                const eventPlusOnes = watch('eventPlusOnes') || {}
+                
+                // Find events where user is attending (YES)
+                const attendingEvents = config.events.filter(event => eventResponses[event.id] === 'YES')
+                
+                // Find the first event with complete plus one info
+                const sourceEvent = config.events.find(event => {
+                  const plusOne = eventPlusOnes[event.id]
+                  return plusOne?.plusOne && plusOne?.plusOneName && plusOne.plusOneName.trim()
+                })
+                
+                // Check if there are other attending events that don't have the same plus one info
+                const needsCopy = sourceEvent && attendingEvents.some(event => {
+                  if (event.id === sourceEvent.id) return false
+                  const targetPlusOne = eventPlusOnes[event.id]
+                  const sourcePlusOne = eventPlusOnes[sourceEvent.id]
+                  return !targetPlusOne?.plusOne || 
+                         targetPlusOne.plusOneName !== sourcePlusOne?.plusOneName ||
+                         targetPlusOne.plusOneRelation !== sourcePlusOne?.plusOneRelation
+                })
+                
+                const handleCopyPlusOne = () => {
+                  if (!sourceEvent) return
+                  
+                  const sourcePlusOne = eventPlusOnes[sourceEvent.id]
+                  if (!sourcePlusOne?.plusOneName) return
+                  
+                  // Copy to all other attending events
+                  attendingEvents.forEach(event => {
+                    if (event.id !== sourceEvent.id && eventResponses[event.id] === 'YES') {
+                      setValue(`eventPlusOnes.${event.id}.plusOne`, true)
+                      setValue(`eventPlusOnes.${event.id}.plusOneName`, sourcePlusOne.plusOneName)
+                      setValue(`eventPlusOnes.${event.id}.plusOneRelation`, sourcePlusOne.plusOneRelation || '')
+                    }
+                  })
+                  
+                  setPlusOneCopied(true)
+                  setTimeout(() => setPlusOneCopied(false), 3000)
+                }
+                
+                if (needsCopy) {
+                  return (
+                    <div className="mt-6 p-4 bg-sage/10 dark:bg-sage/20 border border-sage/30 dark:border-sage/40 rounded-xl animate-fade-in-up">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-shrink-0 mt-0.5">
+                          <Copy className="w-5 h-5 text-sage dark:text-sage/90" weight="duotone" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-charcoal dark:text-dark-text mb-1" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                            Same plus-one for all events?
+                          </p>
+                          <p className="text-xs text-charcoal/60 dark:text-dark-text-secondary mb-3" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                            Copy the plus-one information to all events you're attending
+                          </p>
+                          <button
+                            type="button"
+                            onClick={handleCopyPlusOne}
+                            className="flex items-center gap-2 px-4 py-2 bg-sage text-white rounded-lg text-sm font-medium hover:bg-sage/90 transition-all duration-200 shadow-sm hover:shadow-md touch-ripple"
+                          >
+                            {plusOneCopied ? (
+                              <>
+                                <Check className="w-4 h-4" weight="bold" />
+                                <span>Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-4 h-4" weight="duotone" />
+                                <span>Copy to All Events</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )
+                }
+                return null
+              })()}
             </section>
 
             {/* Additional Information */}
@@ -673,8 +757,8 @@ export default function RSVPFormPage() {
               </h2>
               <div className="form-input-wrapper">
                 <label className="form-label">Leave a note for the Bride & Groom!</label>
-                <textarea
-                  {...register('notes')}
+                  <textarea
+                    {...register('notes')}
                   rows={5}
                   className="form-textarea touch-ripple"
                   placeholder="Share your excitement, dietary restrictions, or any special requests..."
@@ -683,25 +767,25 @@ export default function RSVPFormPage() {
             </section>
 
             <div className="mt-12 pt-8 border-t border-taupe/20">
-              <button
-                type="submit"
-                disabled={submitting}
+            <button
+              type="submit"
+              disabled={submitting}
                 className="submit-button touch-ripple mobile-touch-glow"
-              >
-                {submitting ? (
+            >
+              {submitting ? (
                   <span className="flex items-center justify-center gap-3">
                     <span className="spinner w-5 h-5 border-2 border-white border-t-transparent rounded-full"></span>
                     <span>Submitting your RSVP...</span>
-                  </span>
-                ) : (
+                </span>
+              ) : (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                     </svg>
                     Submit RSVP
                   </span>
-                )}
-              </button>
+              )}
+            </button>
             </div>
           </form>
         </div>
