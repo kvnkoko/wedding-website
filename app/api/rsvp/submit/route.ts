@@ -176,45 +176,69 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        // Create event responses - try Prisma first, fallback to raw SQL
+        // Create event responses
+        // Use Prisma's createMany - it handles column mapping automatically
+        // If schema doesn't match, we'll catch and handle it
         try {
-          // Try using Prisma - it will work if schema matches
-          await tx.rsvpEventResponse.createMany({
-            data: eventResponsesData.map((responseData) => ({
-              rsvpId: newRsvp.id,
-              eventId: responseData.eventId,
-              status: responseData.status,
-              ...(hasNewSchema ? {
+          if (hasNewSchema) {
+            // New schema - include plus one fields
+            await tx.rsvpEventResponse.createMany({
+              data: eventResponsesData.map((responseData) => ({
+                rsvpId: newRsvp.id,
+                eventId: responseData.eventId,
+                status: responseData.status,
                 plusOne: false,
                 plusOneName: null,
                 plusOneRelation: null,
-              } : {}),
-            })),
-            skipDuplicates: true,
-          })
-        } catch (prismaError: any) {
-          // If Prisma fails (schema mismatch), use raw SQL
-          console.log('Prisma createMany failed, using raw SQL:', prismaError?.message)
+              })),
+            })
+          } else {
+            // Old schema - only include basic fields
+            // Prisma will map camelCase to snake_case automatically
+            await tx.rsvpEventResponse.createMany({
+              data: eventResponsesData.map((responseData) => ({
+                rsvpId: newRsvp.id,
+                eventId: responseData.eventId,
+                status: responseData.status,
+              })),
+            })
+          }
+        } catch (createError: any) {
+          // If createMany fails, try creating one by one to see which one fails
+          console.error('createMany failed, trying individual creates:', createError?.message)
           
-          // Use raw SQL with Prisma's actual column mapping
-          // Prisma maps camelCase to snake_case, so rsvpId -> rsvp_id
           for (const responseData of eventResponsesData) {
-            if (columnNames) {
-              // Use detected column names
-              await tx.$executeRawUnsafe(
-                `INSERT INTO rsvp_event_responses (id, "${columnNames.rsvpId}", "${columnNames.eventId}", "${columnNames.status}", "${columnNames.createdAt}", "${columnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
-                newRsvp.id,
-                responseData.eventId,
-                responseData.status
-              )
-            } else {
-              // Try Prisma's default mapping (camelCase -> snake_case)
-              await tx.$executeRawUnsafe(
-                `INSERT INTO rsvp_event_responses (id, rsvp_id, event_id, status, created_at, updated_at) VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW()) ON CONFLICT DO NOTHING`,
-                newRsvp.id,
-                responseData.eventId,
-                responseData.status
-              )
+            try {
+              if (hasNewSchema) {
+                await tx.rsvpEventResponse.create({
+                  data: {
+                    rsvpId: newRsvp.id,
+                    eventId: responseData.eventId,
+                    status: responseData.status,
+                    plusOne: false,
+                    plusOneName: null,
+                    plusOneRelation: null,
+                  },
+                })
+              } else {
+                // For old schema, Prisma should still work - it just won't set the plusOne fields
+                // But we need to make sure we're not including them
+                await tx.rsvpEventResponse.create({
+                  data: {
+                    rsvpId: newRsvp.id,
+                    eventId: responseData.eventId,
+                    status: responseData.status,
+                  },
+                })
+              }
+            } catch (individualError: any) {
+              console.error('Individual create failed:', {
+                eventId: responseData.eventId,
+                error: individualError?.message,
+                code: individualError?.code,
+                meta: individualError?.meta,
+              })
+              throw individualError
             }
           }
         }
