@@ -63,48 +63,71 @@ export async function POST(request: NextRequest) {
     // This will work regardless of whether migration has been applied
     const eventResponsesData = Object.entries(eventResponses || {}).map(([eventId, response]) => {
       // Handle both old format (string) and new format (object)
-      const responseData = typeof response === 'string' 
-        ? response 
-        : (response as any).status
+      let status: string
+      if (typeof response === 'string') {
+        status = response
+      } else if (response && typeof response === 'object' && 'status' in response) {
+        status = (response as any).status
+      } else {
+        console.error('Invalid response format:', response)
+        throw new Error(`Invalid event response format for event ${eventId}`)
+      }
       
       // Only include status - no plusOne fields
       return {
         eventId,
-        status: responseData,
+        status: status,
       }
     })
 
-    console.log('Creating RSVP with event responses:', {
-      count: eventResponsesData.length,
-      sample: eventResponsesData[0],
+    console.log('Creating RSVP:', {
+      inviteLinkConfigId,
+      name,
+      phone,
+      email,
+      side,
+      eventResponsesCount: eventResponsesData.length,
+      sampleResponse: eventResponsesData[0],
     })
 
     // Create RSVP
-    const rsvp = await prisma.rsvp.create({
-      data: {
-        inviteLinkConfigId,
-        name,
-        phone,
-        email: email || null,
-        side,
-        plusOne: hasAnyPlusOne, // Keep for backward compatibility
-        plusOneName: null,
-        plusOneRelation: null,
-        dietaryRequirements: dietaryRequirements || null,
-        notes: notes || null,
-        editToken,
-        eventResponses: {
-          create: eventResponsesData,
-        },
-      },
-      include: {
-        eventResponses: {
-          include: {
-            event: true,
+    let rsvp
+    try {
+      rsvp = await prisma.rsvp.create({
+        data: {
+          inviteLinkConfigId,
+          name,
+          phone,
+          email: email || null,
+          side,
+          plusOne: hasAnyPlusOne || false, // Keep for backward compatibility
+          plusOneName: null,
+          plusOneRelation: null,
+          dietaryRequirements: dietaryRequirements || null,
+          notes: notes || null,
+          editToken,
+          eventResponses: {
+            create: eventResponsesData,
           },
         },
-      },
-    })
+        include: {
+          eventResponses: {
+            include: {
+              event: true,
+            },
+          },
+        },
+      })
+      console.log('RSVP created successfully:', rsvp.id)
+    } catch (createError: any) {
+      console.error('RSVP creation failed:', {
+        message: createError?.message,
+        code: createError?.code,
+        meta: createError?.meta,
+        stack: createError?.stack,
+      })
+      throw createError
+    }
 
     return NextResponse.json({
       id: rsvp.id,
