@@ -113,15 +113,48 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Check if the new schema columns exist
+      // Check if the new schema columns exist and get actual column names
       let hasNewSchema = false
+      let columnNames: { rsvpId: string; eventId: string; status: string; createdAt: string; updatedAt: string } | null = null
+      
       try {
+        // Try to query the new schema column
         await prisma.$queryRaw`SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0`
         hasNewSchema = true
         console.log('Database has new schema (with plus_one columns)')
       } catch (schemaCheckError: any) {
         hasNewSchema = false
         console.log('Database has old schema (no plus_one columns)')
+        
+        // Query actual column names from information_schema
+        try {
+          const columns = await prisma.$queryRaw<Array<{ column_name: string }>>`
+            SELECT column_name 
+            FROM information_schema.columns 
+            WHERE table_name = 'rsvp_event_responses'
+            ORDER BY ordinal_position
+          `
+          
+          // Find the actual column names
+          const rsvpIdCol = columns.find(c => c.column_name.toLowerCase().includes('rsvp') && c.column_name.toLowerCase().includes('id'))?.column_name
+          const eventIdCol = columns.find(c => c.column_name.toLowerCase().includes('event') && c.column_name.toLowerCase().includes('id'))?.column_name
+          const statusCol = columns.find(c => c.column_name.toLowerCase() === 'status')?.column_name
+          const createdAtCol = columns.find(c => c.column_name.toLowerCase().includes('created'))?.column_name
+          const updatedAtCol = columns.find(c => c.column_name.toLowerCase().includes('updated'))?.column_name
+          
+          if (rsvpIdCol && eventIdCol && statusCol && createdAtCol && updatedAtCol) {
+            columnNames = {
+              rsvpId: rsvpIdCol,
+              eventId: eventIdCol,
+              status: statusCol,
+              createdAt: createdAtCol,
+              updatedAt: updatedAtCol,
+            }
+            console.log('Found column names:', columnNames)
+          }
+        } catch (columnCheckError: any) {
+          console.error('Could not query column names:', columnCheckError?.message)
+        }
       }
 
       // Try to create RSVP - use a transaction to ensure atomicity
@@ -143,8 +176,7 @@ export async function POST(request: NextRequest) {
           },
         })
 
-        // Create event responses using raw SQL to avoid schema mismatch
-        // This works regardless of whether the migration has been applied
+        // Create event responses
         if (hasNewSchema) {
           // New schema - use Prisma normally
           for (const responseData of eventResponsesData) {
@@ -160,12 +192,46 @@ export async function POST(request: NextRequest) {
             })
           }
         } else {
-          // Old schema - use raw SQL to insert only the fields that exist
-          for (const responseData of eventResponsesData) {
-            await tx.$executeRaw`
-              INSERT INTO rsvp_event_responses (id, rsvp_id, event_id, status, created_at, updated_at)
-              VALUES (gen_random_uuid()::text, ${newRsvp.id}, ${responseData.eventId}, ${responseData.status}, NOW(), NOW())
-            `
+          // Old schema - use raw SQL with actual column names
+          if (columnNames) {
+            // Use the actual column names we found
+            for (const responseData of eventResponsesData) {
+              await tx.$executeRawUnsafe(
+                `INSERT INTO rsvp_event_responses (id, "${columnNames.rsvpId}", "${columnNames.eventId}", "${columnNames.status}", "${columnNames.createdAt}", "${columnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
+                newRsvp.id,
+                responseData.eventId,
+                responseData.status
+              )
+            }
+          } else {
+            // Fallback: try common column name variations
+            for (const responseData of eventResponsesData) {
+              try {
+                // Try snake_case first
+                await tx.$executeRawUnsafe(
+                  `INSERT INTO rsvp_event_responses (id, rsvp_id, event_id, status, created_at, updated_at) VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
+                  newRsvp.id,
+                  responseData.eventId,
+                  responseData.status
+                )
+              } catch (snakeCaseError: any) {
+                // Try camelCase
+                try {
+                  await tx.$executeRawUnsafe(
+                    `INSERT INTO rsvp_event_responses (id, "rsvpId", "eventId", status, "createdAt", "updatedAt") VALUES (gen_random_uuid()::text, $1, $2, $3, NOW(), NOW())`,
+                    newRsvp.id,
+                    responseData.eventId,
+                    responseData.status
+                  )
+                } catch (camelCaseError: any) {
+                  console.error('Both column name attempts failed:', {
+                    snakeCase: snakeCaseError?.message,
+                    camelCase: camelCaseError?.message,
+                  })
+                  throw camelCaseError
+                }
+              }
+            }
           }
         }
 
