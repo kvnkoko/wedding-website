@@ -220,16 +220,55 @@ export async function POST(request: NextRequest) {
         }
 
         // Fetch the complete RSVP with relations
-        return await tx.rsvp.findUnique({
-          where: { id: newRsvp.id },
-          include: {
-            eventResponses: {
-              include: {
-                event: true,
+        // Use select instead of include to avoid Prisma trying to fetch non-existent columns
+        if (hasNewSchema) {
+          return await tx.rsvp.findUnique({
+            where: { id: newRsvp.id },
+            include: {
+              eventResponses: {
+                include: {
+                  event: true,
+                },
               },
             },
-          },
-        })
+          })
+        } else {
+          // Old schema - manually fetch to avoid plusOne fields
+          const fetchedRsvp = await tx.rsvp.findUnique({
+            where: { id: newRsvp.id },
+          })
+          
+          // Manually fetch event responses without plusOne fields
+          const responses = await tx.$queryRaw<Array<{
+            id: string;
+            rsvpId: string;
+            eventId: string;
+            status: string;
+            createdAt: Date;
+            updatedAt: Date;
+          }>>`
+            SELECT id, ${actualColumnNames!.rsvpId} as "rsvpId", ${actualColumnNames!.eventId} as "eventId", 
+                   ${actualColumnNames!.status} as status, 
+                   ${actualColumnNames!.createdAt} as "createdAt", 
+                   ${actualColumnNames!.updatedAt} as "updatedAt"
+            FROM rsvp_event_responses
+            WHERE ${actualColumnNames!.rsvpId} = ${newRsvp.id}
+          `
+          
+          // Fetch events for each response
+          const eventIds = responses.map(r => r.eventId)
+          const events = await tx.event.findMany({
+            where: { id: { in: eventIds } },
+          })
+          
+          return {
+            ...fetchedRsvp,
+            eventResponses: responses.map(r => ({
+              ...r,
+              event: events.find(e => e.id === r.eventId)!,
+            })),
+          } as any
+        }
       })
       
       if (!rsvp) {
