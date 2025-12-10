@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
     for (const rsvp of rsvps) {
       try {
         if (hasNewSchema) {
-          // New schema - use Prisma normally
+          // New schema - use Prisma normally, include plus one fields
           const responses = await prisma.rsvpEventResponse.findMany({
             where: { rsvpId: rsvp.id },
             include: {
@@ -115,7 +115,16 @@ export async function GET(request: NextRequest) {
               },
             },
           })
-          ;(rsvp as any).eventResponses = responses
+          // Map to include plus one fields
+          ;(rsvp as any).eventResponses = responses.map((r: any) => ({
+            id: r.id,
+            eventId: r.eventId,
+            status: r.status,
+            plusOne: r.plusOne || false,
+            plusOneName: r.plusOneName || null,
+            plusOneRelation: r.plusOneRelation || null,
+            event: r.event,
+          }))
         } else {
           // Old schema - use raw SQL with actual column names
           if (actualColumnNames) {
@@ -139,6 +148,9 @@ export async function GET(request: NextRequest) {
             
             ;(rsvp as any).eventResponses = responses.map(r => ({
               ...r,
+              plusOne: false,
+              plusOneName: null,
+              plusOneRelation: null,
               event: events.find(e => e.id === r.eventId) || { id: r.eventId, name: 'Unknown Event' },
             }))
           } else {

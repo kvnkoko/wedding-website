@@ -1,6 +1,22 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { 
+  MagnifyingGlass, 
+  Funnel, 
+  Download, 
+  Pencil, 
+  Trash, 
+  User, 
+  Users,
+  Phone, 
+  Envelope,
+  Calendar,
+  UserPlus,
+  CheckCircle,
+  XCircle,
+  X
+} from 'phosphor-react'
 
 interface Rsvp {
   id: string
@@ -24,6 +40,9 @@ interface Rsvp {
       name: string
     }
     status: string
+    plusOne?: boolean
+    plusOneName?: string | null
+    plusOneRelation?: string | null
   }>
 }
 
@@ -116,7 +135,6 @@ export default function AdminRSVPsPage() {
       })
 
       if (res.ok) {
-        // Refresh the list
         const params = new URLSearchParams()
         if (search) params.set('search', search)
         if (eventFilter) params.set('eventId', eventFilter)
@@ -141,7 +159,6 @@ export default function AdminRSVPsPage() {
     const formData = new FormData(e.currentTarget)
     const eventResponses: Record<string, string> = {}
 
-    // Collect event responses
     editing?.eventResponses.forEach((er) => {
       const value = formData.get(`event-${er.event.id}`) as string
       if (value) {
@@ -172,7 +189,6 @@ export default function AdminRSVPsPage() {
       if (res.ok) {
         setShowForm(false)
         setEditing(null)
-        // Refresh the list
         const params = new URLSearchParams()
         if (search) params.set('search', search)
         if (eventFilter) params.set('eventId', eventFilter)
@@ -193,16 +209,23 @@ export default function AdminRSVPsPage() {
   }
 
   const getStatusBadge = (status: string) => {
-    const colors = {
-      YES: 'bg-green-100 text-green-800',
-      NO: 'bg-red-100 text-red-800',
+    if (status === 'YES') {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-sans font-medium bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800">
+          <CheckCircle className="w-3 h-3" weight="fill" />
+          Yes
+        </span>
+      )
+    } else if (status === 'NO') {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-sans font-medium bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800">
+          <XCircle className="w-3 h-3" weight="fill" />
+          No
+        </span>
+      )
     }
     return (
-      <span
-        className={`px-2 py-1 rounded-sm text-xs font-sans font-medium ${
-          colors[status as keyof typeof colors] || 'bg-gray-100 text-gray-800'
-        }`}
-      >
+      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-sans font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
         {status}
       </span>
     )
@@ -211,46 +234,65 @@ export default function AdminRSVPsPage() {
   if (loading && rsvps.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="font-sans text-lg text-charcoal/70">Loading...</p>
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="w-12 h-12 border-4 border-sage border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="font-sans text-lg text-charcoal dark:text-dark-text">Loading RSVPs...</p>
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="font-serif text-5xl text-charcoal">RSVPs</h1>
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <div>
+          <h1 className="font-title text-4xl sm:text-5xl text-charcoal dark:text-dark-text mb-2">RSVPs</h1>
+          <p className="font-sans text-base text-charcoal/60 dark:text-dark-text-secondary">
+            Manage and review all guest responses
+          </p>
+        </div>
         <button
           onClick={handleExport}
-          className="bg-sage text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-sage/90 transition-all"
+          className="flex items-center gap-2 bg-sage text-white px-6 py-3 rounded-lg font-sans text-sm font-medium hover:bg-sage/90 transition-all duration-200 shadow-md hover:shadow-lg"
         >
+          <Download className="w-4 h-4" weight="duotone" />
           Export CSV
         </button>
       </div>
 
       {/* Filters */}
-      <div className="bg-white p-6 rounded-sm shadow-sm mb-6">
+      <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-md border border-taupe/20 dark:border-dark-border mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Funnel className="w-5 h-5 text-charcoal dark:text-dark-text" weight="duotone" />
+          <h2 className="font-title text-lg text-charcoal dark:text-dark-text">Filters</h2>
+        </div>
         <div className="grid md:grid-cols-3 gap-4">
           <div>
-            <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+            <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
               Search
             </label>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Name, email, phone..."
-              className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
-            />
+            <div className="relative">
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/40 dark:text-dark-text-secondary" weight="duotone" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Name, email, phone..."
+                className="w-full pl-10 pr-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+              />
+            </div>
           </div>
           <div>
-            <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+            <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
               Event
             </label>
             <select
               value={eventFilter}
               onChange={(e) => setEventFilter(e.target.value)}
-              className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+              className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
             >
               <option value="">All Events</option>
               {events.map((event) => (
@@ -261,30 +303,41 @@ export default function AdminRSVPsPage() {
             </select>
           </div>
           <div>
-            <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+            <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
               Status
             </label>
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
-              >
-                <option value="">All Statuses</option>
-                <option value="YES">Yes</option>
-                <option value="NO">No</option>
-              </select>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+            >
+              <option value="">All Statuses</option>
+              <option value="YES">Attending</option>
+              <option value="NO">Declined</option>
+            </select>
           </div>
         </div>
       </div>
 
       {/* Edit Form */}
       {showForm && editing && (
-        <div className="bg-white p-8 rounded-sm shadow-sm mb-8" key={editing.id}>
-          <h2 className="font-serif text-2xl text-charcoal mb-6">Edit RSVP</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="bg-white dark:bg-dark-card p-8 rounded-xl shadow-lg border border-taupe/20 dark:border-dark-border mb-8" key={editing.id}>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="font-title text-2xl text-charcoal dark:text-dark-text">Edit RSVP</h2>
+            <button
+              onClick={() => {
+                setShowForm(false)
+                setEditing(null)
+              }}
+              className="p-2 hover:bg-taupe/10 dark:hover:bg-dark-border rounded-lg transition-colors duration-200"
+            >
+              <X className="w-5 h-5 text-charcoal dark:text-dark-text" />
+            </button>
+          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                   Name <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -292,11 +345,11 @@ export default function AdminRSVPsPage() {
                   name="name"
                   defaultValue={editing.name}
                   required
-                  className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                   Phone <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -304,28 +357,28 @@ export default function AdminRSVPsPage() {
                   name="phone"
                   defaultValue={editing.phone}
                   required
-                  className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                   Email
                 </label>
                 <input
                   type="email"
                   name="email"
                   defaultValue={editing.email || ''}
-                  className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                 />
               </div>
               <div>
-                <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                   Side
                 </label>
                 <select
                   name="side"
                   defaultValue={editing.side}
-                  className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                 >
                   <option value="Bride">Bride</option>
                   <option value="Groom">Groom</option>
@@ -333,56 +386,19 @@ export default function AdminRSVPsPage() {
                   <option value="Other">Other</option>
                 </select>
               </div>
-              <div>
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    name="plusOne"
-                    defaultChecked={editing.plusOne}
-                    className="mr-2"
-                  />
-                  <span className="font-sans text-sm text-charcoal">Plus One</span>
-                </label>
-              </div>
-              {editing.plusOne && (
-                <>
-                  <div>
-                    <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                      Plus One Name
-                    </label>
-                    <input
-                      type="text"
-                      name="plusOneName"
-                      defaultValue={editing.plusOneName || ''}
-                      className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                      Relationship
-                    </label>
-                    <input
-                      type="text"
-                      name="plusOneRelation"
-                      defaultValue={editing.plusOneRelation || ''}
-                      className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
-                    />
-                  </div>
-                </>
-              )}
             </div>
             <div>
-              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+              <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-4">
                 Event Responses
               </label>
-              <div className="grid md:grid-cols-3 gap-3 border border-taupe/30 rounded-sm p-4">
+              <div className="grid md:grid-cols-2 gap-3 border border-taupe/30 dark:border-dark-border rounded-lg p-4 bg-taupe/5 dark:bg-dark-surface">
                 {editing.eventResponses.map((er) => (
-                  <div key={er.event.id} className="flex items-center gap-2">
-                    <span className="font-sans text-sm text-charcoal w-32">{er.event.name}:</span>
+                  <div key={er.event.id} className="flex items-center gap-3">
+                    <span className="font-sans text-sm text-charcoal dark:text-dark-text w-32 flex-shrink-0">{er.event.name}:</span>
                     <select
                       name={`event-${er.event.id}`}
                       defaultValue={er.status}
-                      className="flex-1 px-3 py-1 border border-taupe/30 rounded-sm font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage"
+                      className="flex-1 px-3 py-2 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-bg dark:text-dark-text transition-all duration-200"
                     >
                       <option value="YES">Yes</option>
                       <option value="NO">No</option>
@@ -392,22 +408,22 @@ export default function AdminRSVPsPage() {
               </div>
             </div>
             <div>
-              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
-                Leave a note for the Bride & Groom!
+              <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
+                Notes
               </label>
               <textarea
                 name="notes"
                 defaultValue={editing.notes || ''}
                 rows={3}
-                className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
               />
             </div>
             <div className="flex gap-4">
               <button
                 type="submit"
-                className="bg-charcoal text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 transition-all"
+                className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-lg font-sans text-sm font-medium hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all duration-200 shadow-md hover:shadow-lg"
               >
-                Update
+                Update RSVP
               </button>
               <button
                 type="button"
@@ -415,7 +431,7 @@ export default function AdminRSVPsPage() {
                   setShowForm(false)
                   setEditing(null)
                 }}
-                className="bg-taupe text-charcoal px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/90 transition-all"
+                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-3 rounded-lg font-sans text-sm font-medium hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all duration-200"
               >
                 Cancel
               </button>
@@ -424,114 +440,144 @@ export default function AdminRSVPsPage() {
         </div>
       )}
 
-      {/* RSVPs Table */}
-      <div className="bg-white rounded-sm shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-taupe/30">
-            <thead className="bg-beige">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-sans font-medium text-charcoal uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-sans font-medium text-charcoal uppercase tracking-wider">
-                  Contact
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-sans font-medium text-charcoal uppercase tracking-wider">
-                  Side
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-sans font-medium text-charcoal uppercase tracking-wider">
-                  Plus One
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-sans font-medium text-charcoal uppercase tracking-wider">
-                  Event Responses
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-sans font-medium text-charcoal uppercase tracking-wider">
-                  Invite Link
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-sans font-medium text-charcoal uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-sans font-medium text-charcoal uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-taupe/30">
-              {rsvps.map((rsvp) => (
-                <tr key={rsvp.id} className="hover:bg-beige/50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-sans text-sm font-medium text-charcoal">{rsvp.name}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="font-sans text-sm text-charcoal/70">{rsvp.phone}</div>
-                    {rsvp.email && (
-                      <div className="font-sans text-xs text-charcoal/60">{rsvp.email}</div>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="font-sans text-sm text-charcoal/70">{rsvp.side}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {rsvp.plusOne ? (
-                      <div className="font-sans text-sm text-charcoal/70">
-                        {rsvp.plusOneName || 'Yes'}
-                        {rsvp.plusOneRelation && (
-                          <div className="text-xs text-charcoal/60">({rsvp.plusOneRelation})</div>
-                        )}
+      {/* RSVPs List */}
+      {rsvps.length === 0 ? (
+        <div className="bg-white dark:bg-dark-card p-12 rounded-xl shadow-md border border-taupe/20 dark:border-dark-border text-center">
+          <Users className="w-16 h-16 text-charcoal/30 dark:text-dark-text-secondary mx-auto mb-4" weight="duotone" />
+          <p className="font-sans text-lg text-charcoal/70 dark:text-dark-text-secondary">No RSVPs found</p>
+          {(search || eventFilter || statusFilter) && (
+            <p className="font-sans text-sm text-charcoal/50 dark:text-dark-text-secondary mt-2">
+              Try adjusting your filters
+            </p>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {rsvps.map((rsvp) => (
+            <div
+              key={rsvp.id}
+              className="bg-white dark:bg-dark-card rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-taupe/20 dark:border-dark-border overflow-hidden"
+            >
+              {/* RSVP Header */}
+              <div className="bg-gradient-to-r from-sage/10 to-sage/5 dark:from-sage/20 dark:to-sage/10 px-6 py-4 border-b border-taupe/20 dark:border-dark-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sage to-sage/70 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                      {rsvp.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div>
+                      <h3 className="font-title text-xl text-charcoal dark:text-dark-text">{rsvp.name}</h3>
+                      <p className="font-sans text-sm text-charcoal/60 dark:text-dark-text-secondary">
+                        {rsvp.inviteLinkConfig.label} • {new Date(rsvp.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => {
+                        setEditing(rsvp)
+                        setShowForm(true)
+                      }}
+                      className="flex items-center gap-2 bg-sage text-white px-4 py-2 rounded-lg font-sans text-sm font-medium hover:bg-sage/90 transition-all duration-200 shadow-md hover:shadow-lg"
+                    >
+                      <Pencil className="w-4 h-4" weight="duotone" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(rsvp.id)}
+                      className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg font-sans text-sm font-medium hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg"
+                    >
+                      <Trash className="w-4 h-4" weight="duotone" />
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* RSVP Content */}
+              <div className="p-6">
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  {/* Contact Info */}
+                  <div>
+                    <h4 className="font-sans text-sm font-semibold text-charcoal dark:text-dark-text mb-3 flex items-center gap-2">
+                      <User className="w-4 h-4 text-sage" weight="duotone" />
+                      Contact Information
+                    </h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 text-sm text-charcoal/70 dark:text-dark-text-secondary">
+                        <Phone className="w-4 h-4" weight="duotone" />
+                        <span>{rsvp.phone}</span>
                       </div>
-                    ) : (
-                      <span className="font-sans text-sm text-charcoal/40">No</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex flex-wrap gap-2">
+                      {rsvp.email && (
+                        <div className="flex items-center gap-2 text-sm text-charcoal/70 dark:text-dark-text-secondary">
+                          <Envelope className="w-4 h-4" weight="duotone" />
+                          <span>{rsvp.email}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="text-charcoal/60 dark:text-dark-text-secondary">Side:</span>
+                        <span className="px-2 py-1 bg-taupe/20 dark:bg-dark-border rounded text-charcoal dark:text-dark-text text-xs font-medium">
+                          {rsvp.side}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Event Responses */}
+                  <div>
+                    <h4 className="font-sans text-sm font-semibold text-charcoal dark:text-dark-text mb-3 flex items-center gap-2">
+                      <Calendar className="w-4 h-4 text-sage" weight="duotone" />
+                      Event Responses
+                    </h4>
+                    <div className="space-y-3">
                       {rsvp.eventResponses.map((er, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <span className="font-sans text-xs text-charcoal/70">{er.event.name}:</span>
-                          {getStatusBadge(er.status)}
+                        <div
+                          key={idx}
+                          className="p-3 rounded-lg bg-taupe/5 dark:bg-dark-surface border border-taupe/20 dark:border-dark-border"
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-sans text-sm font-medium text-charcoal dark:text-dark-text">
+                              {er.event.name}
+                            </span>
+                            {getStatusBadge(er.status)}
+                          </div>
+                          {/* Per-Event Plus One */}
+                          {er.status === 'YES' && er.plusOne && (
+                            <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
+                              <div className="flex items-center gap-2 text-xs text-charcoal/70 dark:text-dark-text-secondary">
+                                <UserPlus className="w-3.5 h-3.5 text-sage" weight="duotone" />
+                                <span className="font-medium">Plus One:</span>
+                                <span>{er.plusOneName || 'Guest'}</span>
+                                {er.plusOneRelation && (
+                                  <span className="text-charcoal/50 dark:text-dark-text-secondary">
+                                    ({er.plusOneRelation})
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="font-sans text-xs text-sage">{rsvp.inviteLinkConfig.slug}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="font-sans text-xs text-charcoal/60">
-                      {new Date(rsvp.createdAt).toLocaleDateString()}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          setEditing(rsvp)
-                          setShowForm(true)
-                        }}
-                        className="bg-sage text-white px-3 py-1 rounded-sm font-sans text-xs tracking-wider uppercase hover:bg-sage/90 transition-all"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(rsvp.id)}
-                        className="bg-red-600 text-white px-3 py-1 rounded-sm font-sans text-xs tracking-wider uppercase hover:bg-red-700 transition-all"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                </div>
+
+                {/* Notes */}
+                {rsvp.notes && (
+                  <div className="pt-4 border-t border-taupe/20 dark:border-dark-border">
+                    <h4 className="font-sans text-sm font-semibold text-charcoal dark:text-dark-text mb-2">
+                      Notes
+                    </h4>
+                    <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary italic">
+                      {rsvp.notes}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
-        {rsvps.length === 0 && (
-          <div className="text-center py-12">
-            <p className="font-sans text-lg text-charcoal/70">No RSVPs found</p>
-          </div>
-        )}
-      </div>
+      )}
     </div>
   )
 }
-
