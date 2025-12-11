@@ -66,6 +66,21 @@ export default function AdminRSVPsPage() {
 
         if (rsvpsRes.ok) {
           const data = await rsvpsRes.json()
+          console.log('[Admin RSVPs Page] Fetched RSVPs:', {
+            count: data.length,
+            sampleRsvp: data[0],
+            sampleEventResponse: data[0]?.eventResponses?.[0],
+            allEventResponses: data.flatMap((r: Rsvp) => 
+              r.eventResponses.map(er => ({
+                rsvpName: r.name,
+                eventName: er.event.name,
+                status: er.status,
+                plusOne: er.plusOne,
+                plusOneName: er.plusOneName,
+                plusOneRelation: er.plusOneRelation,
+              }))
+            ),
+          })
           setRsvps(data)
         }
 
@@ -542,7 +557,7 @@ export default function AdminRSVPsPage() {
                             {getStatusBadge(er.status)}
                           </div>
                           {/* Per-Event Plus One */}
-                          {er.status === 'YES' && er.plusOne ? (
+                          {er.status === 'YES' && (er.plusOne || er.plusOneName) ? (
                             <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
                               <div className="flex items-start gap-2">
                                 <UserPlus className="w-4 h-4 text-sage flex-shrink-0 mt-0.5" weight="duotone" />
