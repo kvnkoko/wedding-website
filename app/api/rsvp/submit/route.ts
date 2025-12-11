@@ -78,9 +78,10 @@ export async function POST(request: NextRequest) {
         status = response
       } else if (response && typeof response === 'object' && 'status' in response) {
         status = (response as any).status
-        plusOne = (response as any).plusOne || false
         plusOneName = (response as any).plusOneName || null
         plusOneRelation = (response as any).plusOneRelation || null
+        // Set plusOne to true if there's a name, even if the boolean wasn't set
+        plusOne = (response as any).plusOne || (plusOneName && plusOneName.trim() !== '') || false
       } else {
         console.error('Invalid response format:', response)
         throw new Error(`Invalid event response format for event ${eventId}`)
@@ -189,18 +190,18 @@ export async function POST(request: NextRequest) {
       rsvp = await prisma.$transaction(async (tx) => {
         // First create the RSVP
         const newRsvp = await tx.rsvp.create({
-          data: {
-            inviteLinkConfigId,
-            name,
-            phone,
-            email: email || null,
-            side,
+      data: {
+        inviteLinkConfigId,
+        name,
+        phone,
+        email: email || null,
+        side,
             plusOne: hasAnyPlusOne || false,
             plusOneName: null,
             plusOneRelation: null,
-            dietaryRequirements: dietaryRequirements || null,
-            notes: notes || null,
-            editToken,
+        dietaryRequirements: dietaryRequirements || null,
+        notes: notes || null,
+        editToken,
           },
         })
 
@@ -287,13 +288,13 @@ export async function POST(request: NextRequest) {
         if (hasNewSchema) {
           return await tx.rsvp.findUnique({
             where: { id: newRsvp.id },
-            include: {
-              eventResponses: {
-                include: {
-                  event: true,
-                },
-              },
-            },
+      include: {
+        eventResponses: {
+          include: {
+            event: true,
+          },
+        },
+      },
           })
         } else {
           // Old schema - manually fetch to avoid plusOne fields
@@ -378,9 +379,9 @@ export async function POST(request: NextRequest) {
         const plusOneRelation = er.plusOneRelation !== undefined ? er.plusOneRelation : (er.plus_one_relation !== undefined ? er.plus_one_relation : null)
         
         return {
-          eventId: er.eventId,
-          eventName: er.event.name,
-          status: er.status,
+        eventId: er.eventId,
+        eventName: er.event.name,
+        status: er.status,
           plusOne,
           plusOneName,
           plusOneRelation,
