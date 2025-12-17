@@ -313,6 +313,20 @@ export default function RSVPFormPage() {
       }
 
       const result = await res.json()
+      console.log('[RSVP Form] Received submission result:', {
+        hasEventResponses: !!result.eventResponses,
+        eventResponsesCount: result.eventResponses?.length || 0,
+        eventResponses: result.eventResponses?.map((er: any) => ({
+          eventId: er.eventId,
+          eventName: er.eventName,
+          status: er.status,
+          plusOne: er.plusOne,
+          plusOneName: er.plusOneName,
+          plusOneRelation: er.plusOneRelation,
+          hasPlusOneData: !!(er.plusOne || er.plusOneName),
+        })),
+        fullResult: result,
+      })
       setSubmissionData(result)
       setSubmitted(true)
     } catch (error: any) {
@@ -497,7 +511,8 @@ export default function RSVPFormPage() {
                           return null
                         })()}
                     </div>
-                  ))}
+                      )
+                    })}
                 </div>
               </div>
 
