@@ -825,13 +825,6 @@ export async function POST(request: NextRequest) {
           finalPlusOneRelation: mapped.plusOneRelation,
         })
         
-        console.log(`[Submit API Response] Mapping event response for ${er.eventId}:`, {
-          raw: { plusOneRaw, plusOneNameRaw, plusOneRelationRaw },
-          mapped,
-          hasPlusOneName,
-          hasPlusOneRelation,
-        })
-        
         // CRITICAL: Always log to verify data is being returned
         console.log('[Submit] Mapping event response for return:', {
           raw: er,
