@@ -82,7 +82,7 @@ export default function AdminRSVPsPage() {
               }))
             ),
             responsesWithPlusOne: data.flatMap((r: Rsvp) => 
-              r.eventResponses
+              (r.eventResponses || [])
                 .filter(er => er.plusOne || er.plusOneName)
                 .map(er => ({
                   rsvpName: r.name,
@@ -623,8 +623,9 @@ export default function AdminRSVPsPage() {
                             }
                             return null
                           })()}
-                        </div>
-                      ))}
+                          </div>
+                        )
+                      })}
                     </div>
                   </div>
                 </div>
