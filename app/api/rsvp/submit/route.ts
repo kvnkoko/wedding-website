@@ -322,18 +322,24 @@ export async function POST(request: NextRequest) {
             }
           }
           
-          // Check if plus_one columns exist in old schema
+          // Check if plus_one columns exist in old schema - check both camelCase and snake_case
           let hasPlusOneColumns = false
           try {
             const plusOneCheck = await tx.$queryRaw<Array<{ column_name: string }>>`
               SELECT column_name 
               FROM information_schema.columns 
               WHERE table_name = 'rsvp_event_responses' 
-              AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation')
-              LIMIT 3
+              AND column_name IN ('plusOne', 'plus_one', 'plusOneName', 'plus_one_name', 'plusOneRelation', 'plus_one_relation')
+              LIMIT 6
             `
-            hasPlusOneColumns = Array.isArray(plusOneCheck) && plusOneCheck.length === 3
-          } catch {
+            // Check if we have all three columns (either camelCase or snake_case)
+            const foundPlusOne = plusOneCheck.some(c => c.column_name === 'plusOne' || c.column_name === 'plus_one')
+            const foundPlusOneName = plusOneCheck.some(c => c.column_name === 'plusOneName' || c.column_name === 'plus_one_name')
+            const foundPlusOneRelation = plusOneCheck.some(c => c.column_name === 'plusOneRelation' || c.column_name === 'plus_one_relation')
+            hasPlusOneColumns = foundPlusOne && foundPlusOneName && foundPlusOneRelation
+            console.log('Plus one columns check:', { foundPlusOne, foundPlusOneName, foundPlusOneRelation, hasPlusOneColumns, foundColumns: plusOneCheck })
+          } catch (e) {
+            console.warn('Error checking plus_one columns:', e)
             hasPlusOneColumns = false
           }
           
