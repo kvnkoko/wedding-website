@@ -381,9 +381,39 @@ export async function GET(request: NextRequest) {
         console.error(`Error fetching event responses for RSVP ${rsvp.id}:`, responseError?.message)
         ;(rsvp as any).eventResponses = []
       }
+      
+      // Ensure eventResponses is always defined
+      if (!(rsvp as any).eventResponses) {
+        console.warn(`[Admin RSVPs] RSVP ${rsvp.id} has no eventResponses, setting to empty array`)
+        ;(rsvp as any).eventResponses = []
+      }
     }
 
-    return NextResponse.json(rsvps)
+    // Final verification - log what we're returning
+    console.log('[Admin RSVPs] FINAL RSVPs DATA:', JSON.stringify(rsvps.map((r: any) => ({
+      id: r.id,
+      name: r.name,
+      eventResponsesCount: r.eventResponses?.length || 0,
+      hasEventResponses: !!r.eventResponses,
+      eventResponses: r.eventResponses?.map((er: any) => ({
+        id: er.id,
+        eventId: er.eventId,
+        eventName: er.event?.name,
+        status: er.status,
+        plusOne: er.plusOne,
+        plusOneName: er.plusOneName,
+        plusOneRelation: er.plusOneRelation,
+        hasEvent: !!er.event,
+      })) || [],
+    })), null, 2))
+
+    // Ensure eventResponses is always an array, even if empty
+    const rsvpsWithEventResponses = rsvps.map((r: any) => ({
+      ...r,
+      eventResponses: r.eventResponses || [],
+    }))
+
+    return NextResponse.json(rsvpsWithEventResponses)
   } catch (error) {
     console.error('Error fetching RSVPs:', error)
     return NextResponse.json(
