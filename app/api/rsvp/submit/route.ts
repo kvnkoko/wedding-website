@@ -147,13 +147,24 @@ export async function POST(request: NextRequest) {
       let hasNewSchema = false
       let actualColumnNames: { rsvpId: string; eventId: string; status: string; createdAt: string; updatedAt: string } | null = null
       
+      // More robust schema detection - check for all three columns
       try {
-        await prisma.$queryRaw`SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0`
-        hasNewSchema = true
-        console.log('Database has new schema (with plus_one columns)')
+        const schemaCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
+          SELECT column_name 
+          FROM information_schema.columns 
+          WHERE table_name = 'rsvp_event_responses' 
+          AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation')
+          LIMIT 3
+        `
+        hasNewSchema = Array.isArray(schemaCheck) && schemaCheck.length === 3
+        console.log('Schema detection result:', {
+          foundColumns: schemaCheck,
+          hasNewSchema: hasNewSchema,
+          columnCount: schemaCheck?.length || 0,
+        })
       } catch (schemaCheckError: any) {
         hasNewSchema = false
-        console.log('Database has old schema (no plus_one columns)')
+        console.log('Schema detection error (assuming old schema):', schemaCheckError?.message)
         
         // Get actual column names from the database
         try {
@@ -310,15 +321,37 @@ export async function POST(request: NextRequest) {
               const plusOneNameCol = (actualColumnNames as any).plusOneName || 'plus_one_name'
               const plusOneRelationCol = (actualColumnNames as any).plusOneRelation || 'plus_one_relation'
               
+              const plusOneValue = Boolean(responseData.plusOne || (responseData.plusOneName && responseData.plusOneName.trim() !== ''))
+              const plusOneNameValue = responseData.plusOneName?.trim() || null
+              const plusOneRelationValue = responseData.plusOneRelation?.trim() || null
+              
+              console.log(`[Submit] Inserting event response ${responseData.eventId} with plus one:`, {
+                plusOne: plusOneValue,
+                plusOneName: plusOneNameValue,
+                plusOneRelation: plusOneRelationValue,
+              })
+              
               await tx.$executeRawUnsafe(
                 `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", "${plusOneCol}", "${plusOneNameCol}", "${plusOneRelationCol}", "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, NOW(), NOW())`,
                 newRsvp.id,
                 responseData.eventId,
                 responseData.status,
-                Boolean(responseData.plusOne || (responseData.plusOneName && responseData.plusOneName.trim() !== '')),
-                responseData.plusOneName?.trim() || null,
-                responseData.plusOneRelation?.trim() || null
+                plusOneValue,
+                plusOneNameValue,
+                plusOneRelationValue
               )
+              
+              // Verify immediately after insert
+              const justInserted = await tx.$queryRawUnsafe<Array<any>>(
+                `SELECT "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status, "${plusOneCol}" as "plusOne", "${plusOneNameCol}" as "plusOneName", "${plusOneRelationCol}" as "plusOneRelation"
+                 FROM rsvp_event_responses 
+                 WHERE "${actualColumnNames.rsvpId}" = $1 AND "${actualColumnNames.eventId}" = $2
+                 ORDER BY "${actualColumnNames.createdAt}" DESC
+                 LIMIT 1`,
+                newRsvp.id,
+                responseData.eventId
+              )
+              console.log(`✅ VERIFIED INSERTED DATA for event ${responseData.eventId}:`, JSON.stringify(justInserted, null, 2))
             } else {
               // Use the actual column names we detected (no plus one columns)
               console.log('Inserting without plus one columns (old schema):', {
@@ -496,9 +529,9 @@ export async function POST(request: NextRequest) {
         const plusOne = Boolean(plusOneRaw || hasPlusOneName || false)
         
         const mapped = {
-          eventId: er.eventId,
+        eventId: er.eventId,
           eventName: er.event?.name || 'Unknown Event',
-          status: er.status,
+        status: er.status,
           plusOne: plusOne,
           plusOneName: plusOneNameRaw?.trim() || null,
           plusOneRelation: plusOneRelationRaw?.trim() || null,

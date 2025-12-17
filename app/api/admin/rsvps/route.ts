@@ -42,11 +42,24 @@ export async function GET(request: NextRequest) {
     let hasNewSchema = false
     let actualColumnNames: { rsvpId: string; eventId: string; status: string; plusOne?: string; plusOneName?: string; plusOneRelation?: string } | null = null
     
+    // More robust schema detection - check for all three columns
     try {
-      await prisma.$queryRaw`SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0`
-      hasNewSchema = true
-    } catch {
+      const schemaCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'rsvp_event_responses' 
+        AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation')
+        LIMIT 3
+      `
+      hasNewSchema = Array.isArray(schemaCheck) && schemaCheck.length === 3
+      console.log('[Admin RSVPs] Schema detection result:', {
+        foundColumns: schemaCheck,
+        hasNewSchema: hasNewSchema,
+        columnCount: schemaCheck?.length || 0,
+      })
+    } catch (schemaCheckError: any) {
       hasNewSchema = false
+      console.log('[Admin RSVPs] Schema detection error (assuming old schema):', schemaCheckError?.message)
       
       // Get actual column names for old schema
       try {
