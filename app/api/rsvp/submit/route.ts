@@ -86,14 +86,14 @@ export async function POST(request: NextRequest) {
         // Also handle string "true"/"false" from checkbox
         const plusOneValue = (response as any).plusOne
         const plusOneBool = plusOneValue === true || plusOneValue === 'true' || plusOneValue === 'on' || plusOneValue === 1
-        hasName = plusOneName && 
+        hasName = Boolean(plusOneName && 
                  String(plusOneName).trim() !== '' && 
                  String(plusOneName).trim() !== 'null' &&
-                 String(plusOneName).trim().toLowerCase() !== 'none'
-        hasRelation = plusOneRelation && 
+                 String(plusOneName).trim().toLowerCase() !== 'none')
+        hasRelation = Boolean(plusOneRelation && 
                      String(plusOneRelation).trim() !== '' && 
                      String(plusOneRelation).trim() !== 'null' &&
-                     String(plusOneRelation).trim().toLowerCase() !== 'none'
+                     String(plusOneRelation).trim().toLowerCase() !== 'none')
         plusOne = plusOneBool || hasName || hasRelation || false
         
         console.log(`[Submit] Processing event ${eventId}:`, {
