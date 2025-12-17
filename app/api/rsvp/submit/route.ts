@@ -208,24 +208,50 @@ export async function POST(request: NextRequest) {
         // Create event responses - use the schema we detected
         if (hasNewSchema) {
           // New schema - include plus one fields using Prisma
-          const eventResponseData = eventResponsesData.map((responseData) => ({
-            rsvpId: newRsvp.id,
-            eventId: responseData.eventId,
-            status: responseData.status,
-            plusOne: responseData.plusOne || false,
-            plusOneName: responseData.plusOneName || null,
-            plusOneRelation: responseData.plusOneRelation || null,
-          }))
+          const eventResponseData = eventResponsesData.map((responseData) => {
+            // Ensure plusOne is true if there's a name
+            const hasName = responseData.plusOneName && responseData.plusOneName.trim()
+            const plusOne = Boolean(responseData.plusOne || hasName || false)
+            
+            return {
+              rsvpId: newRsvp.id,
+              eventId: responseData.eventId,
+              status: responseData.status,
+              plusOne: plusOne,
+              plusOneName: responseData.plusOneName || null,
+              plusOneRelation: responseData.plusOneRelation || null,
+            }
+          })
           
           console.log('Creating event responses with plus one data:', {
             count: eventResponseData.length,
             sample: eventResponseData[0],
-            allWithPlusOne: eventResponseData.filter(r => r.plusOne),
+            allWithPlusOne: eventResponseData.filter(r => r.plusOne || r.plusOneName),
+            allData: eventResponseData.map(r => ({
+              eventId: r.eventId,
+              status: r.status,
+              plusOne: r.plusOne,
+              plusOneName: r.plusOneName,
+              plusOneRelation: r.plusOneRelation,
+            })),
           })
           
           await tx.rsvpEventResponse.createMany({
             data: eventResponseData,
           })
+          
+          // Verify data was saved correctly
+          const verifyData = await tx.rsvpEventResponse.findMany({
+            where: { rsvpId: newRsvp.id },
+            select: {
+              eventId: true,
+              status: true,
+              plusOne: true,
+              plusOneName: true,
+              plusOneRelation: true,
+            },
+          })
+          console.log('Verified saved event responses:', verifyData)
         } else {
           // Old schema - use raw SQL with actual column names
           if (!actualColumnNames) {

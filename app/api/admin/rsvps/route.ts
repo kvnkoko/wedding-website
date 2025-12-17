@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
     // Check if new schema exists to avoid querying non-existent columns
     let hasNewSchema = false
-    let actualColumnNames: { rsvpId: string; eventId: string; status: string } | null = null
+    let actualColumnNames: { rsvpId: string; eventId: string; status: string; plusOne?: string; plusOneName?: string; plusOneRelation?: string } | null = null
     
     try {
       await prisma.$queryRaw`SELECT "plus_one" FROM "rsvp_event_responses" LIMIT 0`
@@ -70,13 +70,20 @@ export async function GET(request: NextRequest) {
         )?.column_name
         
         const statusCol = columns.find(c => c.column_name.toLowerCase() === 'status')?.column_name
+        const plusOneCol = columns.find(c => c.column_name.toLowerCase() === 'plus_one' || c.column_name.toLowerCase() === 'plusone')?.column_name
+        const plusOneNameCol = columns.find(c => c.column_name.toLowerCase() === 'plus_one_name' || c.column_name.toLowerCase() === 'plusonename')?.column_name
+        const plusOneRelationCol = columns.find(c => c.column_name.toLowerCase() === 'plus_one_relation' || c.column_name.toLowerCase() === 'plusonerelation')?.column_name
         
         if (rsvpIdCol && eventIdCol && statusCol) {
           actualColumnNames = {
             rsvpId: rsvpIdCol,
             eventId: eventIdCol,
             status: statusCol,
+            ...(plusOneCol && { plusOne: plusOneCol }),
+            ...(plusOneNameCol && { plusOneName: plusOneNameCol }),
+            ...(plusOneRelationCol && { plusOneRelation: plusOneRelationCol }),
           }
+          console.log('[Admin RSVPs] Detected column names:', actualColumnNames)
         }
       } catch (columnError: any) {
         console.error('Could not query column names:', columnError?.message)
@@ -106,15 +113,18 @@ export async function GET(request: NextRequest) {
           // New schema - use Prisma normally, include plus one fields
           const responses = await prisma.rsvpEventResponse.findMany({
             where: { rsvpId: rsvp.id },
-          include: {
-            event: {
-              select: {
-                id: true,
-                name: true,
+            include: {
+              event: {
+                select: {
+                  id: true,
+                  name: true,
+                },
               },
             },
-          },
           })
+          
+          console.log(`[Admin RSVPs] Fetched ${responses.length} event responses for RSVP ${rsvp.id}`)
+          
           // Map to include plus one fields
           ;(rsvp as any).eventResponses = responses.map((r: any) => {
             // Check if plusOne should be true based on name presence
@@ -130,18 +140,20 @@ export async function GET(request: NextRequest) {
               plusOneRelation: r.plusOneRelation || null,
               event: r.event,
             }
-            // Debug logging for all responses with plus one data
-            if (hasPlusOneName || r.plusOne) {
-              console.log(`[Admin RSVPs] Event response with plus one for RSVP ${rsvp.id}:`, {
-                eventId: r.eventId,
-                eventName: r.event?.name,
-                rawPlusOne: r.plusOne,
-                rawPlusOneName: r.plusOneName,
-                rawPlusOneRelation: r.plusOneRelation,
-                computedPlusOne: plusOne,
-                mapped: mapped,
-              })
-            }
+            
+            // Log ALL responses to see what we're getting
+            console.log(`[Admin RSVPs] Event response for RSVP ${rsvp.id}, Event ${r.event?.name}:`, {
+              eventId: r.eventId,
+              eventName: r.event?.name,
+              status: r.status,
+              rawPlusOne: r.plusOne,
+              rawPlusOneName: r.plusOneName,
+              rawPlusOneRelation: r.plusOneRelation,
+              hasPlusOneName: hasPlusOneName,
+              computedPlusOne: plusOne,
+              finalMapped: mapped,
+            })
+            
             return mapped
           })
         } else {
@@ -163,8 +175,15 @@ export async function GET(request: NextRequest) {
             }
 
             let responses: any[]
-            if (hasPlusOneColumn) {
-              // Query with plus one fields
+            if (hasPlusOneColumn && actualColumnNames.plusOne && actualColumnNames.plusOneName && actualColumnNames.plusOneRelation) {
+              // Query with plus one fields using actual column names
+              const query = `SELECT id, "${actualColumnNames.rsvpId}" as "rsvpId", "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status,
+                            "${actualColumnNames.plusOne}" as "plusOne", "${actualColumnNames.plusOneName}" as "plusOneName", "${actualColumnNames.plusOneRelation}" as "plusOneRelation"
+                            FROM rsvp_event_responses
+                            WHERE "${actualColumnNames.rsvpId}" = $1`
+              
+              console.log(`[Admin RSVPs] Old schema for RSVP ${rsvp.id}: Querying with plus one columns:`, query)
+              
               responses = await prisma.$queryRawUnsafe<Array<{
                 id: string;
                 rsvpId: string;
@@ -173,26 +192,25 @@ export async function GET(request: NextRequest) {
                 plusOne?: boolean;
                 plusOneName?: string | null;
                 plusOneRelation?: string | null;
-              }>>(
-                `SELECT id, "${actualColumnNames.rsvpId}" as "rsvpId", "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status,
-                        plus_one as "plusOne", plus_one_name as "plusOneName", plus_one_relation as "plusOneRelation"
-                 FROM rsvp_event_responses
-                 WHERE "${actualColumnNames.rsvpId}" = $1`,
-                rsvp.id
-              )
+              }>>(query, rsvp.id)
+              
+              console.log(`[Admin RSVPs] Old schema for RSVP ${rsvp.id}: Fetched ${responses.length} responses with plus one data:`, responses)
             } else {
               // Query without plus one fields
+              const query = `SELECT id, "${actualColumnNames.rsvpId}" as "rsvpId", "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status
+                            FROM rsvp_event_responses
+                            WHERE "${actualColumnNames.rsvpId}" = $1`
+              
+              console.log(`[Admin RSVPs] Old schema for RSVP ${rsvp.id}: Querying without plus one columns:`, query)
+              
               responses = await prisma.$queryRawUnsafe<Array<{
                 id: string;
                 rsvpId: string;
                 eventId: string;
                 status: string;
-              }>>(
-                `SELECT id, "${actualColumnNames.rsvpId}" as "rsvpId", "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status
-                 FROM rsvp_event_responses
-                 WHERE "${actualColumnNames.rsvpId}" = $1`,
-                rsvp.id
-              )
+              }>>(query, rsvp.id)
+              
+              console.log(`[Admin RSVPs] Old schema for RSVP ${rsvp.id}: Fetched ${responses.length} responses without plus one data`)
             }
             
             const eventIds = responses.map(r => r.eventId)
@@ -203,28 +221,31 @@ export async function GET(request: NextRequest) {
             
             ;(rsvp as any).eventResponses = responses.map(r => {
               // Check if plusOne should be true based on name presence
-              const hasPlusOneName = r.plusOneName && r.plusOneName.trim()
-              const plusOne = r.plusOne || hasPlusOneName || false
+              const hasPlusOneName = (r as any).plusOneName && (r as any).plusOneName.trim()
+              const plusOne = (r as any).plusOne || hasPlusOneName || false
               
               const mapped = {
-                ...r,
+                id: r.id,
+                eventId: r.eventId,
+                status: r.status,
                 plusOne: plusOne,
-                plusOneName: r.plusOneName || null,
-                plusOneRelation: r.plusOneRelation || null,
+                plusOneName: (r as any).plusOneName || null,
+                plusOneRelation: (r as any).plusOneRelation || null,
                 event: events.find(e => e.id === r.eventId) || { id: r.eventId, name: 'Unknown Event' },
               }
               
-              // Debug logging for responses with plus one data
-              if (hasPlusOneName || r.plusOne) {
-                console.log(`[Admin RSVPs] Old schema - Event response with plus one for RSVP ${rsvp.id}:`, {
-                  eventId: r.eventId,
-                  rawPlusOne: r.plusOne,
-                  rawPlusOneName: r.plusOneName,
-                  rawPlusOneRelation: r.plusOneRelation,
-                  computedPlusOne: plusOne,
-                  mapped: mapped,
-                })
-              }
+              // Log ALL responses to see what we're getting
+              console.log(`[Admin RSVPs] Old schema - Event response for RSVP ${rsvp.id}, Event ${mapped.event.name}:`, {
+                eventId: r.eventId,
+                eventName: mapped.event.name,
+                status: r.status,
+                rawPlusOne: (r as any).plusOne,
+                rawPlusOneName: (r as any).plusOneName,
+                rawPlusOneRelation: (r as any).plusOneRelation,
+                hasPlusOneName: hasPlusOneName,
+                computedPlusOne: plusOne,
+                finalMapped: mapped,
+              })
               
               return mapped
             })

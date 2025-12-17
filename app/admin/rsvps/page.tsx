@@ -78,7 +78,20 @@ export default function AdminRSVPsPage() {
                 plusOne: er.plusOne,
                 plusOneName: er.plusOneName,
                 plusOneRelation: er.plusOneRelation,
+                hasPlusOneData: !!(er.plusOne || er.plusOneName),
               }))
+            ),
+            responsesWithPlusOne: data.flatMap((r: Rsvp) => 
+              r.eventResponses
+                .filter(er => er.plusOne || er.plusOneName)
+                .map(er => ({
+                  rsvpName: r.name,
+                  eventName: er.event.name,
+                  status: er.status,
+                  plusOne: er.plusOne,
+                  plusOneName: er.plusOneName,
+                  plusOneRelation: er.plusOneRelation,
+                }))
             ),
           })
           setRsvps(data)
@@ -557,32 +570,42 @@ export default function AdminRSVPsPage() {
                             {getStatusBadge(er.status)}
                           </div>
                           {/* Per-Event Plus One */}
-                          {er.status === 'YES' && (er.plusOne || er.plusOneName) ? (
-                            <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
-                              <div className="flex items-start gap-2">
-                                <UserPlus className="w-4 h-4 text-sage flex-shrink-0 mt-0.5" weight="duotone" />
-                                <div className="flex-1">
-                                  <div className="text-xs font-semibold text-charcoal dark:text-dark-text mb-1">
-                                    Plus One
-                                  </div>
-                                  <div className="text-sm text-charcoal dark:text-dark-text font-medium">
-                                    {er.plusOneName || 'Name not provided'}
-                                  </div>
-                                  {er.plusOneRelation && (
-                                    <div className="text-xs text-charcoal/60 dark:text-dark-text-secondary mt-1">
-                                      {er.plusOneRelation}
+                          {(() => {
+                            const hasPlusOne = er.plusOne || (er.plusOneName && er.plusOneName.trim())
+                            const plusOneName = er.plusOneName?.trim() || null
+                            
+                            if (er.status === 'YES' && hasPlusOne) {
+                              return (
+                                <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
+                                  <div className="flex items-start gap-2">
+                                    <UserPlus className="w-4 h-4 text-sage dark:text-sage/90 flex-shrink-0 mt-0.5" weight="duotone" />
+                                    <div className="flex-1">
+                                      <div className="text-xs font-semibold text-charcoal dark:text-dark-text mb-1">
+                                        Plus One
+                                      </div>
+                                      <div className="text-sm text-charcoal dark:text-dark-text font-medium">
+                                        {plusOneName || 'Name not provided'}
+                                      </div>
+                                      {er.plusOneRelation && er.plusOneRelation.trim() && (
+                                        <div className="text-xs text-charcoal/70 dark:text-dark-text-secondary mt-1">
+                                          {er.plusOneRelation}
+                                        </div>
+                                      )}
                                     </div>
-                                  )}
+                                  </div>
                                 </div>
-                              </div>
-                            </div>
-                          ) : er.status === 'YES' ? (
-                            <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
-                              <div className="text-xs text-charcoal/40 dark:text-dark-text-secondary italic">
-                                No plus one
-                              </div>
-                            </div>
-                          ) : null}
+                              )
+                            } else if (er.status === 'YES') {
+                              return (
+                                <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
+                                  <div className="text-xs text-charcoal/50 dark:text-dark-text-secondary/70 italic">
+                                    No plus one
+                                  </div>
+                                </div>
+                              )
+                            }
+                            return null
+                          })()}
                         </div>
                       ))}
                     </div>
