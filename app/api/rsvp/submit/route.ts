@@ -452,21 +452,32 @@ export async function POST(request: NextRequest) {
             where: { id: newRsvp.id },
           })
           
-          // Check if plus_one columns exist in old schema
+          // Check if plus_one columns exist in old schema - check both camelCase and snake_case
           let hasPlusOneColumns = false
-          let plusOneCol = 'plus_one'
-          let plusOneNameCol = 'plus_one_name'
-          let plusOneRelationCol = 'plus_one_relation'
+          let plusOneCol = 'plusOne'
+          let plusOneNameCol = 'plusOneName'
+          let plusOneRelationCol = 'plusOneRelation'
           
           try {
             const plusOneCheck = await tx.$queryRaw<Array<{ column_name: string }>>`
               SELECT column_name 
               FROM information_schema.columns 
               WHERE table_name = 'rsvp_event_responses' 
-              AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation')
-              LIMIT 3
+              AND column_name IN ('plusOne', 'plus_one', 'plusOneName', 'plus_one_name', 'plusOneRelation', 'plus_one_relation')
+              LIMIT 6
             `
-            hasPlusOneColumns = Array.isArray(plusOneCheck) && plusOneCheck.length === 3
+            // Check if we have all three columns (either camelCase or snake_case)
+            const foundPlusOne = plusOneCheck.find(c => c.column_name === 'plusOne' || c.column_name === 'plus_one')
+            const foundPlusOneName = plusOneCheck.find(c => c.column_name === 'plusOneName' || c.column_name === 'plus_one_name')
+            const foundPlusOneRelation = plusOneCheck.find(c => c.column_name === 'plusOneRelation' || c.column_name === 'plus_one_relation')
+            hasPlusOneColumns = !!(foundPlusOne && foundPlusOneName && foundPlusOneRelation)
+            
+            if (hasPlusOneColumns) {
+              plusOneCol = foundPlusOne!.column_name
+              plusOneNameCol = foundPlusOneName!.column_name
+              plusOneRelationCol = foundPlusOneRelation!.column_name
+              console.log('[Submit] Old schema fetch - detected plus_one columns:', { plusOneCol, plusOneNameCol, plusOneRelationCol })
+            }
             
             if (hasPlusOneColumns && actualColumnNames) {
               plusOneCol = (actualColumnNames as any).plusOne || 'plus_one'

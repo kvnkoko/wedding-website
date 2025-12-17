@@ -126,26 +126,55 @@ export async function GET(request: NextRequest) {
           // New schema - use Prisma normally, include plus one fields
           const responses = await prisma.rsvpEventResponse.findMany({
             where: { rsvpId: rsvp.id },
-            include: {
-              event: {
-                select: {
-                  id: true,
-                  name: true,
-                },
+          include: {
+            event: {
+              select: {
+                id: true,
+                name: true,
               },
             },
+          },
           })
           
           console.log(`[Admin RSVPs] Fetched ${responses.length} event responses for RSVP ${rsvp.id}`)
           
-          // Also verify with raw SQL to see actual database values
-          const rawVerify = await prisma.$queryRawUnsafe<Array<any>>(
-            `SELECT event_id, status, plus_one, plus_one_name, plus_one_relation 
-             FROM rsvp_event_responses 
-             WHERE rsvp_id = $1`,
-            rsvp.id
-          )
-          console.log(`[Admin RSVPs] RAW DATABASE VALUES for RSVP ${rsvp.id}:`, JSON.stringify(rawVerify, null, 2))
+          // Also verify with raw SQL to see actual database values - use detected column names
+          // First detect the actual column names
+          let rawVerify: any[] = []
+          try {
+            const columns = await prisma.$queryRaw<Array<{ column_name: string }>>`
+              SELECT column_name 
+              FROM information_schema.columns 
+              WHERE table_name = 'rsvp_event_responses'
+              ORDER BY ordinal_position
+            `
+            
+            const eventIdCol = columns.find(c => c.column_name === 'eventId' || c.column_name.toLowerCase() === 'eventid' || c.column_name.toLowerCase() === 'event_id')?.column_name || 'eventId'
+            const statusCol = columns.find(c => c.column_name.toLowerCase() === 'status')?.column_name || 'status'
+            const rsvpIdCol = columns.find(c => c.column_name === 'rsvpId' || c.column_name.toLowerCase() === 'rsvpid' || c.column_name.toLowerCase() === 'rsvp_id')?.column_name || 'rsvpId'
+            const plusOneCol = columns.find(c => c.column_name === 'plusOne' || c.column_name === 'plus_one')?.column_name
+            const plusOneNameCol = columns.find(c => c.column_name === 'plusOneName' || c.column_name === 'plus_one_name')?.column_name
+            const plusOneRelationCol = columns.find(c => c.column_name === 'plusOneRelation' || c.column_name === 'plus_one_relation')?.column_name
+            
+            if (plusOneCol && plusOneNameCol && plusOneRelationCol) {
+              rawVerify = await prisma.$queryRawUnsafe<Array<any>>(
+                `SELECT "${eventIdCol}" as "eventId", "${statusCol}" as status, "${plusOneCol}" as "plusOne", "${plusOneNameCol}" as "plusOneName", "${plusOneRelationCol}" as "plusOneRelation"
+                 FROM rsvp_event_responses 
+                 WHERE "${rsvpIdCol}" = $1`,
+                rsvp.id
+              )
+            } else {
+              rawVerify = await prisma.$queryRawUnsafe<Array<any>>(
+                `SELECT "${eventIdCol}" as "eventId", "${statusCol}" as status
+                 FROM rsvp_event_responses 
+                 WHERE "${rsvpIdCol}" = $1`,
+                rsvp.id
+              )
+            }
+            console.log(`[Admin RSVPs] RAW DATABASE VALUES for RSVP ${rsvp.id}:`, JSON.stringify(rawVerify, null, 2))
+          } catch (e) {
+            console.warn(`[Admin RSVPs] Could not fetch raw values for RSVP ${rsvp.id}:`, e)
+          }
           
           // Map to include plus one fields
           ;(rsvp as any).eventResponses = responses.map((r: any) => {
