@@ -73,6 +73,8 @@ export async function POST(request: NextRequest) {
       let plusOne = false
       let plusOneName: string | null = null
       let plusOneRelation: string | null = null
+      let hasName = false
+      let hasRelation = false
       
       if (typeof response === 'string') {
         status = response
@@ -84,8 +86,14 @@ export async function POST(request: NextRequest) {
         // Also handle string "true"/"false" from checkbox
         const plusOneValue = (response as any).plusOne
         const plusOneBool = plusOneValue === true || plusOneValue === 'true' || plusOneValue === 'on' || plusOneValue === 1
-        const hasName = plusOneName && String(plusOneName).trim() !== '' && String(plusOneName).trim() !== 'null'
-        const hasRelation = plusOneRelation && String(plusOneRelation).trim() !== '' && String(plusOneRelation).trim() !== 'null'
+        hasName = plusOneName && 
+                 String(plusOneName).trim() !== '' && 
+                 String(plusOneName).trim() !== 'null' &&
+                 String(plusOneName).trim().toLowerCase() !== 'none'
+        hasRelation = plusOneRelation && 
+                     String(plusOneRelation).trim() !== '' && 
+                     String(plusOneRelation).trim() !== 'null' &&
+                     String(plusOneRelation).trim().toLowerCase() !== 'none'
         plusOne = plusOneBool || hasName || hasRelation || false
         
         console.log(`[Submit] Processing event ${eventId}:`, {
