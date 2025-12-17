@@ -82,8 +82,23 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         setRsvpLink('/rsvp')
         setDateRange(null) // No dates on main page
         localStorage.removeItem('rsvpSlug') // Clear only on main page
-      } else if (pathname === '/faq' || pathname === '/rsvp') {
-        // On FAQ or RSVP pages - always go to main homepage, not slug pages
+      } else if (pathname === '/faq') {
+        // On FAQ page - check if we have a stored slug to maintain context
+        if (storedSlug) {
+          // User came from a slug page - maintain slug context
+          setHomeLink(storedSlug) // Home goes to slug home page
+          setFaqLink('/faq')
+          setRsvpLink(`${storedSlug}?form=true`) // RSVP goes to slug form
+          setDateRange(null)
+        } else {
+          // No slug context - use main pages
+          setHomeLink('/')
+          setFaqLink('/faq')
+          setRsvpLink('/rsvp')
+          setDateRange(null)
+        }
+      } else if (pathname === '/rsvp') {
+        // On generic RSVP page - always go to main homepage
         setHomeLink('/')
         setFaqLink('/faq')
         setRsvpLink('/rsvp')
