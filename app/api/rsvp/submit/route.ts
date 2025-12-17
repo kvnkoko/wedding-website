@@ -204,10 +204,26 @@ export async function POST(request: NextRequest) {
             }
             console.log('Using column names:', actualColumnNames)
           } else {
-            console.error('Could not find all required columns. Found:', { rsvpIdCol, eventIdCol, statusCol, createdAtCol, updatedAtCol })
+            console.warn('Could not find all required columns. Using defaults. Found:', { rsvpIdCol, eventIdCol, statusCol, createdAtCol, updatedAtCol })
+            // Use defaults as fallback
+            actualColumnNames = {
+              rsvpId: rsvpIdCol || 'rsvp_id',
+              eventId: eventIdCol || 'event_id',
+              status: statusCol || 'status',
+              createdAt: createdAtCol || 'created_at',
+              updatedAt: updatedAtCol || 'updated_at',
+            }
           }
         } catch (columnCheckError: any) {
-          console.error('Could not query column names:', columnCheckError?.message)
+          console.warn('Could not query column names, using defaults:', columnCheckError?.message)
+          // Use defaults as fallback
+          actualColumnNames = {
+            rsvpId: 'rsvp_id',
+            eventId: 'event_id',
+            status: 'status',
+            createdAt: 'created_at',
+            updatedAt: 'updated_at',
+          }
         }
       }
 
