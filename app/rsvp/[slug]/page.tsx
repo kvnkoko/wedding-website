@@ -264,7 +264,10 @@ export default function RSVPFormPage() {
         // Extract Plus One values, handling empty strings
         const plusOneName = plusOneData?.plusOneName ? String(plusOneData.plusOneName).trim() : null
         const plusOneRelation = plusOneData?.plusOneRelation ? String(plusOneData.plusOneRelation).trim() : null
-        const plusOneCheckbox = plusOneData?.plusOne === true || plusOneData?.plusOne === 'true' || plusOneData?.plusOne === 'on'
+        // Handle checkbox value - can be boolean or string from form submission
+        const plusOneValue = plusOneData?.plusOne
+        const plusOneCheckbox = plusOneValue === true || 
+                                 (typeof plusOneValue === 'string' && (plusOneValue === 'true' || plusOneValue === 'on'))
         
         // If there's a plus one name or relation, ensure plusOne is true
         const hasPlusOneName = plusOneName && plusOneName !== '' && plusOneName !== 'null'
@@ -545,7 +548,11 @@ export default function RSVPFormPage() {
                           // Check if there's any Plus One data at all
                           const hasPlusOneName = plusOneNameValue && plusOneNameValue !== '' && plusOneNameValue !== 'null'
                           const hasPlusOneRelation = plusOneRelationValue && plusOneRelationValue !== '' && plusOneRelationValue !== 'null'
-                          const hasPlusOneFlag = normalizedEr.plusOne === true || normalizedEr.plusOne === 'true' || normalizedEr.plusOne === 1 || normalizedEr.plusOne === '1'
+                          // Handle plusOne flag - can be boolean, number, or string from API
+                          const plusOneFlagValue = normalizedEr.plusOne
+                          const hasPlusOneFlag = plusOneFlagValue === true || 
+                                                  plusOneFlagValue === 1 || 
+                                                  (typeof plusOneFlagValue === 'string' && (plusOneFlagValue === 'true' || plusOneFlagValue === '1'))
                           
                           // Show Plus One section if: status is YES AND (has name OR has relation OR flag is true)
                           const shouldShowPlusOne = normalizedEr.status === 'YES' && (hasPlusOneName || hasPlusOneRelation || hasPlusOneFlag)
