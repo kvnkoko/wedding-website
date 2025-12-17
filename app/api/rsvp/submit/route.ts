@@ -358,6 +358,19 @@ export async function POST(request: NextRequest) {
           
           console.log('✅ Created event responses with createMany, data:', JSON.stringify(eventResponseData, null, 2))
           
+          // CRITICAL: Immediately verify what was actually saved
+          const verifySaved = await tx.rsvpEventResponse.findMany({
+            where: { rsvpId: newRsvp.id },
+            select: {
+              eventId: true,
+              status: true,
+              plusOne: true,
+              plusOneName: true,
+              plusOneRelation: true,
+            },
+          })
+          console.log('✅ IMMEDIATELY AFTER SAVE - Verified saved data:', JSON.stringify(verifySaved, null, 2))
+          
           // Verify data was saved correctly - use raw query to see actual database values
           // First detect actual column names
           let verifyData: any[] = []
@@ -708,6 +721,22 @@ export async function POST(request: NextRequest) {
       throw createError
     }
 
+    // CRITICAL: Log what we're about to return to see if data is there
+    console.log('[Submit API] About to return RSVP response:', {
+      rsvpId: rsvp.id,
+      eventResponsesCount: rsvp.eventResponses?.length || 0,
+      eventResponsesRaw: JSON.stringify(rsvp.eventResponses, null, 2),
+      firstEventResponse: rsvp.eventResponses?.[0] ? {
+        eventId: rsvp.eventResponses[0].eventId,
+        status: rsvp.eventResponses[0].status,
+        plusOne: rsvp.eventResponses[0].plusOne,
+        plusOneName: rsvp.eventResponses[0].plusOneName,
+        plusOneRelation: rsvp.eventResponses[0].plusOneRelation,
+        allKeys: Object.keys(rsvp.eventResponses[0]),
+        fullObject: JSON.stringify(rsvp.eventResponses[0], null, 2),
+      } : null,
+    })
+    
     return NextResponse.json({
       id: rsvp.id,
       name: rsvp.name,
