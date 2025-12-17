@@ -81,7 +81,21 @@ export async function POST(request: NextRequest) {
         plusOneName = (response as any).plusOneName || null
         plusOneRelation = (response as any).plusOneRelation || null
         // Set plusOne to true if there's a name, even if the boolean wasn't set
-        plusOne = (response as any).plusOne || (plusOneName && plusOneName.trim() !== '') || false
+        // Also handle string "true"/"false" from checkbox
+        const plusOneValue = (response as any).plusOne
+        const plusOneBool = plusOneValue === true || plusOneValue === 'true' || plusOneValue === 'on'
+        const hasName = plusOneName && plusOneName.trim() !== ''
+        plusOne = plusOneBool || hasName || false
+        
+        console.log(`[Submit] Processing event ${eventId}:`, {
+          status,
+          plusOneValue,
+          plusOneBool,
+          plusOneName,
+          plusOneRelation,
+          hasName,
+          finalPlusOne: plusOne,
+        })
       } else {
         console.error('Invalid response format:', response)
         throw new Error(`Invalid event response format for event ${eventId}`)
@@ -90,9 +104,9 @@ export async function POST(request: NextRequest) {
       return {
         eventId,
         status: status,
-        plusOne,
-        plusOneName,
-        plusOneRelation,
+        plusOne: Boolean(plusOne), // Ensure it's always a boolean
+        plusOneName: plusOneName?.trim() || null,
+        plusOneRelation: plusOneRelation?.trim() || null,
       }
     })
 
@@ -210,17 +224,24 @@ export async function POST(request: NextRequest) {
           // New schema - include plus one fields using Prisma
           const eventResponseData = eventResponsesData.map((responseData) => {
             // Ensure plusOne is true if there's a name
-            const hasName = responseData.plusOneName && responseData.plusOneName.trim()
+            const hasName = responseData.plusOneName && responseData.plusOneName.trim() !== ''
             const plusOne = Boolean(responseData.plusOne || hasName || false)
             
-            return {
+            const data = {
               rsvpId: newRsvp.id,
               eventId: responseData.eventId,
               status: responseData.status,
               plusOne: plusOne,
-              plusOneName: responseData.plusOneName || null,
-              plusOneRelation: responseData.plusOneRelation || null,
+              plusOneName: responseData.plusOneName?.trim() || null,
+              plusOneRelation: responseData.plusOneRelation?.trim() || null,
             }
+            
+            console.log(`[Submit] Creating event response for event ${responseData.eventId}:`, {
+              original: responseData,
+              processed: data,
+            })
+            
+            return data
           })
           
           console.log('Creating event responses with plus one data:', {
@@ -284,14 +305,19 @@ export async function POST(request: NextRequest) {
                 plusOneName: responseData.plusOneName,
                 plusOneRelation: responseData.plusOneRelation,
               })
+              // Use actual column names for plus_one fields
+              const plusOneCol = (actualColumnNames as any).plusOne || 'plus_one'
+              const plusOneNameCol = (actualColumnNames as any).plusOneName || 'plus_one_name'
+              const plusOneRelationCol = (actualColumnNames as any).plusOneRelation || 'plus_one_relation'
+              
               await tx.$executeRawUnsafe(
-                `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", plus_one, plus_one_name, plus_one_relation, "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, NOW(), NOW())`,
+                `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", "${plusOneCol}", "${plusOneNameCol}", "${plusOneRelationCol}", "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, NOW(), NOW())`,
                 newRsvp.id,
                 responseData.eventId,
                 responseData.status,
-                responseData.plusOne || false,
-                responseData.plusOneName || null,
-                responseData.plusOneRelation || null
+                Boolean(responseData.plusOne || (responseData.plusOneName && responseData.plusOneName.trim() !== '')),
+                responseData.plusOneName?.trim() || null,
+                responseData.plusOneRelation?.trim() || null
               )
             } else {
               // Use the actual column names we detected (no plus one columns)

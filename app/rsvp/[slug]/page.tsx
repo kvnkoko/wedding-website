@@ -260,9 +260,13 @@ export default function RSVPFormPage() {
       const eventResponsesWithPlusOnes: Record<string, any> = {}
       Object.entries(data.eventResponses || {}).forEach(([eventId, status]) => {
         const plusOneData = data.eventPlusOnes?.[eventId]
+        // If there's a plus one name, ensure plusOne is true
+        const hasPlusOneName = plusOneData?.plusOneName && plusOneData.plusOneName.trim() !== ''
+        const plusOne = plusOneData?.plusOne || hasPlusOneName || false
+        
         eventResponsesWithPlusOnes[eventId] = {
           status,
-          plusOne: plusOneData?.plusOne || false,
+          plusOne: plusOne,
           plusOneName: plusOneData?.plusOneName || null,
           plusOneRelation: plusOneData?.plusOneRelation || null,
         }
