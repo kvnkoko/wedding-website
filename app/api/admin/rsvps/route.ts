@@ -133,17 +133,18 @@ export async function GET(request: NextRequest) {
           // New schema - use Prisma normally, include plus one fields
           const responses = await prisma.rsvpEventResponse.findMany({
             where: { rsvpId: rsvp.id },
-          include: {
-            event: {
-              select: {
-                id: true,
-                name: true,
+            include: {
+              event: {
+                select: {
+                  id: true,
+                  name: true,
+                },
               },
             },
-          },
           })
           
           console.log(`[Admin RSVPs] Fetched ${responses.length} event responses for RSVP ${rsvp.id}`)
+          console.log(`[Admin RSVPs] Raw Prisma responses for RSVP ${rsvp.id}:`, JSON.stringify(responses, null, 2))
           
           // Also verify with raw SQL to see actual database values - use detected column names
           // First detect the actual column names
