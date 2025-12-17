@@ -191,8 +191,16 @@ export async function POST(request: NextRequest) {
           )?.column_name
           
           const statusCol = columns.find(c => c.column_name.toLowerCase() === 'status')?.column_name
-          const createdAtCol = columns.find(c => c.column_name.toLowerCase().includes('created'))?.column_name
-          const updatedAtCol = columns.find(c => c.column_name.toLowerCase().includes('updated'))?.column_name
+          const createdAtCol = columns.find(c => 
+            c.column_name === 'createdAt' ||
+            c.column_name.toLowerCase() === 'createdat' ||
+            c.column_name.toLowerCase().includes('created')
+          )?.column_name
+          const updatedAtCol = columns.find(c => 
+            c.column_name === 'updatedAt' ||
+            c.column_name.toLowerCase() === 'updatedat' ||
+            c.column_name.toLowerCase().includes('updated')
+          )?.column_name
           
           if (rsvpIdCol && eventIdCol && statusCol && createdAtCol && updatedAtCol) {
             actualColumnNames = {
@@ -202,27 +210,27 @@ export async function POST(request: NextRequest) {
               createdAt: createdAtCol,
               updatedAt: updatedAtCol,
             }
-            console.log('Using column names:', actualColumnNames)
+            console.log('Using detected column names:', actualColumnNames)
           } else {
             console.warn('Could not find all required columns. Using defaults. Found:', { rsvpIdCol, eventIdCol, statusCol, createdAtCol, updatedAtCol })
-            // Use defaults as fallback
+            // Try camelCase first (Prisma default), then snake_case
             actualColumnNames = {
-              rsvpId: rsvpIdCol || 'rsvp_id',
-              eventId: eventIdCol || 'event_id',
+              rsvpId: rsvpIdCol || 'rsvpId',
+              eventId: eventIdCol || 'eventId',
               status: statusCol || 'status',
-              createdAt: createdAtCol || 'created_at',
-              updatedAt: updatedAtCol || 'updated_at',
+              createdAt: createdAtCol || 'createdAt',
+              updatedAt: updatedAtCol || 'updatedAt',
             }
           }
         } catch (columnCheckError: any) {
-          console.warn('Could not query column names, using defaults:', columnCheckError?.message)
-          // Use defaults as fallback
+          console.warn('Could not query column names, using camelCase defaults:', columnCheckError?.message)
+          // Use camelCase defaults (Prisma default naming)
           actualColumnNames = {
-            rsvpId: 'rsvp_id',
-            eventId: 'event_id',
+            rsvpId: 'rsvpId',
+            eventId: 'eventId',
             status: 'status',
-            createdAt: 'created_at',
-            updatedAt: 'updated_at',
+            createdAt: 'createdAt',
+            updatedAt: 'updatedAt',
           }
         }
       }
@@ -302,15 +310,15 @@ export async function POST(request: NextRequest) {
           console.log('Verified saved event responses:', verifyData)
         } else {
           // Old schema - use raw SQL with actual column names
-          // If we couldn't detect column names, use common defaults
+          // If we couldn't detect column names, use camelCase defaults (Prisma default)
           if (!actualColumnNames) {
-            console.warn('Could not determine actual column names, using defaults')
+            console.warn('Could not determine actual column names, using camelCase defaults')
             actualColumnNames = {
-              rsvpId: 'rsvp_id',
-              eventId: 'event_id',
+              rsvpId: 'rsvpId',
+              eventId: 'eventId',
               status: 'status',
-              createdAt: 'created_at',
-              updatedAt: 'updated_at',
+              createdAt: 'createdAt',
+              updatedAt: 'updatedAt',
             }
           }
           
