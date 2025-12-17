@@ -138,6 +138,15 @@ export async function GET(request: NextRequest) {
           
           console.log(`[Admin RSVPs] Fetched ${responses.length} event responses for RSVP ${rsvp.id}`)
           
+          // Also verify with raw SQL to see actual database values
+          const rawVerify = await prisma.$queryRawUnsafe<Array<any>>(
+            `SELECT event_id, status, plus_one, plus_one_name, plus_one_relation 
+             FROM rsvp_event_responses 
+             WHERE rsvp_id = $1`,
+            rsvp.id
+          )
+          console.log(`[Admin RSVPs] RAW DATABASE VALUES for RSVP ${rsvp.id}:`, JSON.stringify(rawVerify, null, 2))
+          
           // Map to include plus one fields
           ;(rsvp as any).eventResponses = responses.map((r: any) => {
             // Check if plusOne should be true based on name presence
