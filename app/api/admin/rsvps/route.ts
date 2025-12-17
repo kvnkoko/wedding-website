@@ -232,8 +232,19 @@ export async function GET(request: NextRequest) {
             return mapped
           })
           
-          ;(rsvp as any).eventResponses = mappedResponses
+          ;(rsvp as any).eventResponses = mappedResponses || []
           console.log(`[Admin RSVPs] Mapped ${mappedResponses.length} event responses for RSVP ${rsvp.id}:`, JSON.stringify(mappedResponses, null, 2))
+          
+          // CRITICAL: Verify eventResponses is set
+          if (!(rsvp as any).eventResponses || (rsvp as any).eventResponses.length === 0) {
+            console.error(`[Admin RSVPs] WARNING: RSVP ${rsvp.id} (${rsvp.name}) has NO event responses after mapping!`, {
+              rsvpId: rsvp.id,
+              rsvpName: rsvp.name,
+              mappedResponsesCount: mappedResponses.length,
+              mappedResponses: mappedResponses,
+              rawResponsesCount: responses.length,
+            })
+          }
         } else {
           // Old schema - use raw SQL with actual column names
           if (actualColumnNames) {
