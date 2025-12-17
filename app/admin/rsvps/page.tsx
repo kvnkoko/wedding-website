@@ -592,8 +592,18 @@ export default function AdminRSVPsPage() {
                             const plusOneNameValue = er.plusOneName ? String(er.plusOneName).trim() : null
                             const plusOneRelationValue = er.plusOneRelation ? String(er.plusOneRelation).trim() : null
                             const hasPlusOneFlag = er.plusOne === true || er.plusOne === 'true' || er.plusOne === 1 || er.plusOne === '1'
-                            const hasPlusOneName = plusOneNameValue && plusOneNameValue !== '' && plusOneNameValue !== 'null' && plusOneNameValue !== 'undefined'
-                            const hasPlusOneRelation = plusOneRelationValue && plusOneRelationValue !== '' && plusOneRelationValue !== 'null' && plusOneRelationValue !== 'undefined'
+                            const hasPlusOneName = plusOneNameValue && 
+                                                  plusOneNameValue !== '' && 
+                                                  plusOneNameValue !== 'null' && 
+                                                  plusOneNameValue !== 'undefined' &&
+                                                  plusOneNameValue !== 'None' &&
+                                                  plusOneNameValue.toLowerCase() !== 'none'
+                            const hasPlusOneRelation = plusOneRelationValue && 
+                                                     plusOneRelationValue !== '' && 
+                                                     plusOneRelationValue !== 'null' && 
+                                                     plusOneRelationValue !== 'undefined' &&
+                                                     plusOneRelationValue !== 'None' &&
+                                                     plusOneRelationValue.toLowerCase() !== 'none'
                             const hasPlusOne = hasPlusOneFlag || hasPlusOneName || hasPlusOneRelation
                             
                             // Debug: log even when not showing to help diagnose

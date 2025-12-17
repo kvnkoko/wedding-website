@@ -666,22 +666,26 @@ export async function POST(request: NextRequest) {
       editToken: rsvp.editToken,
       eventResponses: rsvp.eventResponses.map((er: any) => {
         // Handle both camelCase and snake_case field names
-        // Also check for null/undefined explicitly
-        const plusOneRaw = er.plusOne !== undefined && er.plusOne !== null ? er.plusOne : (er.plus_one !== undefined && er.plus_one !== null ? er.plus_one : false)
-        const plusOneNameRaw = er.plusOneName !== undefined && er.plusOneName !== null ? er.plusOneName : (er.plus_one_name !== undefined && er.plus_one_name !== null ? er.plus_one_name : null)
-        const plusOneRelationRaw = er.plusOneRelation !== undefined && er.plusOneRelation !== null ? er.plusOneRelation : (er.plus_one_relation !== undefined && er.plus_one_relation !== null ? er.plus_one_relation : null)
+        // Also check for null/undefined explicitly - be very thorough
+        const plusOneRaw = er.plusOne !== undefined && er.plusOne !== null ? er.plusOne : 
+                          (er.plus_one !== undefined && er.plus_one !== null ? er.plus_one : false)
+        const plusOneNameRaw = er.plusOneName !== undefined && er.plusOneName !== null ? er.plusOneName : 
+                              (er.plus_one_name !== undefined && er.plus_one_name !== null ? er.plus_one_name : null)
+        const plusOneRelationRaw = er.plusOneRelation !== undefined && er.plusOneRelation !== null ? er.plusOneRelation : 
+                                  (er.plus_one_relation !== undefined && er.plus_one_relation !== null ? er.plus_one_relation : null)
         
-        // Ensure plusOne is true if there's a name
-        const hasPlusOneName = plusOneNameRaw && String(plusOneNameRaw).trim() !== ''
-        const plusOne = Boolean(plusOneRaw || hasPlusOneName || false)
+        // Ensure plusOne is true if there's a name or relation
+        const hasPlusOneName = plusOneNameRaw && String(plusOneNameRaw).trim() !== '' && String(plusOneNameRaw).trim() !== 'null'
+        const hasPlusOneRelation = plusOneRelationRaw && String(plusOneRelationRaw).trim() !== '' && String(plusOneRelationRaw).trim() !== 'null'
+        const plusOne = Boolean(plusOneRaw || hasPlusOneName || hasPlusOneRelation || false)
         
         const mapped = {
           eventId: er.eventId,
           eventName: er.event?.name || 'Unknown Event',
           status: er.status,
           plusOne: plusOne,
-          plusOneName: plusOneNameRaw ? String(plusOneNameRaw).trim() : null,
-          plusOneRelation: plusOneRelationRaw ? String(plusOneRelationRaw).trim() : null,
+          plusOneName: hasPlusOneName ? String(plusOneNameRaw).trim() : null,
+          plusOneRelation: hasPlusOneRelation ? String(plusOneRelationRaw).trim() : null,
         }
         
         console.log('[Submit] Mapping event response for return:', {
@@ -693,6 +697,9 @@ export async function POST(request: NextRequest) {
           plusOneRaw,
           plusOneNameRaw,
           plusOneRelationRaw,
+          hasPlusOneName,
+          hasPlusOneRelation,
+          finalPlusOne: plusOne,
           mapped: mapped,
         })
         

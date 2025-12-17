@@ -545,9 +545,19 @@ export default function RSVPFormPage() {
                           const plusOneNameValue = normalizedEr.plusOneName ? String(normalizedEr.plusOneName).trim() : null
                           const plusOneRelationValue = normalizedEr.plusOneRelation ? String(normalizedEr.plusOneRelation).trim() : null
                           
-                          // Check if there's any Plus One data at all - be very permissive
-                          const hasPlusOneName = plusOneNameValue && plusOneNameValue !== '' && plusOneNameValue !== 'null' && plusOneNameValue !== 'undefined'
-                          const hasPlusOneRelation = plusOneRelationValue && plusOneRelationValue !== '' && plusOneRelationValue !== 'null' && plusOneRelationValue !== 'undefined'
+                          // Check if there's any Plus One data at all - be VERY permissive
+                          const hasPlusOneName = plusOneNameValue && 
+                                                plusOneNameValue !== '' && 
+                                                plusOneNameValue !== 'null' && 
+                                                plusOneNameValue !== 'undefined' &&
+                                                plusOneNameValue !== 'None' &&
+                                                plusOneNameValue.toLowerCase() !== 'none'
+                          const hasPlusOneRelation = plusOneRelationValue && 
+                                                     plusOneRelationValue !== '' && 
+                                                     plusOneRelationValue !== 'null' && 
+                                                     plusOneRelationValue !== 'undefined' &&
+                                                     plusOneRelationValue !== 'None' &&
+                                                     plusOneRelationValue.toLowerCase() !== 'none'
                           // Handle plusOne flag - can be boolean, number, or string from API
                           const plusOneFlagValue = normalizedEr.plusOne
                           const hasPlusOneFlag = plusOneFlagValue === true || 
@@ -555,7 +565,7 @@ export default function RSVPFormPage() {
                                                   (typeof plusOneFlagValue === 'string' && (plusOneFlagValue === 'true' || plusOneFlagValue === '1'))
                           
                           // Show Plus One section if: status is YES AND (has name OR has relation OR flag is true)
-                          // Also show if there's ANY Plus One data, even if status check is unclear
+                          // Be very aggressive - show if ANY indication of Plus One exists
                           const shouldShowPlusOne = normalizedEr.status === 'YES' && (hasPlusOneName || hasPlusOneRelation || hasPlusOneFlag)
                           
                           // Debug: log even when not showing to help diagnose
