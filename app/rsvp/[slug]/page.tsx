@@ -267,7 +267,7 @@ export default function RSVPFormPage() {
         // Handle checkbox value - can be boolean or string from form submission
         const plusOneValue = plusOneData?.plusOne
         const plusOneCheckbox = plusOneValue === true || 
-                                 plusOneValue === 1 ||
+                                 (typeof plusOneValue === 'number' && plusOneValue === 1) ||
                                  (typeof plusOneValue === 'string' && (plusOneValue === 'true' || plusOneValue === 'on' || plusOneValue === '1'))
         
         // If there's a plus one name or relation, ensure plusOne is true
