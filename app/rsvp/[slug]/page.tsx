@@ -261,19 +261,29 @@ export default function RSVPFormPage() {
       Object.entries(data.eventResponses || {}).forEach(([eventId, status]) => {
         const plusOneData = data.eventPlusOnes?.[eventId]
         
-        // Extract Plus One values, handling empty strings
+        // Extract Plus One values, handling empty strings - be very thorough
         const plusOneName = plusOneData?.plusOneName ? String(plusOneData.plusOneName).trim() : null
         const plusOneRelation = plusOneData?.plusOneRelation ? String(plusOneData.plusOneRelation).trim() : null
         // Handle checkbox value - can be boolean or string from form submission
         const plusOneValue = plusOneData?.plusOne
         const plusOneCheckbox = plusOneValue === true || 
-                                 (typeof plusOneValue === 'string' && (plusOneValue === 'true' || plusOneValue === 'on'))
+                                 plusOneValue === 1 ||
+                                 (typeof plusOneValue === 'string' && (plusOneValue === 'true' || plusOneValue === 'on' || plusOneValue === '1'))
         
         // If there's a plus one name or relation, ensure plusOne is true
-        const hasPlusOneName = plusOneName && plusOneName !== '' && plusOneName !== 'null'
-        const hasPlusOneRelation = plusOneRelation && plusOneRelation !== '' && plusOneRelation !== 'null'
+        const hasPlusOneName = plusOneName && 
+                              plusOneName !== '' && 
+                              plusOneName !== 'null' && 
+                              plusOneName !== 'undefined' &&
+                              plusOneName.toLowerCase() !== 'none'
+        const hasPlusOneRelation = plusOneRelation && 
+                                  plusOneRelation !== '' && 
+                                  plusOneRelation !== 'null' && 
+                                  plusOneRelation !== 'undefined' &&
+                                  plusOneRelation.toLowerCase() !== 'none'
         const plusOne = plusOneCheckbox || hasPlusOneName || hasPlusOneRelation || false
         
+        // ALWAYS include Plus One data if name or relation exists, even if checkbox wasn't checked
         eventResponsesWithPlusOnes[eventId] = {
           status,
           plusOne: plusOne,
@@ -283,6 +293,8 @@ export default function RSVPFormPage() {
         
         console.log(`[Form Submit] Processing event ${eventId}:`, {
           status,
+          plusOneData: plusOneData,
+          plusOneValue,
           plusOneCheckbox,
           plusOneName,
           plusOneRelation,
@@ -290,6 +302,7 @@ export default function RSVPFormPage() {
           hasPlusOneRelation,
           finalPlusOne: plusOne,
           finalData: eventResponsesWithPlusOnes[eventId],
+          allEventPlusOnes: data.eventPlusOnes,
         })
       })
 

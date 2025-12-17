@@ -80,12 +80,13 @@ export async function POST(request: NextRequest) {
         status = (response as any).status
         plusOneName = (response as any).plusOneName || null
         plusOneRelation = (response as any).plusOneRelation || null
-        // Set plusOne to true if there's a name, even if the boolean wasn't set
+        // Set plusOne to true if there's a name OR relation, even if the boolean wasn't set
         // Also handle string "true"/"false" from checkbox
         const plusOneValue = (response as any).plusOne
-        const plusOneBool = plusOneValue === true || plusOneValue === 'true' || plusOneValue === 'on'
-        const hasName = plusOneName && plusOneName.trim() !== ''
-        plusOne = plusOneBool || hasName || false
+        const plusOneBool = plusOneValue === true || plusOneValue === 'true' || plusOneValue === 'on' || plusOneValue === 1
+        const hasName = plusOneName && String(plusOneName).trim() !== '' && String(plusOneName).trim() !== 'null'
+        const hasRelation = plusOneRelation && String(plusOneRelation).trim() !== '' && String(plusOneRelation).trim() !== 'null'
+        plusOne = plusOneBool || hasName || hasRelation || false
         
         console.log(`[Submit] Processing event ${eventId}:`, {
           status,
@@ -94,19 +95,28 @@ export async function POST(request: NextRequest) {
           plusOneName,
           plusOneRelation,
           hasName,
+          hasRelation,
           finalPlusOne: plusOne,
+          rawResponse: response,
         })
       } else {
         console.error('Invalid response format:', response)
         throw new Error(`Invalid event response format for event ${eventId}`)
       }
       
+      // Always include Plus One data if it exists, even if plusOne flag is false
+      const finalPlusOneName = hasName ? String(plusOneName).trim() : null
+      const finalPlusOneRelation = hasRelation ? String(plusOneRelation).trim() : null
+      
+      // Set plusOne to true if we have name or relation, even if flag wasn't set
+      const finalPlusOne = Boolean(plusOne || finalPlusOneName || finalPlusOneRelation)
+      
       return {
         eventId,
         status: status,
-        plusOne: Boolean(plusOne), // Ensure it's always a boolean
-        plusOneName: plusOneName?.trim() || null,
-        plusOneRelation: plusOneRelation?.trim() || null,
+        plusOne: finalPlusOne,
+        plusOneName: finalPlusOneName,
+        plusOneRelation: finalPlusOneRelation,
       }
     })
 
