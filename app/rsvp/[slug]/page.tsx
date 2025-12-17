@@ -581,15 +581,16 @@ export default function RSVPFormPage() {
                           const shouldShow = normalizedEr.status === 'YES' && (hasName || hasRelation || hasFlag)
                           
                           // Debug: log even when not showing to help diagnose
-                          if (normalizedEr.status === 'YES' && !shouldShowPlusOne) {
+                          if (normalizedEr.status === 'YES' && !shouldShow) {
                             console.warn(`[RSVP Success Page] Plus One data exists but not showing for event ${normalizedEr.eventId}:`, {
                               status: normalizedEr.status,
-                              plusOneFlag: normalizedEr.plusOne,
-                              plusOneName: normalizedEr.plusOneName,
-                              plusOneRelation: normalizedEr.plusOneRelation,
-                              hasPlusOneName,
-                              hasPlusOneRelation,
-                              hasPlusOneFlag,
+                              plusOneFlag: rawPlusOneFlag,
+                              plusOneName: rawPlusOneName,
+                              plusOneRelation: rawPlusOneRelation,
+                              hasName,
+                              hasRelation,
+                              hasFlag,
+                              shouldShow,
                             })
                           }
                           
