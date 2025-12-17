@@ -566,7 +566,7 @@ export default function AdminRSVPsPage() {
                         })
                         return null
                       })()}
-                      {(rsvp.eventResponses || []).map((er, idx) => {
+                      {(rsvp.eventResponses || []).map((er: any, idx: number) => {
                         console.log(`[Admin Frontend] Event response ${idx} for ${rsvp.name}:`, {
                           eventId: er.eventId,
                           eventName: er.event?.name,
