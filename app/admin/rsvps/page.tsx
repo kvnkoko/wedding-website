@@ -576,10 +576,10 @@ export default function AdminRSVPsPage() {
                           plusOneRelation: er.plusOneRelation,
                         })
                         return (
-                        <div
-                          key={idx}
-                          className="p-3 rounded-lg bg-taupe/5 dark:bg-dark-surface border border-taupe/20 dark:border-dark-border"
-                        >
+                          <div
+                            key={idx}
+                            className="p-3 rounded-lg bg-taupe/5 dark:bg-dark-surface border border-taupe/20 dark:border-dark-border"
+                          >
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-sans text-sm font-medium text-charcoal dark:text-dark-text">
                               {er.event.name}
