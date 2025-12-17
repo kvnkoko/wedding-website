@@ -563,23 +563,27 @@ export default function RSVPFormPage() {
                         </div>
                         {/* Show plus one info for this event if attending with plus one */}
                         {(() => {
-                          // ULTRA-AGGRESSIVE: Check raw values directly, no filtering
+                          // NUCLEAR OPTION: Check if fields exist in object AT ALL, regardless of value
                           const rawPlusOneName = normalizedEr.plusOneName
                           const rawPlusOneRelation = normalizedEr.plusOneRelation
                           const rawPlusOneFlag = normalizedEr.plusOne
                           
-                          // Check if raw values exist at all (not null, not undefined)
-                          const hasRawName = rawPlusOneName != null && rawPlusOneName !== undefined
-                          const hasRawRelation = rawPlusOneRelation != null && rawPlusOneRelation !== undefined
-                          const hasRawFlag = rawPlusOneFlag != null && rawPlusOneFlag !== undefined && rawPlusOneFlag !== false
+                          // Check if fields exist in the object itself (using 'in' operator)
+                          const hasNameField = 'plusOneName' in normalizedEr
+                          const hasRelationField = 'plusOneRelation' in normalizedEr
+                          const hasFlagField = 'plusOne' in normalizedEr
                           
-                          // Convert to strings for display - trim but keep even if empty
-                          const plusOneNameValue = hasRawName ? String(rawPlusOneName).trim() : null
-                          const plusOneRelationValue = hasRawRelation ? String(rawPlusOneRelation).trim() : null
+                          // Also check if values are truthy or non-empty strings
+                          const hasNameValue = rawPlusOneName != null && rawPlusOneName !== undefined && String(rawPlusOneName).trim() !== ''
+                          const hasRelationValue = rawPlusOneRelation != null && rawPlusOneRelation !== undefined && String(rawPlusOneRelation).trim() !== ''
+                          const hasFlagValue = rawPlusOneFlag === true || rawPlusOneFlag === 1 || rawPlusOneFlag === 'true' || rawPlusOneFlag === '1'
                           
-                          // Show if status is YES and we have ANY raw data (name, relation, or flag)
-                          // Don't validate content - just check if data exists
-                          const shouldShow = normalizedEr.status === 'YES' && (hasRawName || hasRawRelation || hasRawFlag)
+                          // Show if status is YES and (field exists OR value exists)
+                          // This is the most permissive check possible
+                          const shouldShow = normalizedEr.status === 'YES' && (
+                            hasNameField || hasRelationField || hasFlagField || 
+                            hasNameValue || hasRelationValue || hasFlagValue
+                          )
                           
                           // Debug: log even when not showing to help diagnose
                           if (normalizedEr.status === 'YES' && !shouldShow) {
@@ -588,10 +592,14 @@ export default function RSVPFormPage() {
                               plusOneFlag: rawPlusOneFlag,
                               plusOneName: rawPlusOneName,
                               plusOneRelation: rawPlusOneRelation,
-                              hasRawName,
-                              hasRawRelation,
-                              hasRawFlag,
+                              hasNameField,
+                              hasRelationField,
+                              hasFlagField,
+                              hasNameValue,
+                              hasRelationValue,
+                              hasFlagValue,
                               shouldShow,
+                              allKeys: Object.keys(normalizedEr),
                             })
                           }
                           
@@ -601,20 +609,26 @@ export default function RSVPFormPage() {
                             rawPlusOneFlag,
                             rawPlusOneName,
                             rawPlusOneRelation,
-                            hasRawName,
-                            hasRawRelation,
-                            hasRawFlag,
-                            plusOneNameValue,
-                            plusOneRelationValue,
+                            hasNameField,
+                            hasRelationField,
+                            hasFlagField,
+                            hasNameValue,
+                            hasRelationValue,
+                            hasFlagValue,
                             shouldShow,
+                            allKeys: Object.keys(normalizedEr),
                             fullEventResponse: JSON.stringify(normalizedEr, null, 2),
                           })
                           
                           // Show Plus One section - ALWAYS show if shouldShow is true
                           if (shouldShow) {
+                            // Convert to strings for display
+                            const plusOneNameValue = rawPlusOneName != null && rawPlusOneName !== undefined ? String(rawPlusOneName).trim() : null
+                            const plusOneRelationValue = rawPlusOneRelation != null && rawPlusOneRelation !== undefined ? String(rawPlusOneRelation).trim() : null
+                            
                             // Use the values we have - show them even if they're empty strings
-                            const displayName = hasRawName ? plusOneNameValue : null
-                            const displayRelation = hasRawRelation ? plusOneRelationValue : null
+                            const displayName = hasNameValue ? plusOneNameValue : (hasNameField ? (plusOneNameValue || 'Not provided') : null)
+                            const displayRelation = hasRelationValue ? plusOneRelationValue : null
                             
                             // Always render the section if shouldShow is true
                             // Show name/relation fields even if values are empty - user submitted something
@@ -660,14 +674,16 @@ export default function RSVPFormPage() {
                           if (normalizedEr.status === 'YES' && !shouldShow) {
                             console.error(`[RSVP Success Page] NOT showing Plus One for event ${normalizedEr.eventId} even though status is YES:`, {
                               shouldShow,
-                              hasRawName,
-                              hasRawRelation,
-                              hasRawFlag,
+                              hasNameField,
+                              hasRelationField,
+                              hasFlagField,
+                              hasNameValue,
+                              hasRelationValue,
+                              hasFlagValue,
                               rawPlusOneName,
                               rawPlusOneRelation,
                               rawPlusOneFlag,
-                              plusOneNameValue,
-                              plusOneRelationValue,
+                              allKeys: Object.keys(normalizedEr),
                               normalizedEr: JSON.stringify(normalizedEr, null, 2),
                             })
                           }
