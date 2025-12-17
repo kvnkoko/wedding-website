@@ -294,8 +294,6 @@ export default function RSVPFormPage() {
           plusOneCheckbox,
           plusOneName,
           plusOneRelation,
-          hasPlusOneName,
-          hasPlusOneRelation,
           finalPlusOne: plusOne,
           finalData: eventResponsesWithPlusOnes[eventId],
           allEventPlusOnes: data.eventPlusOnes,
