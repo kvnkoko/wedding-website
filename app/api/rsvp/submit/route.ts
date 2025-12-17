@@ -363,14 +363,41 @@ export async function POST(request: NextRequest) {
               const plusOneNameValue = responseData.plusOneName?.trim() || null
               const plusOneRelationValue = responseData.plusOneRelation?.trim() || null
               
+              // Detect actual plus_one column names from database
+              let detectedPlusOneCol = plusOneCol
+              let detectedPlusOneNameCol = plusOneNameCol
+              let detectedPlusOneRelationCol = plusOneRelationCol
+              
+              try {
+                const plusOneCols = await tx.$queryRaw<Array<{ column_name: string }>>`
+                  SELECT column_name 
+                  FROM information_schema.columns 
+                  WHERE table_name = 'rsvp_event_responses' 
+                  AND column_name IN ('plusOne', 'plus_one', 'plusOneName', 'plus_one_name', 'plusOneRelation', 'plus_one_relation')
+                `
+                
+                const foundPlusOne = plusOneCols.find(c => c.column_name === 'plusOne' || c.column_name === 'plus_one')
+                const foundPlusOneName = plusOneCols.find(c => c.column_name === 'plusOneName' || c.column_name === 'plus_one_name')
+                const foundPlusOneRelation = plusOneCols.find(c => c.column_name === 'plusOneRelation' || c.column_name === 'plus_one_relation')
+                
+                detectedPlusOneCol = foundPlusOne?.column_name || plusOneCol
+                detectedPlusOneNameCol = foundPlusOneName?.column_name || plusOneNameCol
+                detectedPlusOneRelationCol = foundPlusOneRelation?.column_name || plusOneRelationCol
+                
+                console.log('Using detected plus_one column names:', { detectedPlusOneCol, detectedPlusOneNameCol, detectedPlusOneRelationCol })
+              } catch (e) {
+                console.warn('Could not detect plus_one column names, using defaults:', e)
+              }
+              
               console.log(`[Submit] Inserting event response ${responseData.eventId} with plus one:`, {
                 plusOne: plusOneValue,
                 plusOneName: plusOneNameValue,
                 plusOneRelation: plusOneRelationValue,
+                usingColumns: { detectedPlusOneCol, detectedPlusOneNameCol, detectedPlusOneRelationCol },
               })
               
               await tx.$executeRawUnsafe(
-                `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", "${plusOneCol}", "${plusOneNameCol}", "${plusOneRelationCol}", "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, NOW(), NOW())`,
+                `INSERT INTO rsvp_event_responses (id, "${actualColumnNames.rsvpId}", "${actualColumnNames.eventId}", "${actualColumnNames.status}", "${detectedPlusOneCol}", "${detectedPlusOneNameCol}", "${detectedPlusOneRelationCol}", "${actualColumnNames.createdAt}", "${actualColumnNames.updatedAt}") VALUES (gen_random_uuid()::text, $1, $2, $3, $4, $5, $6, NOW(), NOW())`,
                 newRsvp.id,
                 responseData.eventId,
                 responseData.status,
