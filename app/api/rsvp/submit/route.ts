@@ -325,6 +325,21 @@ export async function POST(request: NextRequest) {
               willSavePlusOneRelation: data.plusOneRelation,
             })
             
+            // CRITICAL: Verify the data we're about to save
+            if (data.plusOneName || data.plusOneRelation) {
+              console.log(`[Submit] ✅ VERIFYING: About to save Plus One data for event ${responseData.eventId}:`, {
+                plusOne: data.plusOne,
+                plusOneName: data.plusOneName,
+                plusOneRelation: data.plusOneRelation,
+                dataObject: JSON.stringify(data, null, 2),
+              })
+            } else {
+              console.warn(`[Submit] ⚠️ WARNING: No Plus One data to save for event ${responseData.eventId}`, {
+                originalResponseData: responseData,
+                processedData: data,
+              })
+            }
+            
             return data
           })
           
