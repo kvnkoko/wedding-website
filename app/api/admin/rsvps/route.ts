@@ -184,9 +184,10 @@ export async function GET(request: NextRequest) {
             console.warn(`[Admin RSVPs] Could not fetch raw values for RSVP ${rsvp.id}:`, e)
           }
           
-          // Map to include plus one fields
-          ;(rsvp as any).eventResponses = responses.map((r: any) => {
+          // Map to include plus one fields - Prisma should already have them
+          const mappedResponses = responses.map((r: any) => {
             // Check if plusOne should be true based on name presence
+            // Prisma returns camelCase, so these should be direct
             const plusOneNameRaw = r.plusOneName
             const plusOneRelationRaw = r.plusOneRelation
             const plusOneRaw = r.plusOne
@@ -201,11 +202,12 @@ export async function GET(request: NextRequest) {
               plusOne: plusOne,
               plusOneName: plusOneNameRaw ? String(plusOneNameRaw).trim() : null,
               plusOneRelation: plusOneRelationRaw ? String(plusOneRelationRaw).trim() : null,
-              event: r.event,
+              event: r.event || { id: r.eventId, name: 'Unknown Event' },
             }
             
             // Log ALL responses to see what we're getting
             console.log(`[Admin RSVPs] New schema - Event response for RSVP ${rsvp.id}, Event ${r.event?.name}:`, {
+              rawPrismaResponse: r,
               eventId: r.eventId,
               eventName: r.event?.name,
               status: r.status,
@@ -219,6 +221,9 @@ export async function GET(request: NextRequest) {
             
             return mapped
           })
+          
+          ;(rsvp as any).eventResponses = mappedResponses
+          console.log(`[Admin RSVPs] Mapped ${mappedResponses.length} event responses for RSVP ${rsvp.id}:`, JSON.stringify(mappedResponses, null, 2))
         } else {
           // Old schema - use raw SQL with actual column names
           if (actualColumnNames) {
