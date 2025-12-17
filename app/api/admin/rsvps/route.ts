@@ -195,22 +195,29 @@ export async function GET(request: NextRequest) {
           
           // Map to include plus one fields - Prisma should already have them
           const mappedResponses = responses.map((r: any) => {
-            // Check if plusOne should be true based on name presence
+            // Check if plusOne should be true based on name OR relation presence
             // Prisma returns camelCase, so these should be direct
             const plusOneNameRaw = r.plusOneName
             const plusOneRelationRaw = r.plusOneRelation
             const plusOneRaw = r.plusOne
             
-            const hasPlusOneName = plusOneNameRaw && String(plusOneNameRaw).trim() !== ''
-            const plusOne = Boolean(plusOneRaw || hasPlusOneName || false)
+            const hasPlusOneName = plusOneNameRaw && 
+                                 String(plusOneNameRaw).trim() !== '' && 
+                                 String(plusOneNameRaw).trim() !== 'null' &&
+                                 String(plusOneNameRaw).trim().toLowerCase() !== 'none'
+            const hasPlusOneRelation = plusOneRelationRaw && 
+                                     String(plusOneRelationRaw).trim() !== '' && 
+                                     String(plusOneRelationRaw).trim() !== 'null' &&
+                                     String(plusOneRelationRaw).trim().toLowerCase() !== 'none'
+            const plusOne = Boolean(plusOneRaw || hasPlusOneName || hasPlusOneRelation || false)
             
             const mapped = {
               id: r.id,
               eventId: r.eventId,
               status: r.status,
               plusOne: plusOne,
-              plusOneName: plusOneNameRaw ? String(plusOneNameRaw).trim() : null,
-              plusOneRelation: plusOneRelationRaw ? String(plusOneRelationRaw).trim() : null,
+              plusOneName: hasPlusOneName ? String(plusOneNameRaw).trim() : null,
+              plusOneRelation: hasPlusOneRelation ? String(plusOneRelationRaw).trim() : null,
               event: r.event || { id: r.eventId, name: 'Unknown Event' },
             }
             
@@ -224,6 +231,7 @@ export async function GET(request: NextRequest) {
               rawPlusOneName: plusOneNameRaw,
               rawPlusOneRelation: plusOneRelationRaw,
               hasPlusOneName: hasPlusOneName,
+              hasPlusOneRelation: hasPlusOneRelation,
               computedPlusOne: plusOne,
               finalMapped: mapped,
             })
@@ -232,6 +240,7 @@ export async function GET(request: NextRequest) {
           })
           
           ;(rsvp as any).eventResponses = mappedResponses
+          console.log(`[Admin RSVPs] Set ${mappedResponses.length} event responses for RSVP ${rsvp.id} (${rsvp.name})`)
           console.log(`[Admin RSVPs] Mapped ${mappedResponses.length} event responses for RSVP ${rsvp.id}:`, JSON.stringify(mappedResponses, null, 2))
         } else {
           // Old schema - use raw SQL with actual column names
