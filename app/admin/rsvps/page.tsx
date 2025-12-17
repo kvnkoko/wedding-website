@@ -588,12 +588,13 @@ export default function AdminRSVPsPage() {
                           </div>
                           {/* Per-Event Plus One */}
                           {(() => {
-                            // Check for Plus One data - handle both explicit plusOne flag and presence of name
+                            // Check for Plus One data - handle both explicit plusOne flag and presence of name/relation
                             const plusOneNameValue = er.plusOneName ? String(er.plusOneName).trim() : null
                             const plusOneRelationValue = er.plusOneRelation ? String(er.plusOneRelation).trim() : null
-                            const hasPlusOneFlag = er.plusOne === true || er.plusOne === 'true' || er.plusOne === 1
-                            const hasPlusOneName = plusOneNameValue && plusOneNameValue !== ''
-                            const hasPlusOne = hasPlusOneFlag || hasPlusOneName
+                            const hasPlusOneFlag = er.plusOne === true || er.plusOne === 'true' || er.plusOne === 1 || er.plusOne === '1'
+                            const hasPlusOneName = plusOneNameValue && plusOneNameValue !== '' && plusOneNameValue !== 'null'
+                            const hasPlusOneRelation = plusOneRelationValue && plusOneRelationValue !== '' && plusOneRelationValue !== 'null'
+                            const hasPlusOne = hasPlusOneFlag || hasPlusOneName || hasPlusOneRelation
                             
                             console.log(`[Admin Frontend] Plus One check for event ${er.event?.name}:`, {
                               status: er.status,
@@ -604,35 +605,40 @@ export default function AdminRSVPsPage() {
                               hasPlusOneName,
                               plusOneRelation: er.plusOneRelation,
                               plusOneRelationValue,
+                              hasPlusOneRelation,
                               finalHasPlusOne: hasPlusOne,
                             })
                             
                             if (er.status === 'YES' && hasPlusOne) {
                               return (
-                                <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
-                                  <div className="flex items-start gap-2">
-                                    <UserPlus className="w-4 h-4 text-sage dark:text-sage/90 flex-shrink-0 mt-0.5" weight="duotone" />
-                                    <div className="flex-1">
-                                      <div className="text-xs font-semibold text-charcoal dark:text-dark-text mb-1">
-                                        Plus One
+                                <div className="mt-3 pt-3 border-t border-taupe/20 dark:border-dark-border">
+                                  <div className="bg-sage/10 dark:bg-sage/20 rounded-lg p-3 border border-sage/20 dark:border-sage/30">
+                                    <div className="flex items-start gap-2.5">
+                                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-sage/20 dark:bg-sage/30 flex items-center justify-center mt-0.5">
+                                        <UserPlus className="w-3.5 h-3.5 text-sage dark:text-sage/90" weight="duotone" />
                                       </div>
-                                      <div className="text-sm text-charcoal dark:text-dark-text font-medium">
-                                        {plusOneNameValue || 'Name not provided'}
-                                      </div>
-                                      {plusOneRelationValue && (
-                                        <div className="text-xs text-charcoal/70 dark:text-dark-text-secondary mt-1">
-                                          {plusOneRelationValue}
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-xs uppercase tracking-wider text-sage dark:text-sage/90 font-semibold mb-2">Plus One</p>
+                                        <div className="space-y-1.5">
+                                          {hasPlusOneName ? (
+                                            <div>
+                                              <p className="text-xs uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Name</p>
+                                              <p className="text-sm text-charcoal dark:text-dark-text font-semibold">
+                                                {plusOneNameValue}
+                                              </p>
+                                            </div>
+                                          ) : null}
+                                          {hasPlusOneRelation && (
+                                            <div>
+                                              <p className="text-xs uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Relationship</p>
+                                              <p className="text-sm text-charcoal/80 dark:text-dark-text-secondary">
+                                                {plusOneRelationValue}
+                                              </p>
+                                            </div>
+                                          )}
                                         </div>
-                                      )}
+                                      </div>
                                     </div>
-                                  </div>
-                                </div>
-                              )
-                            } else if (er.status === 'YES') {
-                              return (
-                                <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
-                                  <div className="text-xs text-charcoal/50 dark:text-dark-text-secondary/70 italic">
-                                    No plus one
                                   </div>
                                 </div>
                               )

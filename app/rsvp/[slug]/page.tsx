@@ -574,25 +574,31 @@ export default function RSVPFormPage() {
                           if (shouldShowPlusOne) {
                             return (
                               <div className="mt-4 pt-4 border-t border-taupe/20 dark:border-dark-border">
-                                <div className="flex items-start gap-2">
-                                  <UserPlus className="w-4 h-4 text-sage dark:text-sage/90 flex-shrink-0 mt-0.5" weight="duotone" />
-                                  <div className="flex-1">
-                                    <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-2">Plus One</p>
-                                    <div className="space-y-2">
-                                      {hasPlusOneName ? (
-                                        <p className="text-sm text-charcoal dark:text-dark-text font-medium" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                                          {plusOneNameValue}
-                                        </p>
-                                      ) : (
-                                        <p className="text-sm text-charcoal/60 dark:text-dark-text-secondary italic" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                                          Name not provided
-                                        </p>
-                                      )}
-                                      {hasPlusOneRelation && (
-                                        <p className="text-xs text-charcoal/70 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                                          {plusOneRelationValue}
-                                        </p>
-                                      )}
+                                <div className="bg-sage/10 dark:bg-sage/20 rounded-lg p-4 border border-sage/20 dark:border-sage/30">
+                                  <div className="flex items-start gap-3">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sage/20 dark:bg-sage/30 flex items-center justify-center">
+                                      <UserPlus className="w-4 h-4 text-sage dark:text-sage/90" weight="duotone" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-xs uppercase tracking-wider text-sage dark:text-sage/90 font-semibold mb-2">Plus One</p>
+                                      <div className="space-y-1.5">
+                                        {hasPlusOneName ? (
+                                          <div>
+                                            <p className="text-xs uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Name</p>
+                                            <p className="text-sm text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                                              {plusOneNameValue}
+                                            </p>
+                                          </div>
+                                        ) : null}
+                                        {hasPlusOneRelation && (
+                                          <div>
+                                            <p className="text-xs uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Relationship</p>
+                                            <p className="text-sm text-charcoal/80 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                                              {plusOneRelationValue}
+                                            </p>
+                                          </div>
+                                        )}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
