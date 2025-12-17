@@ -594,9 +594,11 @@ export default function RSVPFormPage() {
                             })
                           }
                           
-                          console.log(`[RSVP Success Page] Plus One check for event ${normalizedEr.eventId}:`, {
+                          // ALWAYS log for debugging - this is critical
+                          console.log(`[RSVP Success Page] Plus One check for event ${normalizedEr.eventId} (${normalizedEr.eventName}):`, {
                             status: normalizedEr.status,
                             plusOneFlag: normalizedEr.plusOne,
+                            plusOneFlagValue,
                             hasPlusOneFlag,
                             plusOneName: normalizedEr.plusOneName,
                             plusOneNameValue,
@@ -606,7 +608,22 @@ export default function RSVPFormPage() {
                             hasPlusOneRelation,
                             shouldShowPlusOne,
                             allEventResponseKeys: Object.keys(normalizedEr),
+                            fullEventResponse: JSON.stringify(normalizedEr, null, 2),
                           })
+                          
+                          // Debug: log even when not showing to help diagnose
+                          if (normalizedEr.status === 'YES' && !shouldShowPlusOne) {
+                            console.error(`[RSVP Success Page] ERROR: Plus One data should show but isn't! Event ${normalizedEr.eventId}:`, {
+                              status: normalizedEr.status,
+                              plusOneFlag: normalizedEr.plusOne,
+                              plusOneName: normalizedEr.plusOneName,
+                              plusOneRelation: normalizedEr.plusOneRelation,
+                              hasPlusOneName,
+                              hasPlusOneRelation,
+                              hasPlusOneFlag,
+                              shouldShowPlusOne,
+                            })
+                          }
                           
                           if (shouldShowPlusOne) {
                             return (

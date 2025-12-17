@@ -283,22 +283,33 @@ export async function POST(request: NextRequest) {
         if (hasNewSchema) {
           // New schema - include plus one fields using Prisma
           const eventResponseData = eventResponsesData.map((responseData) => {
-            // Ensure plusOne is true if there's a name
-            const hasName = responseData.plusOneName && responseData.plusOneName.trim() !== ''
-            const plusOne = Boolean(responseData.plusOne || hasName || false)
+            // Ensure plusOne is true if there's a name OR relation
+            const hasName = responseData.plusOneName && 
+                           String(responseData.plusOneName).trim() !== '' && 
+                           String(responseData.plusOneName).trim() !== 'null'
+            const hasRelation = responseData.plusOneRelation && 
+                               String(responseData.plusOneRelation).trim() !== '' && 
+                               String(responseData.plusOneRelation).trim() !== 'null'
+            // Use the plusOne flag from responseData (already computed) OR check for name/relation
+            const plusOne = Boolean(responseData.plusOne || hasName || hasRelation || false)
             
             const data = {
               rsvpId: newRsvp.id,
               eventId: responseData.eventId,
               status: responseData.status,
               plusOne: plusOne,
-              plusOneName: responseData.plusOneName?.trim() || null,
-              plusOneRelation: responseData.plusOneRelation?.trim() || null,
+              plusOneName: hasName ? String(responseData.plusOneName).trim() : null,
+              plusOneRelation: hasRelation ? String(responseData.plusOneRelation).trim() : null,
             }
             
             console.log(`[Submit] Creating event response for event ${responseData.eventId}:`, {
               original: responseData,
+              hasName,
+              hasRelation,
               processed: data,
+              willSavePlusOne: data.plusOne,
+              willSavePlusOneName: data.plusOneName,
+              willSavePlusOneRelation: data.plusOneRelation,
             })
             
             return data
@@ -693,8 +704,14 @@ export async function POST(request: NextRequest) {
                                   (er.plus_one_relation !== undefined && er.plus_one_relation !== null ? er.plus_one_relation : null)
         
         // Ensure plusOne is true if there's a name or relation
-        const hasPlusOneName = plusOneNameRaw && String(plusOneNameRaw).trim() !== '' && String(plusOneNameRaw).trim() !== 'null'
-        const hasPlusOneRelation = plusOneRelationRaw && String(plusOneRelationRaw).trim() !== '' && String(plusOneRelationRaw).trim() !== 'null'
+        const hasPlusOneName = plusOneNameRaw && 
+                              String(plusOneNameRaw).trim() !== '' && 
+                              String(plusOneNameRaw).trim() !== 'null' &&
+                              String(plusOneNameRaw).trim().toLowerCase() !== 'none'
+        const hasPlusOneRelation = plusOneRelationRaw && 
+                                  String(plusOneRelationRaw).trim() !== '' && 
+                                  String(plusOneRelationRaw).trim() !== 'null' &&
+                                  String(plusOneRelationRaw).trim().toLowerCase() !== 'none'
         const plusOne = Boolean(plusOneRaw || hasPlusOneName || hasPlusOneRelation || false)
         
         const mapped = {
@@ -706,6 +723,7 @@ export async function POST(request: NextRequest) {
           plusOneRelation: hasPlusOneRelation ? String(plusOneRelationRaw).trim() : null,
         }
         
+        // CRITICAL: Always log to verify data is being returned
         console.log('[Submit] Mapping event response for return:', {
           raw: er,
           rawKeys: Object.keys(er),
@@ -719,6 +737,8 @@ export async function POST(request: NextRequest) {
           hasPlusOneRelation,
           finalPlusOne: plusOne,
           mapped: mapped,
+          willReturnPlusOneName: mapped.plusOneName,
+          willReturnPlusOneRelation: mapped.plusOneRelation,
         })
         
         return mapped
