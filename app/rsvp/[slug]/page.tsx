@@ -563,22 +563,23 @@ export default function RSVPFormPage() {
                         </div>
                         {/* Show plus one info for this event if attending with plus one */}
                         {(() => {
-                          // SIMPLIFIED: Just check if data exists, no complex validation
+                          // ULTRA-AGGRESSIVE: Check raw values directly, no filtering
                           const rawPlusOneName = normalizedEr.plusOneName
                           const rawPlusOneRelation = normalizedEr.plusOneRelation
                           const rawPlusOneFlag = normalizedEr.plusOne
                           
-                          // Convert to strings for display
-                          const plusOneNameValue = rawPlusOneName != null && rawPlusOneName !== '' ? String(rawPlusOneName).trim() : null
-                          const plusOneRelationValue = rawPlusOneRelation != null && rawPlusOneRelation !== '' ? String(rawPlusOneRelation).trim() : null
+                          // Check if raw values exist at all (not null, not undefined)
+                          const hasRawName = rawPlusOneName != null && rawPlusOneName !== undefined
+                          const hasRawRelation = rawPlusOneRelation != null && rawPlusOneRelation !== undefined
+                          const hasRawFlag = rawPlusOneFlag != null && rawPlusOneFlag !== undefined && rawPlusOneFlag !== false
                           
-                          // SIMPLEST CHECK: If status is YES and we have ANY non-empty value, show it
-                          const hasName = plusOneNameValue && plusOneNameValue.length > 0
-                          const hasRelation = plusOneRelationValue && plusOneRelationValue.length > 0
-                          const hasFlag = rawPlusOneFlag === true || rawPlusOneFlag === 1 || rawPlusOneFlag === 'true' || rawPlusOneFlag === '1'
+                          // Convert to strings for display - trim but keep even if empty
+                          const plusOneNameValue = hasRawName ? String(rawPlusOneName).trim() : null
+                          const plusOneRelationValue = hasRawRelation ? String(rawPlusOneRelation).trim() : null
                           
-                          // Show if status is YES and (has name OR has relation OR has flag)
-                          const shouldShow = normalizedEr.status === 'YES' && (hasName || hasRelation || hasFlag)
+                          // Show if status is YES and we have ANY raw data (name, relation, or flag)
+                          // Don't validate content - just check if data exists
+                          const shouldShow = normalizedEr.status === 'YES' && (hasRawName || hasRawRelation || hasRawFlag)
                           
                           // Debug: log even when not showing to help diagnose
                           if (normalizedEr.status === 'YES' && !shouldShow) {
@@ -587,9 +588,9 @@ export default function RSVPFormPage() {
                               plusOneFlag: rawPlusOneFlag,
                               plusOneName: rawPlusOneName,
                               plusOneRelation: rawPlusOneRelation,
-                              hasName,
-                              hasRelation,
-                              hasFlag,
+                              hasRawName,
+                              hasRawRelation,
+                              hasRawFlag,
                               shouldShow,
                             })
                           }
@@ -600,65 +601,68 @@ export default function RSVPFormPage() {
                             rawPlusOneFlag,
                             rawPlusOneName,
                             rawPlusOneRelation,
+                            hasRawName,
+                            hasRawRelation,
+                            hasRawFlag,
                             plusOneNameValue,
                             plusOneRelationValue,
-                            hasName,
-                            hasRelation,
-                            hasFlag,
                             shouldShow,
                             fullEventResponse: JSON.stringify(normalizedEr, null, 2),
                           })
                           
-                          // Show Plus One section
+                          // Show Plus One section - ALWAYS show if shouldShow is true
                           if (shouldShow) {
-                            // Use the values we have
-                            const displayName = hasName ? plusOneNameValue : null
-                            const displayRelation = hasRelation ? plusOneRelationValue : null
+                            // Use the values we have - show them even if they're empty strings
+                            const displayName = hasRawName ? plusOneNameValue : null
+                            const displayRelation = hasRawRelation ? plusOneRelationValue : null
                             
-                            // Always show if we have name or relation
-                            if (displayName || displayRelation) {
-                              return (
-                                <div className="mt-4 pt-4 border-t border-taupe/20 dark:border-dark-border">
-                                  <div className="bg-sage/10 dark:bg-sage/20 rounded-lg p-4 border border-sage/20 dark:border-sage/30">
-                                    <div className="flex items-start gap-3">
-                                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sage/20 dark:bg-sage/30 flex items-center justify-center">
-                                        <UserPlus className="w-4 h-4 text-sage dark:text-sage/90" weight="duotone" />
-                                      </div>
-                                      <div className="flex-1 min-w-0">
-                                        <p className="text-xs uppercase tracking-wider text-sage dark:text-sage/90 font-semibold mb-2">Plus One</p>
-                                        <div className="space-y-1.5">
-                                          {displayName && (
-                                            <div>
-                                              <p className="text-xs uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Name</p>
-                                              <p className="text-sm text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                                                {displayName}
-                                              </p>
-                                            </div>
-                                          )}
-                                          {displayRelation && (
-                                            <div>
-                                              <p className="text-xs uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Relationship</p>
-                                              <p className="text-sm text-charcoal/80 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                                                {displayRelation}
-                                              </p>
-                                            </div>
+                            // Always render the section if shouldShow is true
+                            // Show name/relation fields even if values are empty - user submitted something
+                            return (
+                              <div className="mt-4 pt-4 border-t border-taupe/20 dark:border-dark-border">
+                                <div className="bg-sage/10 dark:bg-sage/20 rounded-lg p-4 border border-sage/20 dark:border-sage/30">
+                                  <div className="flex items-start gap-3">
+                                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sage/20 dark:bg-sage/30 flex items-center justify-center">
+                                      <UserPlus className="w-4 h-4 text-sage dark:text-sage/90" weight="duotone" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-xs uppercase tracking-wider text-sage dark:text-sage/90 font-semibold mb-2">Plus One</p>
+                                      <div className="space-y-1.5">
+                                        <div>
+                                          <p className="text-xs uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Name</p>
+                                          {displayName && displayName.length > 0 ? (
+                                            <p className="text-sm text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                                              {displayName}
+                                            </p>
+                                          ) : (
+                                            <p className="text-sm text-charcoal/60 dark:text-dark-text-secondary italic" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                                              Not provided
+                                            </p>
                                           )}
                                         </div>
+                                        {displayRelation && displayRelation.length > 0 && (
+                                          <div>
+                                            <p className="text-xs uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Relationship</p>
+                                            <p className="text-sm text-charcoal/80 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                                              {displayRelation}
+                                            </p>
+                                          </div>
+                                        )}
                                       </div>
                                     </div>
                                   </div>
                                 </div>
-                              )
-                            }
+                              </div>
+                            )
                           }
                           
                           // If we get here and status is YES, log why we're not showing
                           if (normalizedEr.status === 'YES' && !shouldShow) {
                             console.error(`[RSVP Success Page] NOT showing Plus One for event ${normalizedEr.eventId} even though status is YES:`, {
                               shouldShow,
-                              hasName,
-                              hasRelation,
-                              hasFlag,
+                              hasRawName,
+                              hasRawRelation,
+                              hasRawFlag,
                               rawPlusOneName,
                               rawPlusOneRelation,
                               rawPlusOneFlag,
