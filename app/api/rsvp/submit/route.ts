@@ -348,10 +348,10 @@ export async function POST(request: NextRequest) {
                 plusOneName: responseData.plusOneName,
                 plusOneRelation: responseData.plusOneRelation,
               })
-              // Use actual column names for plus_one fields
-              const plusOneCol = (actualColumnNames as any).plusOne || 'plus_one'
-              const plusOneNameCol = (actualColumnNames as any).plusOneName || 'plus_one_name'
-              const plusOneRelationCol = (actualColumnNames as any).plusOneRelation || 'plus_one_relation'
+              // Use actual column names for plus_one fields - try camelCase first
+              const plusOneCol = (actualColumnNames as any).plusOne || 'plusOne'
+              const plusOneNameCol = (actualColumnNames as any).plusOneName || 'plusOneName'
+              const plusOneRelationCol = (actualColumnNames as any).plusOneRelation || 'plusOneRelation'
               
               const plusOneValue = Boolean(responseData.plusOne || (responseData.plusOneName && responseData.plusOneName.trim() !== ''))
               const plusOneNameValue = responseData.plusOneName?.trim() || null
