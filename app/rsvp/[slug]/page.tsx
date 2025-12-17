@@ -563,51 +563,22 @@ export default function RSVPFormPage() {
                         </div>
                         {/* Show plus one info for this event if attending with plus one */}
                         {(() => {
-                          // Always check for Plus One data - be EXTREMELY permissive
-                          // Get raw values first
+                          // SIMPLIFIED: Just check if data exists, no complex validation
                           const rawPlusOneName = normalizedEr.plusOneName
                           const rawPlusOneRelation = normalizedEr.plusOneRelation
                           const rawPlusOneFlag = normalizedEr.plusOne
                           
-                          // Convert to strings and trim, but be very permissive
-                          const plusOneNameValue = rawPlusOneName != null ? String(rawPlusOneName).trim() : null
-                          const plusOneRelationValue = rawPlusOneRelation != null ? String(rawPlusOneRelation).trim() : null
+                          // Convert to strings for display
+                          const plusOneNameValue = rawPlusOneName != null && rawPlusOneName !== '' ? String(rawPlusOneName).trim() : null
+                          const plusOneRelationValue = rawPlusOneRelation != null && rawPlusOneRelation !== '' ? String(rawPlusOneRelation).trim() : null
                           
-                          // Check if there's any Plus One data at all - be EXTREMELY permissive
-                          // Only exclude truly empty/null values
-                          const hasPlusOneName = plusOneNameValue && 
-                                                plusOneNameValue !== '' && 
-                                                plusOneNameValue !== 'null' && 
-                                                plusOneNameValue !== 'undefined' &&
-                                                plusOneNameValue !== 'None' &&
-                                                plusOneNameValue.toLowerCase() !== 'none' &&
-                                                plusOneNameValue !== 'false'
-                          const hasPlusOneRelation = plusOneRelationValue && 
-                                                     plusOneRelationValue !== '' && 
-                                                     plusOneRelationValue !== 'null' && 
-                                                     plusOneRelationValue !== 'undefined' &&
-                                                     plusOneRelationValue !== 'None' &&
-                                                     plusOneRelationValue.toLowerCase() !== 'none' &&
-                                                     plusOneRelationValue !== 'false'
-                          // Handle plusOne flag - can be boolean, number, or string from API
-                          const plusOneFlagValue = rawPlusOneFlag
-                          const hasPlusOneFlag = plusOneFlagValue === true || 
-                                                  plusOneFlagValue === 1 || 
-                                                  (typeof plusOneFlagValue === 'string' && (plusOneFlagValue === 'true' || plusOneFlagValue === '1'))
+                          // SIMPLEST CHECK: If status is YES and we have ANY non-empty value, show it
+                          const hasName = plusOneNameValue && plusOneNameValue.length > 0
+                          const hasRelation = plusOneRelationValue && plusOneRelationValue.length > 0
+                          const hasFlag = rawPlusOneFlag === true || rawPlusOneFlag === 1 || rawPlusOneFlag === 'true' || rawPlusOneFlag === '1'
                           
-                          // Show Plus One section if: status is YES AND (has name OR has relation OR flag is true)
-                          // Be EXTREMELY aggressive - show if ANY indication of Plus One exists
-                          // Check raw values directly - if they exist and aren't null/undefined, show them
-                          const hasRawPlusOneName = rawPlusOneName != null && rawPlusOneName !== '' && String(rawPlusOneName).trim() !== ''
-                          const hasRawPlusOneRelation = rawPlusOneRelation != null && rawPlusOneRelation !== '' && String(rawPlusOneRelation).trim() !== ''
-                          const hasAnyPlusOneData = hasPlusOneName || hasPlusOneRelation || hasPlusOneFlag || hasRawPlusOneName || hasRawPlusOneRelation
-                          
-                          // CRITICAL: If status is YES and we have ANY Plus One data, show it
-                          const shouldShowPlusOne = normalizedEr.status === 'YES' && hasAnyPlusOneData
-                          
-                          // EXTRA SAFETY: If status is YES and raw values exist, always show
-                          const forceShowPlusOne = normalizedEr.status === 'YES' && (hasRawPlusOneName || hasRawPlusOneRelation)
-                          const finalShouldShow = shouldShowPlusOne || forceShowPlusOne
+                          // Show if status is YES and (has name OR has relation OR has flag)
+                          const shouldShow = normalizedEr.status === 'YES' && (hasName || hasRelation || hasFlag)
                           
                           // Debug: log even when not showing to help diagnose
                           if (normalizedEr.status === 'YES' && !shouldShowPlusOne) {
@@ -625,56 +596,25 @@ export default function RSVPFormPage() {
                           // ALWAYS log for debugging - this is critical
                           console.log(`[RSVP Success Page] Plus One check for event ${normalizedEr.eventId} (${normalizedEr.eventName}):`, {
                             status: normalizedEr.status,
-                            rawPlusOneFlag: rawPlusOneFlag,
-                            rawPlusOneName: rawPlusOneName,
-                            rawPlusOneRelation: rawPlusOneRelation,
-                            plusOneFlagValue,
-                            hasPlusOneFlag,
+                            rawPlusOneFlag,
+                            rawPlusOneName,
+                            rawPlusOneRelation,
                             plusOneNameValue,
-                            hasPlusOneName,
                             plusOneRelationValue,
-                            hasPlusOneRelation,
-                            hasAnyPlusOneData,
-                            hasRawPlusOneName,
-                            hasRawPlusOneRelation,
-                            shouldShowPlusOne,
-                            forceShowPlusOne,
-                            finalShouldShow,
-                            allEventResponseKeys: Object.keys(normalizedEr),
+                            hasName,
+                            hasRelation,
+                            hasFlag,
+                            shouldShow,
                             fullEventResponse: JSON.stringify(normalizedEr, null, 2),
                           })
                           
-                          // Debug: log even when not showing to help diagnose
-                          if (normalizedEr.status === 'YES' && !finalShouldShow) {
-                            console.error(`[RSVP Success Page] ERROR: Plus One data should show but isn't! Event ${normalizedEr.eventId}:`, {
-                              status: normalizedEr.status,
-                              rawPlusOneFlag: rawPlusOneFlag,
-                              rawPlusOneName: rawPlusOneName,
-                              rawPlusOneRelation: rawPlusOneRelation,
-                              plusOneFlagValue,
-                              hasPlusOneFlag,
-                              plusOneNameValue,
-                              hasPlusOneName,
-                              plusOneRelationValue,
-                              hasPlusOneRelation,
-                              hasAnyPlusOneData,
-                              hasRawPlusOneName,
-                              hasRawPlusOneRelation,
-                              shouldShowPlusOne,
-                              forceShowPlusOne,
-                              finalShouldShow,
-                              normalizedEr: JSON.stringify(normalizedEr, null, 2),
-                            })
-                          }
-                          
-                          // ALWAYS show Plus One section if status is YES and we have ANY data
-                          // This is a fallback to ensure Plus One is always displayed when data exists
-                          if (normalizedEr.status === 'YES' && finalShouldShow) {
-                            // Use the most permissive values for display
-                            const displayName = hasPlusOneName ? plusOneNameValue : (rawPlusOneName ? String(rawPlusOneName).trim() : null)
-                            const displayRelation = hasPlusOneRelation ? plusOneRelationValue : (rawPlusOneRelation ? String(rawPlusOneRelation).trim() : null)
+                          // Show Plus One section
+                          if (shouldShow) {
+                            // Use the values we have
+                            const displayName = hasName ? plusOneNameValue : null
+                            const displayRelation = hasRelation ? plusOneRelationValue : null
                             
-                            // Only show if we have at least name or relation to display
+                            // Always show if we have name or relation
                             if (displayName || displayRelation) {
                               return (
                                 <div className="mt-4 pt-4 border-t border-taupe/20 dark:border-dark-border">
@@ -712,20 +652,18 @@ export default function RSVPFormPage() {
                           }
                           
                           // If we get here and status is YES, log why we're not showing
-                          if (normalizedEr.status === 'YES' && !finalShouldShow) {
+                          if (normalizedEr.status === 'YES' && !shouldShow) {
                             console.error(`[RSVP Success Page] NOT showing Plus One for event ${normalizedEr.eventId} even though status is YES:`, {
-                              shouldShowPlusOne,
-                              forceShowPlusOne,
-                              finalShouldShow,
-                              hasAnyPlusOneData,
-                              hasRawPlusOneName,
-                              hasRawPlusOneRelation,
-                              displayName: hasPlusOneName ? plusOneNameValue : (rawPlusOneName ? String(rawPlusOneName).trim() : null),
-                              displayRelation: hasPlusOneRelation ? plusOneRelationValue : (rawPlusOneRelation ? String(rawPlusOneRelation).trim() : null),
+                              shouldShow,
+                              hasName,
+                              hasRelation,
+                              hasFlag,
                               rawPlusOneName,
                               rawPlusOneRelation,
-                              rawPlusOneNameType: typeof rawPlusOneName,
-                              rawPlusOneRelationType: typeof rawPlusOneRelation,
+                              rawPlusOneFlag,
+                              plusOneNameValue,
+                              plusOneRelationValue,
+                              normalizedEr: JSON.stringify(normalizedEr, null, 2),
                             })
                           }
                           
