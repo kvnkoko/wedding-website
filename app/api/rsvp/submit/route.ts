@@ -285,14 +285,21 @@ export async function POST(request: NextRequest) {
         if (hasNewSchema) {
           // New schema - include plus one fields using Prisma
           const eventResponseData = eventResponsesData.map((responseData) => {
-            // Ensure plusOne is true if there's a name OR relation
-            const hasName = responseData.plusOneName && 
-                           String(responseData.plusOneName).trim() !== '' && 
-                           String(responseData.plusOneName).trim() !== 'null'
-            const hasRelation = responseData.plusOneRelation && 
-                               String(responseData.plusOneRelation).trim() !== '' && 
-                               String(responseData.plusOneRelation).trim() !== 'null'
-            // Use the plusOne flag from responseData (already computed) OR check for name/relation
+            // Get raw values - don't filter them out
+            const rawPlusOneName = responseData.plusOneName
+            const rawPlusOneRelation = responseData.plusOneRelation
+            
+            // Trim values if they exist, but save them even if they're empty
+            const plusOneName = rawPlusOneName != null && rawPlusOneName !== '' 
+              ? String(rawPlusOneName).trim() 
+              : null
+            const plusOneRelation = rawPlusOneRelation != null && rawPlusOneRelation !== ''
+              ? String(rawPlusOneRelation).trim()
+              : null
+            
+            // Set plusOne to true if we have name/relation OR if the flag is set
+            const hasName = plusOneName != null && plusOneName !== ''
+            const hasRelation = plusOneRelation != null && plusOneRelation !== ''
             const plusOne = Boolean(responseData.plusOne || hasName || hasRelation || false)
             
             const data = {
@@ -300,12 +307,16 @@ export async function POST(request: NextRequest) {
               eventId: responseData.eventId,
               status: responseData.status,
               plusOne: plusOne,
-              plusOneName: hasName ? String(responseData.plusOneName).trim() : null,
-              plusOneRelation: hasRelation ? String(responseData.plusOneRelation).trim() : null,
+              plusOneName: plusOneName,  // Save the value, even if it's empty
+              plusOneRelation: plusOneRelation,  // Save the value, even if it's empty
             }
             
             console.log(`[Submit] Creating event response for event ${responseData.eventId}:`, {
               original: responseData,
+              rawPlusOneName,
+              rawPlusOneRelation,
+              plusOneName,
+              plusOneRelation,
               hasName,
               hasRelation,
               processed: data,
