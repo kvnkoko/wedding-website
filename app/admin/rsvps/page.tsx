@@ -588,8 +588,24 @@ export default function AdminRSVPsPage() {
                           </div>
                           {/* Per-Event Plus One */}
                           {(() => {
-                            const hasPlusOne = er.plusOne || (er.plusOneName && er.plusOneName.trim())
-                            const plusOneName = er.plusOneName?.trim() || null
+                            // Check for Plus One data - handle both explicit plusOne flag and presence of name
+                            const plusOneNameValue = er.plusOneName ? String(er.plusOneName).trim() : null
+                            const plusOneRelationValue = er.plusOneRelation ? String(er.plusOneRelation).trim() : null
+                            const hasPlusOneFlag = er.plusOne === true || er.plusOne === 'true' || er.plusOne === 1
+                            const hasPlusOneName = plusOneNameValue && plusOneNameValue !== ''
+                            const hasPlusOne = hasPlusOneFlag || hasPlusOneName
+                            
+                            console.log(`[Admin Frontend] Plus One check for event ${er.event?.name}:`, {
+                              status: er.status,
+                              plusOneFlag: er.plusOne,
+                              hasPlusOneFlag,
+                              plusOneName: er.plusOneName,
+                              plusOneNameValue,
+                              hasPlusOneName,
+                              plusOneRelation: er.plusOneRelation,
+                              plusOneRelationValue,
+                              finalHasPlusOne: hasPlusOne,
+                            })
                             
                             if (er.status === 'YES' && hasPlusOne) {
                               return (
@@ -601,11 +617,11 @@ export default function AdminRSVPsPage() {
                                         Plus One
                                       </div>
                                       <div className="text-sm text-charcoal dark:text-dark-text font-medium">
-                                        {plusOneName || 'Name not provided'}
+                                        {plusOneNameValue || 'Name not provided'}
                                       </div>
-                                      {er.plusOneRelation && er.plusOneRelation.trim() && (
+                                      {plusOneRelationValue && (
                                         <div className="text-xs text-charcoal/70 dark:text-dark-text-secondary mt-1">
-                                          {er.plusOneRelation}
+                                          {plusOneRelationValue}
                                         </div>
                                       )}
                                     </div>

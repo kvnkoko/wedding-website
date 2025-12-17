@@ -467,6 +467,7 @@ export default function RSVPFormPage() {
                       return null
                     })()}
                     {submissionData.eventResponses?.map((er: any, index: number) => {
+                      // Log all available fields to debug
                       console.log(`[RSVP Success Page] Event response ${index}:`, {
                         eventId: er.eventId,
                         eventName: er.eventName,
@@ -475,6 +476,8 @@ export default function RSVPFormPage() {
                         plusOneName: er.plusOneName,
                         plusOneRelation: er.plusOneRelation,
                         hasPlusOne: er.plusOne || (er.plusOneName && er.plusOneName.trim()),
+                        allKeys: Object.keys(er),
+                        rawData: er,
                       })
                       
                       return (
@@ -502,8 +505,24 @@ export default function RSVPFormPage() {
                         </div>
                         {/* Show plus one info for this event if attending with plus one */}
                         {(() => {
-                          const hasPlusOne = er.plusOne || (er.plusOneName && er.plusOneName.trim())
-                          const plusOneName = er.plusOneName?.trim() || null
+                          // Check for Plus One data - handle both explicit plusOne flag and presence of name
+                          const plusOneNameValue = er.plusOneName ? String(er.plusOneName).trim() : null
+                          const plusOneRelationValue = er.plusOneRelation ? String(er.plusOneRelation).trim() : null
+                          const hasPlusOneFlag = er.plusOne === true || er.plusOne === 'true' || er.plusOne === 1
+                          const hasPlusOneName = plusOneNameValue && plusOneNameValue !== ''
+                          const hasPlusOne = hasPlusOneFlag || hasPlusOneName
+                          
+                          console.log(`[RSVP Success Page] Plus One check for event ${er.eventId}:`, {
+                            status: er.status,
+                            plusOneFlag: er.plusOne,
+                            hasPlusOneFlag,
+                            plusOneName: er.plusOneName,
+                            plusOneNameValue,
+                            hasPlusOneName,
+                            plusOneRelation: er.plusOneRelation,
+                            plusOneRelationValue,
+                            finalHasPlusOne: hasPlusOne,
+                          })
                           
                           if (er.status === 'YES' && hasPlusOne) {
                             return (
@@ -514,11 +533,11 @@ export default function RSVPFormPage() {
                                     <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-2">Plus One</p>
                                     <div className="space-y-2">
                                       <p className="text-sm text-charcoal dark:text-dark-text font-medium" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                                        {plusOneName || 'Name not provided'}
+                                        {plusOneNameValue || 'Name not provided'}
                                       </p>
-                                      {er.plusOneRelation && er.plusOneRelation.trim() && (
+                                      {plusOneRelationValue && (
                                         <p className="text-xs text-charcoal/70 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                                          {er.plusOneRelation}
+                                          {plusOneRelationValue}
                                         </p>
                                       )}
                                     </div>

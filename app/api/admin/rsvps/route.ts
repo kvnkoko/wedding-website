@@ -130,10 +130,19 @@ export async function GET(request: NextRequest) {
     for (const rsvp of rsvps) {
       try {
         if (hasNewSchema) {
-          // New schema - use Prisma normally, include plus one fields
+          // New schema - use Prisma normally, explicitly select plus one fields
           const responses = await prisma.rsvpEventResponse.findMany({
             where: { rsvpId: rsvp.id },
-            include: {
+            select: {
+              id: true,
+              rsvpId: true,
+              eventId: true,
+              status: true,
+              plusOne: true,
+              plusOneName: true,
+              plusOneRelation: true,
+              createdAt: true,
+              updatedAt: true,
               event: {
                 select: {
                   id: true,
@@ -492,7 +501,16 @@ export async function PUT(request: NextRequest) {
           },
         },
         eventResponses: {
-          include: {
+          select: {
+            id: true,
+            rsvpId: true,
+            eventId: true,
+            status: true,
+            plusOne: true,
+            plusOneName: true,
+            plusOneRelation: true,
+            createdAt: true,
+            updatedAt: true,
             event: {
               select: {
                 id: true,
