@@ -361,6 +361,9 @@ export default function RSVPFormPage() {
       }
 
       const result = await res.json()
+      
+      // CRITICAL: Log the raw API response to see exactly what we're getting
+      console.log('[RSVP Form] RAW API RESPONSE:', JSON.stringify(result, null, 2))
       console.log('[RSVP Form] Received submission result:', {
         hasEventResponses: !!result.eventResponses,
         eventResponsesCount: result.eventResponses?.length || 0,
@@ -372,6 +375,8 @@ export default function RSVPFormPage() {
           plusOneName: er.plusOneName,
           plusOneRelation: er.plusOneRelation,
           hasPlusOneData: !!(er.plusOne || er.plusOneName),
+          allKeys: Object.keys(er),
+          fullEventResponse: JSON.stringify(er, null, 2),
         })),
         fullResult: result,
       })
