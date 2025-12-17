@@ -286,8 +286,16 @@ export async function POST(request: NextRequest) {
           console.log('Verified saved event responses:', verifyData)
         } else {
           // Old schema - use raw SQL with actual column names
+          // If we couldn't detect column names, use common defaults
           if (!actualColumnNames) {
-            throw new Error('Could not determine actual column names for rsvp_event_responses table')
+            console.warn('Could not determine actual column names, using defaults')
+            actualColumnNames = {
+              rsvpId: 'rsvp_id',
+              eventId: 'event_id',
+              status: 'status',
+              createdAt: 'created_at',
+              updatedAt: 'updated_at',
+            }
           }
           
           // Check if plus_one columns exist in old schema
