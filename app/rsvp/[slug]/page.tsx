@@ -458,7 +458,26 @@ export default function RSVPFormPage() {
                     Your Responses
                   </h2>
                   <div className="space-y-3">
-                    {submissionData.eventResponses?.map((er: any, index: number) => (
+                    {(() => {
+                      console.log('[RSVP Success Page] Rendering event responses:', {
+                        eventResponses: submissionData.eventResponses,
+                        count: submissionData.eventResponses?.length || 0,
+                        sample: submissionData.eventResponses?.[0],
+                      })
+                      return null
+                    })()}
+                    {submissionData.eventResponses?.map((er: any, index: number) => {
+                      console.log(`[RSVP Success Page] Event response ${index}:`, {
+                        eventId: er.eventId,
+                        eventName: er.eventName,
+                        status: er.status,
+                        plusOne: er.plusOne,
+                        plusOneName: er.plusOneName,
+                        plusOneRelation: er.plusOneRelation,
+                        hasPlusOne: er.plusOne || (er.plusOneName && er.plusOneName.trim()),
+                      })
+                      
+                      return (
                       <div 
                         key={er.eventId} 
                         className="event-card"
