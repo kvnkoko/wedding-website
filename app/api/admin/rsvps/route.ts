@@ -195,20 +195,14 @@ export async function GET(request: NextRequest) {
           
           // Map to include plus one fields - Prisma should already have them
           const mappedResponses = responses.map((r: any) => {
-            // Check if plusOne should be true based on name OR relation presence
+            // Check if plusOne should be true based on name presence
             // Prisma returns camelCase, so these should be direct
             const plusOneNameRaw = r.plusOneName
             const plusOneRelationRaw = r.plusOneRelation
             const plusOneRaw = r.plusOne
             
-            const hasPlusOneName = plusOneNameRaw && 
-                                 String(plusOneNameRaw).trim() !== '' && 
-                                 String(plusOneNameRaw).trim() !== 'null' &&
-                                 String(plusOneNameRaw).trim().toLowerCase() !== 'none'
-            const hasPlusOneRelation = plusOneRelationRaw && 
-                                     String(plusOneRelationRaw).trim() !== '' && 
-                                     String(plusOneRelationRaw).trim() !== 'null' &&
-                                     String(plusOneRelationRaw).trim().toLowerCase() !== 'none'
+            const hasPlusOneName = plusOneNameRaw && String(plusOneNameRaw).trim() !== '' && String(plusOneNameRaw).trim() !== 'null'
+            const hasPlusOneRelation = plusOneRelationRaw && String(plusOneRelationRaw).trim() !== '' && String(plusOneRelationRaw).trim() !== 'null'
             const plusOne = Boolean(plusOneRaw || hasPlusOneName || hasPlusOneRelation || false)
             
             const mapped = {
@@ -231,7 +225,6 @@ export async function GET(request: NextRequest) {
               rawPlusOneName: plusOneNameRaw,
               rawPlusOneRelation: plusOneRelationRaw,
               hasPlusOneName: hasPlusOneName,
-              hasPlusOneRelation: hasPlusOneRelation,
               computedPlusOne: plusOne,
               finalMapped: mapped,
             })
@@ -240,7 +233,6 @@ export async function GET(request: NextRequest) {
           })
           
           ;(rsvp as any).eventResponses = mappedResponses
-          console.log(`[Admin RSVPs] Set ${mappedResponses.length} event responses for RSVP ${rsvp.id} (${rsvp.name})`)
           console.log(`[Admin RSVPs] Mapped ${mappedResponses.length} event responses for RSVP ${rsvp.id}:`, JSON.stringify(mappedResponses, null, 2))
         } else {
           // Old schema - use raw SQL with actual column names
@@ -400,11 +392,23 @@ export async function GET(request: NextRequest) {
         ;(rsvp as any).eventResponses = []
       }
       
-      // Ensure eventResponses is always defined
-      if (!(rsvp as any).eventResponses) {
-        console.warn(`[Admin RSVPs] RSVP ${rsvp.id} has no eventResponses, setting to empty array`)
+      // Ensure eventResponses is always defined and is an array
+      if (!(rsvp as any).eventResponses || !Array.isArray((rsvp as any).eventResponses)) {
+        console.error(`[Admin RSVPs] CRITICAL: RSVP ${rsvp.id} (${rsvp.name}) has invalid eventResponses!`, {
+          rsvpId: rsvp.id,
+          rsvpName: rsvp.name,
+          eventResponses: (rsvp as any).eventResponses,
+          type: typeof (rsvp as any).eventResponses,
+        })
         ;(rsvp as any).eventResponses = []
       }
+      
+      // Log final state for debugging
+      console.log(`[Admin RSVPs] Final RSVP ${rsvp.id} (${rsvp.name}):`, {
+        hasEventResponses: !!(rsvp as any).eventResponses,
+        eventResponsesCount: (rsvp as any).eventResponses?.length || 0,
+        eventResponses: (rsvp as any).eventResponses,
+      })
     }
 
     // Final verification - log what we're returning
