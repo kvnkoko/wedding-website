@@ -256,17 +256,37 @@ export default function RSVPFormPage() {
   const onSubmit = async (data: FormData) => {
     setSubmitting(true)
     try {
+      // CRITICAL: Log the raw form data first to see what we're getting
+      console.log('[Form Submit] RAW FORM DATA:', {
+        eventResponses: data.eventResponses,
+        eventPlusOnes: data.eventPlusOnes,
+        allEventPlusOnesKeys: Object.keys(data.eventPlusOnes || {}),
+        fullEventPlusOnes: JSON.stringify(data.eventPlusOnes, null, 2),
+      })
+      
       // Prepare event responses with plus one data
       const eventResponsesWithPlusOnes: Record<string, any> = {}
       Object.entries(data.eventResponses || {}).forEach(([eventId, status]) => {
         const plusOneData = data.eventPlusOnes?.[eventId]
         
+        // CRITICAL: Log what we're getting for this specific event
+        console.log(`[Form Submit] Event ${eventId} Plus One Data:`, {
+          plusOneData,
+          plusOneDataKeys: plusOneData ? Object.keys(plusOneData) : [],
+          plusOneNameRaw: plusOneData?.plusOneName,
+          plusOneRelationRaw: plusOneData?.plusOneRelation,
+          plusOneCheckboxRaw: plusOneData?.plusOne,
+          plusOneNameType: typeof plusOneData?.plusOneName,
+          plusOneRelationType: typeof plusOneData?.plusOneRelation,
+        })
+        
         // Extract Plus One values - send raw values, don't filter them
         // The API will handle validation, we just need to send what the user entered
-        const plusOneName = plusOneData?.plusOneName != null && plusOneData.plusOneName !== '' 
+        // IMPORTANT: Don't check for empty string - send whatever we get
+        const plusOneName = plusOneData?.plusOneName != null 
           ? String(plusOneData.plusOneName).trim() 
           : null
-        const plusOneRelation = plusOneData?.plusOneRelation != null && plusOneData.plusOneRelation !== ''
+        const plusOneRelation = plusOneData?.plusOneRelation != null
           ? String(plusOneData.plusOneRelation).trim()
           : null
         // Handle checkbox value - can be boolean or string from form submission
