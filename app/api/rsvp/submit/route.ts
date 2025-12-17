@@ -714,14 +714,23 @@ export async function POST(request: NextRequest) {
                                   String(plusOneRelationRaw).trim().toLowerCase() !== 'none'
         const plusOne = Boolean(plusOneRaw || hasPlusOneName || hasPlusOneRelation || false)
         
+        // ALWAYS return the raw values - let frontend decide what to display
+        // Only trim if they exist, but don't filter them out
         const mapped = {
           eventId: er.eventId,
           eventName: er.event?.name || 'Unknown Event',
           status: er.status,
           plusOne: plusOne,
-          plusOneName: hasPlusOneName ? String(plusOneNameRaw).trim() : null,
-          plusOneRelation: hasPlusOneRelation ? String(plusOneRelationRaw).trim() : null,
+          plusOneName: plusOneNameRaw != null && plusOneNameRaw !== '' ? String(plusOneNameRaw).trim() : null,
+          plusOneRelation: plusOneRelationRaw != null && plusOneRelationRaw !== '' ? String(plusOneRelationRaw).trim() : null,
         }
+        
+        console.log(`[Submit API Response] Mapping event response for ${er.eventId}:`, {
+          raw: { plusOneRaw, plusOneNameRaw, plusOneRelationRaw },
+          mapped,
+          hasPlusOneName,
+          hasPlusOneRelation,
+        })
         
         // CRITICAL: Always log to verify data is being returned
         console.log('[Submit] Mapping event response for return:', {

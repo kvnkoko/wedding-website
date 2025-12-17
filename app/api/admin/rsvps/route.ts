@@ -205,15 +205,24 @@ export async function GET(request: NextRequest) {
             const hasPlusOneRelation = plusOneRelationRaw && String(plusOneRelationRaw).trim() !== '' && String(plusOneRelationRaw).trim() !== 'null'
             const plusOne = Boolean(plusOneRaw || hasPlusOneName || hasPlusOneRelation || false)
             
+            // ALWAYS return the raw values - let frontend decide what to display
+            // Only trim if they exist, but don't filter them out
             const mapped = {
               id: r.id,
               eventId: r.eventId,
               status: r.status,
               plusOne: plusOne,
-              plusOneName: hasPlusOneName ? String(plusOneNameRaw).trim() : null,
-              plusOneRelation: hasPlusOneRelation ? String(plusOneRelationRaw).trim() : null,
+              plusOneName: plusOneNameRaw != null && plusOneNameRaw !== '' ? String(plusOneNameRaw).trim() : null,
+              plusOneRelation: plusOneRelationRaw != null && plusOneRelationRaw !== '' ? String(plusOneRelationRaw).trim() : null,
               event: r.event || { id: r.eventId, name: 'Unknown Event' },
             }
+            
+            console.log(`[Admin RSVPs] Mapping event response for ${r.eventId}:`, {
+              raw: { plusOneRaw, plusOneNameRaw, plusOneRelationRaw },
+              mapped,
+              hasPlusOneName,
+              hasPlusOneRelation,
+            })
             
             // Log ALL responses to see what we're getting
             console.log(`[Admin RSVPs] New schema - Event response for RSVP ${rsvp.id}, Event ${r.event?.name}:`, {
