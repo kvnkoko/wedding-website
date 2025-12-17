@@ -31,16 +31,16 @@ export async function GET(request: NextRequest) {
     let plusOneCount = 0
     try {
       // Try camelCase first
-      const camelCaseCount = await prisma.$queryRawUnsafe<Array<{ count: bigint }>>`
-        SELECT COUNT(*) as count FROM rsvp_event_responses WHERE "plusOne" = true
-      `
+      const camelCaseCount = await prisma.$queryRawUnsafe<Array<{ count: bigint }>>(
+        'SELECT COUNT(*) as count FROM rsvp_event_responses WHERE "plusOne" = true'
+      )
       plusOneCount = Number(camelCaseCount[0]?.count || 0)
     } catch {
       try {
         // Try snake_case
-        const snakeCaseCount = await prisma.$queryRawUnsafe<Array<{ count: bigint }>>`
-          SELECT COUNT(*) as count FROM rsvp_event_responses WHERE plus_one = true
-        `
+        const snakeCaseCount = await prisma.$queryRawUnsafe<Array<{ count: bigint }>>(
+          'SELECT COUNT(*) as count FROM rsvp_event_responses WHERE plus_one = true'
+        )
         plusOneCount = Number(snakeCaseCount[0]?.count || 0)
       } catch {
         plusOneCount = -1 // Error
