@@ -147,19 +147,26 @@ export async function POST(request: NextRequest) {
       let hasNewSchema = false
       let actualColumnNames: { rsvpId: string; eventId: string; status: string; createdAt: string; updatedAt: string } | null = null
       
-      // More robust schema detection - check for all three columns
+      // More robust schema detection - check for all three columns (both camelCase and snake_case)
       try {
         const schemaCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
           SELECT column_name 
           FROM information_schema.columns 
           WHERE table_name = 'rsvp_event_responses' 
-          AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation')
-          LIMIT 3
+          AND column_name IN ('plusOne', 'plus_one', 'plusOneName', 'plus_one_name', 'plusOneRelation', 'plus_one_relation')
+          LIMIT 6
         `
-        hasNewSchema = Array.isArray(schemaCheck) && schemaCheck.length === 3
+        // Check if we have all three columns (either camelCase or snake_case)
+        const foundPlusOne = schemaCheck.some(c => c.column_name === 'plusOne' || c.column_name === 'plus_one')
+        const foundPlusOneName = schemaCheck.some(c => c.column_name === 'plusOneName' || c.column_name === 'plus_one_name')
+        const foundPlusOneRelation = schemaCheck.some(c => c.column_name === 'plusOneRelation' || c.column_name === 'plus_one_relation')
+        hasNewSchema = foundPlusOne && foundPlusOneName && foundPlusOneRelation
         console.log('Schema detection result:', {
           foundColumns: schemaCheck,
           hasNewSchema: hasNewSchema,
+          foundPlusOne,
+          foundPlusOneName,
+          foundPlusOneRelation,
           columnCount: schemaCheck?.length || 0,
         })
       } catch (schemaCheckError: any) {

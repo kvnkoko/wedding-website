@@ -42,19 +42,26 @@ export async function GET(request: NextRequest) {
     let hasNewSchema = false
     let actualColumnNames: { rsvpId: string; eventId: string; status: string; plusOne?: string; plusOneName?: string; plusOneRelation?: string } | null = null
     
-    // More robust schema detection - check for all three columns
+    // More robust schema detection - check for all three columns (both camelCase and snake_case)
     try {
       const schemaCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
         SELECT column_name 
         FROM information_schema.columns 
         WHERE table_name = 'rsvp_event_responses' 
-        AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation')
-        LIMIT 3
+        AND column_name IN ('plusOne', 'plus_one', 'plusOneName', 'plus_one_name', 'plusOneRelation', 'plus_one_relation')
+        LIMIT 6
       `
-      hasNewSchema = Array.isArray(schemaCheck) && schemaCheck.length === 3
+      // Check if we have all three columns (either camelCase or snake_case)
+      const foundPlusOne = schemaCheck.some(c => c.column_name === 'plusOne' || c.column_name === 'plus_one')
+      const foundPlusOneName = schemaCheck.some(c => c.column_name === 'plusOneName' || c.column_name === 'plus_one_name')
+      const foundPlusOneRelation = schemaCheck.some(c => c.column_name === 'plusOneRelation' || c.column_name === 'plus_one_relation')
+      hasNewSchema = foundPlusOne && foundPlusOneName && foundPlusOneRelation
       console.log('[Admin RSVPs] Schema detection result:', {
         foundColumns: schemaCheck,
         hasNewSchema: hasNewSchema,
+        foundPlusOne,
+        foundPlusOneName,
+        foundPlusOneRelation,
         columnCount: schemaCheck?.length || 0,
       })
     } catch (schemaCheckError: any) {
@@ -466,10 +473,39 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'RSVP ID required' }, { status: 400 })
     }
 
-    // Delete event responses first (cascade)
-    await prisma.rsvpEventResponse.deleteMany({
-      where: { rsvpId: id },
-    })
+    // Delete event responses first (cascade) - use raw SQL to avoid schema issues
+    try {
+      // Get actual column names
+      const columns = await prisma.$queryRaw<Array<{ column_name: string }>>`
+        SELECT column_name 
+        FROM information_schema.columns 
+        WHERE table_name = 'rsvp_event_responses'
+        ORDER BY ordinal_position
+      `
+      
+      const rsvpIdCol = columns.find(c => 
+        c.column_name === 'rsvpId' || 
+        c.column_name.toLowerCase() === 'rsvpid' || 
+        c.column_name.toLowerCase() === 'rsvp_id'
+      )?.column_name || 'rsvpId'
+      
+      // Delete using raw SQL
+      await prisma.$executeRawUnsafe(
+        `DELETE FROM rsvp_event_responses WHERE "${rsvpIdCol}" = $1`,
+        id
+      )
+    } catch (error: any) {
+      console.error('Error deleting event responses with raw SQL, trying Prisma:', error)
+      // Fallback to Prisma
+      try {
+        await prisma.rsvpEventResponse.deleteMany({
+          where: { rsvpId: id },
+        })
+      } catch (prismaError: any) {
+        console.error('Prisma delete also failed:', prismaError)
+        // Continue anyway - cascade might handle it
+      }
+    }
 
     // Delete RSVP
     await prisma.rsvp.delete({
