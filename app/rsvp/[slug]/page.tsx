@@ -645,7 +645,7 @@ export default function RSVPFormPage() {
                           })
                           
                           // Debug: log even when not showing to help diagnose
-                          if (normalizedEr.status === 'YES' && !shouldShowPlusOne) {
+                          if (normalizedEr.status === 'YES' && !finalShouldShow) {
                             console.error(`[RSVP Success Page] ERROR: Plus One data should show but isn't! Event ${normalizedEr.eventId}:`, {
                               status: normalizedEr.status,
                               rawPlusOneFlag: rawPlusOneFlag,
@@ -658,7 +658,11 @@ export default function RSVPFormPage() {
                               plusOneRelationValue,
                               hasPlusOneRelation,
                               hasAnyPlusOneData,
+                              hasRawPlusOneName,
+                              hasRawPlusOneRelation,
                               shouldShowPlusOne,
+                              forceShowPlusOne,
+                              finalShouldShow,
                               normalizedEr: JSON.stringify(normalizedEr, null, 2),
                             })
                           }
