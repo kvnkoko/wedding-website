@@ -518,7 +518,16 @@ export default function RSVPFormPage() {
                         plusOneRelationFromResponse,
                         hasPlusOne: plusOneFromResponse || (plusOneNameFromResponse && String(plusOneNameFromResponse).trim()),
                         allKeys: Object.keys(er),
-                        rawData: er,
+                        rawData: JSON.stringify(er, null, 2),
+                        // Check if Plus One fields exist at all
+                        hasPlusOneField: 'plusOne' in er,
+                        hasPlusOneNameField: 'plusOneName' in er,
+                        hasPlusOneRelationField: 'plusOneRelation' in er,
+                        // Check actual values
+                        plusOneNameType: typeof er.plusOneName,
+                        plusOneRelationType: typeof er.plusOneRelation,
+                        plusOneNameLength: er.plusOneName ? String(er.plusOneName).length : 0,
+                        plusOneRelationLength: er.plusOneRelation ? String(er.plusOneRelation).length : 0,
                       })
                       
                       // Normalize the data to use consistent field names
