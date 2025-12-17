@@ -349,28 +349,81 @@ export async function POST(request: NextRequest) {
       },
           })
         } else {
-          // Old schema - manually fetch to avoid plusOne fields
+          // Old schema - manually fetch, but check if plus_one columns exist
           const fetchedRsvp = await tx.rsvp.findUnique({
             where: { id: newRsvp.id },
           })
           
-          // Manually fetch event responses without plusOne fields using raw SQL with actual column names
-          const responses = await tx.$queryRawUnsafe<Array<{
-            id: string;
-            rsvpId: string;
-            eventId: string;
-            status: string;
-            createdAt: Date;
-            updatedAt: Date;
-          }>>(
-            `SELECT id, "${actualColumnNames!.rsvpId}" as "rsvpId", "${actualColumnNames!.eventId}" as "eventId", 
-                    "${actualColumnNames!.status}" as status, 
-                    "${actualColumnNames!.createdAt}" as "createdAt", 
-                    "${actualColumnNames!.updatedAt}" as "updatedAt"
-             FROM rsvp_event_responses
-             WHERE "${actualColumnNames!.rsvpId}" = $1`,
-            newRsvp.id
-          )
+          // Check if plus_one columns exist in old schema
+          let hasPlusOneColumns = false
+          let plusOneCol = 'plus_one'
+          let plusOneNameCol = 'plus_one_name'
+          let plusOneRelationCol = 'plus_one_relation'
+          
+          try {
+            const plusOneCheck = await tx.$queryRaw<Array<{ column_name: string }>>`
+              SELECT column_name 
+              FROM information_schema.columns 
+              WHERE table_name = 'rsvp_event_responses' 
+              AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation')
+              LIMIT 3
+            `
+            hasPlusOneColumns = Array.isArray(plusOneCheck) && plusOneCheck.length === 3
+            
+            if (hasPlusOneColumns && actualColumnNames) {
+              plusOneCol = (actualColumnNames as any).plusOne || 'plus_one'
+              plusOneNameCol = (actualColumnNames as any).plusOneName || 'plus_one_name'
+              plusOneRelationCol = (actualColumnNames as any).plusOneRelation || 'plus_one_relation'
+            }
+          } catch {
+            hasPlusOneColumns = false
+          }
+          
+          console.log('[Submit] Old schema - fetching event responses, hasPlusOneColumns:', hasPlusOneColumns)
+          
+          // Manually fetch event responses using raw SQL with actual column names
+          let responses: any[]
+          if (hasPlusOneColumns) {
+            responses = await tx.$queryRawUnsafe<Array<{
+              id: string;
+              rsvpId: string;
+              eventId: string;
+              status: string;
+              plusOne?: boolean;
+              plusOneName?: string | null;
+              plusOneRelation?: string | null;
+              createdAt: Date;
+              updatedAt: Date;
+            }>>(
+              `SELECT id, "${actualColumnNames!.rsvpId}" as "rsvpId", "${actualColumnNames!.eventId}" as "eventId", 
+                      "${actualColumnNames!.status}" as status,
+                      "${plusOneCol}" as "plusOne", "${plusOneNameCol}" as "plusOneName", "${plusOneRelationCol}" as "plusOneRelation",
+                      "${actualColumnNames!.createdAt}" as "createdAt", 
+                      "${actualColumnNames!.updatedAt}" as "updatedAt"
+               FROM rsvp_event_responses
+               WHERE "${actualColumnNames!.rsvpId}" = $1`,
+              newRsvp.id
+            )
+            console.log('[Submit] Old schema - fetched responses with plus one data:', responses)
+          } else {
+            responses = await tx.$queryRawUnsafe<Array<{
+              id: string;
+              rsvpId: string;
+              eventId: string;
+              status: string;
+              createdAt: Date;
+              updatedAt: Date;
+            }>>(
+              `SELECT id, "${actualColumnNames!.rsvpId}" as "rsvpId", "${actualColumnNames!.eventId}" as "eventId", 
+                      "${actualColumnNames!.status}" as status, 
+                      "${actualColumnNames!.createdAt}" as "createdAt", 
+                      "${actualColumnNames!.updatedAt}" as "updatedAt"
+               FROM rsvp_event_responses
+               WHERE "${actualColumnNames!.rsvpId}" = $1`,
+              newRsvp.id
+            )
+            console.log('[Submit] Old schema - fetched responses without plus one data:', responses)
+          }
           
           // Fetch events for each response
           const eventIds = responses.map(r => r.eventId)
@@ -380,10 +433,18 @@ export async function POST(request: NextRequest) {
           
           return {
             ...fetchedRsvp,
-            eventResponses: responses.map(r => ({
-              ...r,
-              event: events.find(e => e.id === r.eventId)!,
-            })),
+            eventResponses: responses.map(r => {
+              const hasPlusOneName = (r as any).plusOneName && (r as any).plusOneName.trim()
+              const plusOne = (r as any).plusOne || hasPlusOneName || false
+              
+              return {
+                ...r,
+                plusOne: plusOne,
+                plusOneName: (r as any).plusOneName || null,
+                plusOneRelation: (r as any).plusOneRelation || null,
+                event: events.find(e => e.id === r.eventId)!,
+              }
+            }),
           } as any
         }
       })
@@ -425,19 +486,30 @@ export async function POST(request: NextRequest) {
       notes: rsvp.notes,
       editToken: rsvp.editToken,
       eventResponses: rsvp.eventResponses.map((er: any) => {
-        // Safely access plus one fields - they may not exist if migration hasn't been applied
-        const plusOne = er.plusOne !== undefined ? er.plusOne : (er.plus_one !== undefined ? er.plus_one : false)
-        const plusOneName = er.plusOneName !== undefined ? er.plusOneName : (er.plus_one_name !== undefined ? er.plus_one_name : null)
-        const plusOneRelation = er.plusOneRelation !== undefined ? er.plusOneRelation : (er.plus_one_relation !== undefined ? er.plus_one_relation : null)
+        // Handle both camelCase and snake_case field names
+        const plusOneRaw = er.plusOne !== undefined ? er.plusOne : (er.plus_one !== undefined ? er.plus_one : false)
+        const plusOneNameRaw = er.plusOneName !== undefined ? er.plusOneName : (er.plus_one_name !== undefined ? er.plus_one_name : null)
+        const plusOneRelationRaw = er.plusOneRelation !== undefined ? er.plusOneRelation : (er.plus_one_relation !== undefined ? er.plus_one_relation : null)
         
-        return {
-        eventId: er.eventId,
-        eventName: er.event.name,
-        status: er.status,
-          plusOne,
-          plusOneName,
-          plusOneRelation,
+        // Ensure plusOne is true if there's a name
+        const hasPlusOneName = plusOneNameRaw && plusOneNameRaw.trim() !== ''
+        const plusOne = Boolean(plusOneRaw || hasPlusOneName || false)
+        
+        const mapped = {
+          eventId: er.eventId,
+          eventName: er.event?.name || 'Unknown Event',
+          status: er.status,
+          plusOne: plusOne,
+          plusOneName: plusOneNameRaw?.trim() || null,
+          plusOneRelation: plusOneRelationRaw?.trim() || null,
         }
+        
+        console.log('[Submit] Mapping event response for return:', {
+          raw: er,
+          mapped: mapped,
+        })
+        
+        return mapped
       }),
     })
   } catch (error: any) {

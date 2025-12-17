@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { formatDate, formatDateRange } from '@/lib/utils'
 import PhotoCarouselSection from '@/components/PhotoCarouselSection'
-import { User, Calendar, Note, CheckCircle, EnvelopeSimple, Phone, X, Copy, Check } from 'phosphor-react'
+import { User, Calendar, Note, CheckCircle, EnvelopeSimple, Phone, X, Copy, Check, UserPlus } from 'phosphor-react'
 
 // Parallax scroll effect
 function useParallax() {
@@ -468,21 +468,34 @@ export default function RSVPFormPage() {
                           </div>
                         </div>
                         {/* Show plus one info for this event if attending with plus one */}
-                        {er.status === 'YES' && er.plusOne && (
-                          <div className="mt-4 pt-4 border-t border-taupe/20 dark:border-dark-border">
-                            <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-2">Plus One</p>
-                            <div className="space-y-2">
-                              <p className="text-sm text-charcoal dark:text-dark-text font-medium" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                                {er.plusOneName || 'Name not provided'}
-                              </p>
-                              {er.plusOneRelation && (
-                                <p className="text-xs text-charcoal/60 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
-                                  {er.plusOneRelation}
-                                </p>
-                              )}
-                            </div>
-                          </div>
-                        )}
+                        {(() => {
+                          const hasPlusOne = er.plusOne || (er.plusOneName && er.plusOneName.trim())
+                          const plusOneName = er.plusOneName?.trim() || null
+                          
+                          if (er.status === 'YES' && hasPlusOne) {
+                            return (
+                              <div className="mt-4 pt-4 border-t border-taupe/20 dark:border-dark-border">
+                                <div className="flex items-start gap-2">
+                                  <UserPlus className="w-4 h-4 text-sage dark:text-sage/90 flex-shrink-0 mt-0.5" weight="duotone" />
+                                  <div className="flex-1">
+                                    <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-2">Plus One</p>
+                                    <div className="space-y-2">
+                                      <p className="text-sm text-charcoal dark:text-dark-text font-medium" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                                        {plusOneName || 'Name not provided'}
+                                      </p>
+                                      {er.plusOneRelation && er.plusOneRelation.trim() && (
+                                        <p className="text-xs text-charcoal/70 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                                          {er.plusOneRelation}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          }
+                          return null
+                        })()}
                     </div>
                   ))}
                 </div>
