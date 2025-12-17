@@ -543,16 +543,28 @@ export async function POST(request: NextRequest) {
           return {
             ...fetchedRsvp,
             eventResponses: responses.map(r => {
-              const hasPlusOneName = (r as any).plusOneName && (r as any).plusOneName.trim()
-              const plusOne = (r as any).plusOne || hasPlusOneName || false
+              // Handle both camelCase and snake_case from raw query
+              const plusOneRaw = (r as any).plusOne !== undefined ? (r as any).plusOne : ((r as any).plus_one !== undefined ? (r as any).plus_one : false)
+              const plusOneNameRaw = (r as any).plusOneName !== undefined ? (r as any).plusOneName : ((r as any).plus_one_name !== undefined ? (r as any).plus_one_name : null)
+              const plusOneRelationRaw = (r as any).plusOneRelation !== undefined ? (r as any).plusOneRelation : ((r as any).plus_one_relation !== undefined ? (r as any).plus_one_relation : null)
               
-              return {
+              const hasPlusOneName = plusOneNameRaw && String(plusOneNameRaw).trim() !== ''
+              const plusOne = Boolean(plusOneRaw || hasPlusOneName || false)
+              
+              const mapped = {
                 ...r,
                 plusOne: plusOne,
-                plusOneName: (r as any).plusOneName || null,
-                plusOneRelation: (r as any).plusOneRelation || null,
+                plusOneName: plusOneNameRaw ? String(plusOneNameRaw).trim() : null,
+                plusOneRelation: plusOneRelationRaw ? String(plusOneRelationRaw).trim() : null,
                 event: events.find(e => e.id === r.eventId)!,
               }
+              
+              console.log(`[Submit] Old schema - mapped event response for ${r.eventId}:`, {
+                raw: r,
+                mapped: mapped,
+              })
+              
+              return mapped
             }),
           } as any
         }
