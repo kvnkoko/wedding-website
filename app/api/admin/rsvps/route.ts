@@ -128,27 +128,31 @@ export async function GET(request: NextRequest) {
           // Map to include plus one fields
           ;(rsvp as any).eventResponses = responses.map((r: any) => {
             // Check if plusOne should be true based on name presence
-            const hasPlusOneName = r.plusOneName && r.plusOneName.trim()
-            const plusOne = r.plusOne || hasPlusOneName || false
+            const plusOneNameRaw = r.plusOneName
+            const plusOneRelationRaw = r.plusOneRelation
+            const plusOneRaw = r.plusOne
+            
+            const hasPlusOneName = plusOneNameRaw && String(plusOneNameRaw).trim() !== ''
+            const plusOne = Boolean(plusOneRaw || hasPlusOneName || false)
             
             const mapped = {
               id: r.id,
               eventId: r.eventId,
               status: r.status,
               plusOne: plusOne,
-              plusOneName: r.plusOneName || null,
-              plusOneRelation: r.plusOneRelation || null,
+              plusOneName: plusOneNameRaw ? String(plusOneNameRaw).trim() : null,
+              plusOneRelation: plusOneRelationRaw ? String(plusOneRelationRaw).trim() : null,
               event: r.event,
             }
             
             // Log ALL responses to see what we're getting
-            console.log(`[Admin RSVPs] Event response for RSVP ${rsvp.id}, Event ${r.event?.name}:`, {
+            console.log(`[Admin RSVPs] New schema - Event response for RSVP ${rsvp.id}, Event ${r.event?.name}:`, {
               eventId: r.eventId,
               eventName: r.event?.name,
               status: r.status,
-              rawPlusOne: r.plusOne,
-              rawPlusOneName: r.plusOneName,
-              rawPlusOneRelation: r.plusOneRelation,
+              rawPlusOne: plusOneRaw,
+              rawPlusOneName: plusOneNameRaw,
+              rawPlusOneRelation: plusOneRelationRaw,
               hasPlusOneName: hasPlusOneName,
               computedPlusOne: plusOne,
               finalMapped: mapped,
@@ -159,18 +163,24 @@ export async function GET(request: NextRequest) {
         } else {
           // Old schema - use raw SQL with actual column names
           if (actualColumnNames) {
-            // Try to check if plus_one column exists
+            // Try to check if ALL three plus_one columns exist
             let hasPlusOneColumn = false
             try {
               const plusOneCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
                 SELECT column_name 
                 FROM information_schema.columns 
                 WHERE table_name = 'rsvp_event_responses' 
-                AND column_name IN ('plus_one', 'plusOne', 'plus_one_name', 'plusOneName')
-                LIMIT 1
+                AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation')
+                LIMIT 3
               `
-              hasPlusOneColumn = Array.isArray(plusOneCheck) && plusOneCheck.length > 0
-            } catch {
+              hasPlusOneColumn = Array.isArray(plusOneCheck) && plusOneCheck.length === 3
+              console.log(`[Admin RSVPs] Old schema for RSVP ${rsvp.id}: plus_one columns check result:`, {
+                found: plusOneCheck,
+                hasAllThree: hasPlusOneColumn,
+                actualColumnNames: actualColumnNames,
+              })
+            } catch (e) {
+              console.log(`[Admin RSVPs] Old schema for RSVP ${rsvp.id}: Error checking plus_one columns:`, e)
               hasPlusOneColumn = false
             }
 
@@ -221,16 +231,20 @@ export async function GET(request: NextRequest) {
             
             ;(rsvp as any).eventResponses = responses.map(r => {
               // Check if plusOne should be true based on name presence
-              const hasPlusOneName = (r as any).plusOneName && (r as any).plusOneName.trim()
-              const plusOne = (r as any).plusOne || hasPlusOneName || false
+              const plusOneNameRaw = (r as any).plusOneName
+              const plusOneRelationRaw = (r as any).plusOneRelation
+              const plusOneRaw = (r as any).plusOne
+              
+              const hasPlusOneName = plusOneNameRaw && String(plusOneNameRaw).trim() !== ''
+              const plusOne = Boolean(plusOneRaw || hasPlusOneName || false)
               
               const mapped = {
                 id: r.id,
                 eventId: r.eventId,
                 status: r.status,
                 plusOne: plusOne,
-                plusOneName: (r as any).plusOneName || null,
-                plusOneRelation: (r as any).plusOneRelation || null,
+                plusOneName: plusOneNameRaw ? String(plusOneNameRaw).trim() : null,
+                plusOneRelation: plusOneRelationRaw ? String(plusOneRelationRaw).trim() : null,
                 event: events.find(e => e.id === r.eventId) || { id: r.eventId, name: 'Unknown Event' },
               }
               
@@ -239,9 +253,9 @@ export async function GET(request: NextRequest) {
                 eventId: r.eventId,
                 eventName: mapped.event.name,
                 status: r.status,
-                rawPlusOne: (r as any).plusOne,
-                rawPlusOneName: (r as any).plusOneName,
-                rawPlusOneRelation: (r as any).plusOneRelation,
+                rawPlusOne: plusOneRaw,
+                rawPlusOneName: plusOneNameRaw,
+                rawPlusOneRelation: plusOneRelationRaw,
                 hasPlusOneName: hasPlusOneName,
                 computedPlusOne: plusOne,
                 finalMapped: mapped,
