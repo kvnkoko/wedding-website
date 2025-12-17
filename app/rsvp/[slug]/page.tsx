@@ -337,13 +337,9 @@ export default function RSVPFormPage() {
     )
   }
 
-  // Show form if:
-  // 1. ?form=true is in URL (explicit request)
-  // 2. OR we're on a slug page and have config loaded (slug pages should show form by default when navigating back)
-  const explicitFormParam = searchParams.get('form') === 'true'
-  // If we have config loaded, we're on a valid slug page - show form by default
-  // This ensures form shows when navigating back from FAQ
-  const showForm = explicitFormParam || (config !== null && !loading)
+  // Show form only if ?form=true is in URL (explicit request)
+  // The Layout component ensures RSVP links include ?form=true when in slug context
+  const showForm = searchParams.get('form') === 'true'
   
   if (!showForm) {
     // Don't render until we have config to avoid flash of incorrect content
