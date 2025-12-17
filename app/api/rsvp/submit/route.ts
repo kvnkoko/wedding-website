@@ -835,8 +835,6 @@ export async function POST(request: NextRequest) {
           plusOneRaw,
           plusOneNameRaw,
           plusOneRelationRaw,
-          hasPlusOneName,
-          hasPlusOneRelation,
           finalPlusOne: plusOne,
           mapped: mapped,
           willReturnPlusOneName: mapped.plusOneName,
