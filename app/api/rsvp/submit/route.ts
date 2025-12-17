@@ -540,8 +540,22 @@ export async function POST(request: NextRequest) {
             where: { id: newRsvp.id },
             include: {
               eventResponses: {
-                include: {
-                  event: true,
+                select: {
+                  id: true,
+                  rsvpId: true,
+                  eventId: true,
+                  status: true,
+                  plusOne: true,
+                  plusOneName: true,
+                  plusOneRelation: true,
+                  createdAt: true,
+                  updatedAt: true,
+                  event: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
                 },
               },
             },
