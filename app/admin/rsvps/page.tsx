@@ -558,7 +558,24 @@ export default function AdminRSVPsPage() {
                       Event Responses
                     </h4>
                     <div className="space-y-3">
-                      {rsvp.eventResponses.map((er, idx) => (
+                      {(() => {
+                        console.log(`[Admin Frontend] Rendering event responses for RSVP ${rsvp.name}:`, {
+                          eventResponses: rsvp.eventResponses,
+                          count: rsvp.eventResponses?.length || 0,
+                          sample: rsvp.eventResponses?.[0],
+                        })
+                        return null
+                      })()}
+                      {(rsvp.eventResponses || []).map((er, idx) => {
+                        console.log(`[Admin Frontend] Event response ${idx} for ${rsvp.name}:`, {
+                          eventId: er.eventId,
+                          eventName: er.event?.name,
+                          status: er.status,
+                          plusOne: er.plusOne,
+                          plusOneName: er.plusOneName,
+                          plusOneRelation: er.plusOneRelation,
+                        })
+                        return (
                         <div
                           key={idx}
                           className="p-3 rounded-lg bg-taupe/5 dark:bg-dark-surface border border-taupe/20 dark:border-dark-border"

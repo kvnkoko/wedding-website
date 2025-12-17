@@ -221,20 +221,38 @@ export async function GET(request: NextRequest) {
         } else {
           // Old schema - use raw SQL with actual column names
           if (actualColumnNames) {
-            // Try to check if ALL three plus_one columns exist
+            // Try to check if ALL three plus_one columns exist (both camelCase and snake_case)
             let hasPlusOneColumn = false
+            let detectedPlusOneCol = actualColumnNames.plusOne || 'plusOne'
+            let detectedPlusOneNameCol = actualColumnNames.plusOneName || 'plusOneName'
+            let detectedPlusOneRelationCol = actualColumnNames.plusOneRelation || 'plusOneRelation'
+            
             try {
               const plusOneCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
                 SELECT column_name 
                 FROM information_schema.columns 
                 WHERE table_name = 'rsvp_event_responses' 
-                AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation')
-                LIMIT 3
+                AND column_name IN ('plusOne', 'plus_one', 'plusOneName', 'plus_one_name', 'plusOneRelation', 'plus_one_relation')
+                LIMIT 6
               `
-              hasPlusOneColumn = Array.isArray(plusOneCheck) && plusOneCheck.length === 3
+              // Check if we have all three columns (either camelCase or snake_case)
+              const foundPlusOne = plusOneCheck.find(c => c.column_name === 'plusOne' || c.column_name === 'plus_one')
+              const foundPlusOneName = plusOneCheck.find(c => c.column_name === 'plusOneName' || c.column_name === 'plus_one_name')
+              const foundPlusOneRelation = plusOneCheck.find(c => c.column_name === 'plusOneRelation' || c.column_name === 'plus_one_relation')
+              hasPlusOneColumn = !!(foundPlusOne && foundPlusOneName && foundPlusOneRelation)
+              
+              if (hasPlusOneColumn) {
+                detectedPlusOneCol = foundPlusOne!.column_name
+                detectedPlusOneNameCol = foundPlusOneName!.column_name
+                detectedPlusOneRelationCol = foundPlusOneRelation!.column_name
+              }
+              
               console.log(`[Admin RSVPs] Old schema for RSVP ${rsvp.id}: plus_one columns check result:`, {
                 found: plusOneCheck,
                 hasAllThree: hasPlusOneColumn,
+                detectedPlusOneCol,
+                detectedPlusOneNameCol,
+                detectedPlusOneRelationCol,
                 actualColumnNames: actualColumnNames,
               })
             } catch (e) {
@@ -243,14 +261,15 @@ export async function GET(request: NextRequest) {
             }
 
             let responses: any[]
-            if (hasPlusOneColumn && actualColumnNames.plusOne && actualColumnNames.plusOneName && actualColumnNames.plusOneRelation) {
-              // Query with plus one fields using actual column names
+            if (hasPlusOneColumn) {
+              // Query with plus one fields using detected column names
               const query = `SELECT id, "${actualColumnNames.rsvpId}" as "rsvpId", "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status,
-                            "${actualColumnNames.plusOne}" as "plusOne", "${actualColumnNames.plusOneName}" as "plusOneName", "${actualColumnNames.plusOneRelation}" as "plusOneRelation"
+                            "${detectedPlusOneCol}" as "plusOne", "${detectedPlusOneNameCol}" as "plusOneName", "${detectedPlusOneRelationCol}" as "plusOneRelation"
                             FROM rsvp_event_responses
                             WHERE "${actualColumnNames.rsvpId}" = $1`
               
               console.log(`[Admin RSVPs] Old schema for RSVP ${rsvp.id}: Querying with plus one columns:`, query)
+              console.log(`[Admin RSVPs] Using detected column names:`, { detectedPlusOneCol, detectedPlusOneNameCol, detectedPlusOneRelationCol })
               
               responses = await prisma.$queryRawUnsafe<Array<{
                 id: string;
@@ -262,7 +281,7 @@ export async function GET(request: NextRequest) {
                 plusOneRelation?: string | null;
               }>>(query, rsvp.id)
               
-              console.log(`[Admin RSVPs] Old schema for RSVP ${rsvp.id}: Fetched ${responses.length} responses with plus one data:`, responses)
+              console.log(`[Admin RSVPs] Old schema for RSVP ${rsvp.id}: Fetched ${responses.length} responses with plus one data:`, JSON.stringify(responses, null, 2))
             } else {
               // Query without plus one fields
               const query = `SELECT id, "${actualColumnNames.rsvpId}" as "rsvpId", "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status
