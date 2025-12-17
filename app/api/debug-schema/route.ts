@@ -23,9 +23,9 @@ export async function GET(request: NextRequest) {
     `
     
     // Get a sample of actual data
-    const sampleData = await prisma.$queryRawUnsafe<Array<any>>`
-      SELECT * FROM rsvp_event_responses LIMIT 1
-    `
+    const sampleData = await prisma.$queryRawUnsafe<Array<any>>(
+      'SELECT * FROM rsvp_event_responses LIMIT 1'
+    )
     
     // Get count of records with plus one data
     let plusOneCount = 0
