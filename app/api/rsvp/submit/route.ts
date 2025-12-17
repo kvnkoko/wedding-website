@@ -408,7 +408,7 @@ export async function POST(request: NextRequest) {
               
               // Verify immediately after insert
               const justInserted = await tx.$queryRawUnsafe<Array<any>>(
-                `SELECT "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status, "${plusOneCol}" as "plusOne", "${plusOneNameCol}" as "plusOneName", "${plusOneRelationCol}" as "plusOneRelation"
+                `SELECT "${actualColumnNames.eventId}" as "eventId", "${actualColumnNames.status}" as status, "${detectedPlusOneCol}" as "plusOne", "${detectedPlusOneNameCol}" as "plusOneName", "${detectedPlusOneRelationCol}" as "plusOneRelation"
                  FROM rsvp_event_responses 
                  WHERE "${actualColumnNames.rsvpId}" = $1 AND "${actualColumnNames.eventId}" = $2
                  ORDER BY "${actualColumnNames.createdAt}" DESC
