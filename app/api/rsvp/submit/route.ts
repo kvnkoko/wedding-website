@@ -303,8 +303,48 @@ export async function POST(request: NextRequest) {
             data: eventResponseData,
           })
           
-          // Verify data was saved correctly
-          const verifyData = await tx.rsvpEventResponse.findMany({
+          console.log('✅ Created event responses with createMany, data:', JSON.stringify(eventResponseData, null, 2))
+          
+          // Verify data was saved correctly - use raw query to see actual database values
+          // First detect actual column names
+          let verifyData: any[] = []
+          try {
+            const columns = await tx.$queryRaw<Array<{ column_name: string }>>`
+              SELECT column_name 
+              FROM information_schema.columns 
+              WHERE table_name = 'rsvp_event_responses'
+              ORDER BY ordinal_position
+            `
+            
+            const eventIdCol = columns.find(c => c.column_name === 'eventId' || c.column_name.toLowerCase() === 'eventid' || c.column_name.toLowerCase() === 'event_id')?.column_name || 'eventId'
+            const statusCol = columns.find(c => c.column_name.toLowerCase() === 'status')?.column_name || 'status'
+            const rsvpIdCol = columns.find(c => c.column_name === 'rsvpId' || c.column_name.toLowerCase() === 'rsvpid' || c.column_name.toLowerCase() === 'rsvp_id')?.column_name || 'rsvpId'
+            const plusOneCol = columns.find(c => c.column_name === 'plusOne' || c.column_name === 'plus_one')?.column_name
+            const plusOneNameCol = columns.find(c => c.column_name === 'plusOneName' || c.column_name === 'plus_one_name')?.column_name
+            const plusOneRelationCol = columns.find(c => c.column_name === 'plusOneRelation' || c.column_name === 'plus_one_relation')?.column_name
+            
+            if (plusOneCol && plusOneNameCol && plusOneRelationCol) {
+              verifyData = await tx.$queryRawUnsafe<Array<any>>(
+                `SELECT "${eventIdCol}" as "eventId", "${statusCol}" as status, "${plusOneCol}" as "plusOne", "${plusOneNameCol}" as "plusOneName", "${plusOneRelationCol}" as "plusOneRelation"
+                 FROM rsvp_event_responses 
+                 WHERE "${rsvpIdCol}" = $1`,
+                newRsvp.id
+              )
+            } else {
+              verifyData = await tx.$queryRawUnsafe<Array<any>>(
+                `SELECT "${eventIdCol}" as "eventId", "${statusCol}" as status
+                 FROM rsvp_event_responses 
+                 WHERE "${rsvpIdCol}" = $1`,
+                newRsvp.id
+              )
+            }
+            console.log('✅ RAW DATABASE VALUES (New Schema):', JSON.stringify(verifyData, null, 2))
+          } catch (e) {
+            console.error('Error verifying saved data:', e)
+          }
+          
+          // Also verify with Prisma
+          const prismaVerify = await tx.rsvpEventResponse.findMany({
             where: { rsvpId: newRsvp.id },
             select: {
               eventId: true,
@@ -314,7 +354,7 @@ export async function POST(request: NextRequest) {
               plusOneRelation: true,
             },
           })
-          console.log('Verified saved event responses:', verifyData)
+          console.log('✅ VERIFIED SAVED EVENT RESPONSES (Prisma):', JSON.stringify(prismaVerify, null, 2))
         } else {
           // Old schema - use raw SQL with actual column names
           // If we couldn't detect column names, use camelCase defaults (Prisma default)
