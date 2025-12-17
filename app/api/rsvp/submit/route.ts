@@ -562,22 +562,13 @@ export async function POST(request: NextRequest) {
         }
 
         // Fetch the complete RSVP with relations
-        // Explicitly include Plus One fields to ensure they're returned
+        // Use include (not select) to ensure ALL fields are returned including Plus One fields
         if (hasNewSchema) {
-          return await tx.rsvp.findUnique({
+          const fetched = await tx.rsvp.findUnique({
             where: { id: newRsvp.id },
             include: {
               eventResponses: {
-                select: {
-                  id: true,
-                  rsvpId: true,
-                  eventId: true,
-                  status: true,
-                  plusOne: true,
-                  plusOneName: true,
-                  plusOneRelation: true,
-                  createdAt: true,
-                  updatedAt: true,
+                include: {
                   event: {
                     select: {
                       id: true,
@@ -588,6 +579,24 @@ export async function POST(request: NextRequest) {
               },
             },
           })
+          
+          // CRITICAL: Log what Prisma actually returned
+          console.log('[Submit] Prisma fetch result:', {
+            hasEventResponses: !!fetched?.eventResponses,
+            eventResponsesCount: fetched?.eventResponses?.length || 0,
+            firstEventResponse: fetched?.eventResponses?.[0] ? {
+              eventId: fetched.eventResponses[0].eventId,
+              status: fetched.eventResponses[0].status,
+              plusOne: fetched.eventResponses[0].plusOne,
+              plusOneName: fetched.eventResponses[0].plusOneName,
+              plusOneRelation: fetched.eventResponses[0].plusOneRelation,
+              allKeys: Object.keys(fetched.eventResponses[0]),
+              fullObject: JSON.stringify(fetched.eventResponses[0], null, 2),
+            } : null,
+            allEventResponses: JSON.stringify(fetched?.eventResponses || [], null, 2),
+          })
+          
+          return fetched
         } else {
           // Old schema - manually fetch, but check if plus_one columns exist
           const fetchedRsvp = await tx.rsvp.findUnique({
