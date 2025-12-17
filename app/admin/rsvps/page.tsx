@@ -592,9 +592,22 @@ export default function AdminRSVPsPage() {
                             const plusOneNameValue = er.plusOneName ? String(er.plusOneName).trim() : null
                             const plusOneRelationValue = er.plusOneRelation ? String(er.plusOneRelation).trim() : null
                             const hasPlusOneFlag = er.plusOne === true || er.plusOne === 'true' || er.plusOne === 1 || er.plusOne === '1'
-                            const hasPlusOneName = plusOneNameValue && plusOneNameValue !== '' && plusOneNameValue !== 'null'
-                            const hasPlusOneRelation = plusOneRelationValue && plusOneRelationValue !== '' && plusOneRelationValue !== 'null'
+                            const hasPlusOneName = plusOneNameValue && plusOneNameValue !== '' && plusOneNameValue !== 'null' && plusOneNameValue !== 'undefined'
+                            const hasPlusOneRelation = plusOneRelationValue && plusOneRelationValue !== '' && plusOneRelationValue !== 'null' && plusOneRelationValue !== 'undefined'
                             const hasPlusOne = hasPlusOneFlag || hasPlusOneName || hasPlusOneRelation
+                            
+                            // Debug: log even when not showing to help diagnose
+                            if (er.status === 'YES' && !hasPlusOne) {
+                              console.warn(`[Admin Frontend] Event ${er.event?.name} has status YES but no Plus One data:`, {
+                                status: er.status,
+                                plusOneFlag: er.plusOne,
+                                plusOneName: er.plusOneName,
+                                plusOneRelation: er.plusOneRelation,
+                                hasPlusOneName,
+                                hasPlusOneRelation,
+                                hasPlusOneFlag,
+                              })
+                            }
                             
                             console.log(`[Admin Frontend] Plus One check for event ${er.event?.name}:`, {
                               status: er.status,

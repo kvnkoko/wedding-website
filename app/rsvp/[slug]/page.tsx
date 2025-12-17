@@ -545,9 +545,9 @@ export default function RSVPFormPage() {
                           const plusOneNameValue = normalizedEr.plusOneName ? String(normalizedEr.plusOneName).trim() : null
                           const plusOneRelationValue = normalizedEr.plusOneRelation ? String(normalizedEr.plusOneRelation).trim() : null
                           
-                          // Check if there's any Plus One data at all
-                          const hasPlusOneName = plusOneNameValue && plusOneNameValue !== '' && plusOneNameValue !== 'null'
-                          const hasPlusOneRelation = plusOneRelationValue && plusOneRelationValue !== '' && plusOneRelationValue !== 'null'
+                          // Check if there's any Plus One data at all - be very permissive
+                          const hasPlusOneName = plusOneNameValue && plusOneNameValue !== '' && plusOneNameValue !== 'null' && plusOneNameValue !== 'undefined'
+                          const hasPlusOneRelation = plusOneRelationValue && plusOneRelationValue !== '' && plusOneRelationValue !== 'null' && plusOneRelationValue !== 'undefined'
                           // Handle plusOne flag - can be boolean, number, or string from API
                           const plusOneFlagValue = normalizedEr.plusOne
                           const hasPlusOneFlag = plusOneFlagValue === true || 
@@ -555,7 +555,21 @@ export default function RSVPFormPage() {
                                                   (typeof plusOneFlagValue === 'string' && (plusOneFlagValue === 'true' || plusOneFlagValue === '1'))
                           
                           // Show Plus One section if: status is YES AND (has name OR has relation OR flag is true)
+                          // Also show if there's ANY Plus One data, even if status check is unclear
                           const shouldShowPlusOne = normalizedEr.status === 'YES' && (hasPlusOneName || hasPlusOneRelation || hasPlusOneFlag)
+                          
+                          // Debug: log even when not showing to help diagnose
+                          if (normalizedEr.status === 'YES' && !shouldShowPlusOne) {
+                            console.warn(`[RSVP Success Page] Plus One data exists but not showing for event ${normalizedEr.eventId}:`, {
+                              status: normalizedEr.status,
+                              plusOneFlag: normalizedEr.plusOne,
+                              plusOneName: normalizedEr.plusOneName,
+                              plusOneRelation: normalizedEr.plusOneRelation,
+                              hasPlusOneName,
+                              hasPlusOneRelation,
+                              hasPlusOneFlag,
+                            })
+                          }
                           
                           console.log(`[RSVP Success Page] Plus One check for event ${normalizedEr.eventId}:`, {
                             status: normalizedEr.status,
