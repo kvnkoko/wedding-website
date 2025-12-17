@@ -80,26 +80,27 @@ export async function POST(request: NextRequest) {
         status = response
       } else if (response && typeof response === 'object' && 'status' in response) {
         status = (response as any).status
-        plusOneName = (response as any).plusOneName || null
-        plusOneRelation = (response as any).plusOneRelation || null
-        // Set plusOne to true if there's a name OR relation, even if the boolean wasn't set
-        // Also handle string "true"/"false" from checkbox
+        // Get raw values from response - don't filter them yet
+        const rawPlusOneName = (response as any).plusOneName
+        const rawPlusOneRelation = (response as any).plusOneRelation
         const plusOneValue = (response as any).plusOne
+        
+        // Convert to strings and trim, but keep them even if they're empty
+        plusOneName = rawPlusOneName != null && rawPlusOneName !== '' ? String(rawPlusOneName).trim() : null
+        plusOneRelation = rawPlusOneRelation != null && rawPlusOneRelation !== '' ? String(rawPlusOneRelation).trim() : null
+        
+        // Set plusOne to true if checkbox is checked OR if we have name/relation
         const plusOneBool = plusOneValue === true || plusOneValue === 'true' || plusOneValue === 'on' || plusOneValue === 1
-        hasName = Boolean(plusOneName && 
-                 String(plusOneName).trim() !== '' && 
-                 String(plusOneName).trim() !== 'null' &&
-                 String(plusOneName).trim().toLowerCase() !== 'none')
-        hasRelation = Boolean(plusOneRelation && 
-                     String(plusOneRelation).trim() !== '' && 
-                     String(plusOneRelation).trim() !== 'null' &&
-                     String(plusOneRelation).trim().toLowerCase() !== 'none')
+        hasName = Boolean(plusOneName && plusOneName !== '')
+        hasRelation = Boolean(plusOneRelation && plusOneRelation !== '')
         plusOne = plusOneBool || hasName || hasRelation || false
         
         console.log(`[Submit] Processing event ${eventId}:`, {
           status,
           plusOneValue,
           plusOneBool,
+          rawPlusOneName,
+          rawPlusOneRelation,
           plusOneName,
           plusOneRelation,
           hasName,
@@ -112,9 +113,10 @@ export async function POST(request: NextRequest) {
         throw new Error(`Invalid event response format for event ${eventId}`)
       }
       
-      // Always include Plus One data if it exists, even if plusOne flag is false
-      const finalPlusOneName = hasName ? String(plusOneName).trim() : null
-      const finalPlusOneRelation = hasRelation ? String(plusOneRelation).trim() : null
+      // ALWAYS include Plus One data - send the values we received (trimmed)
+      // Don't filter them out based on validation
+      const finalPlusOneName = plusOneName  // Already trimmed above
+      const finalPlusOneRelation = plusOneRelation  // Already trimmed above
       
       // Set plusOne to true if we have name or relation, even if flag wasn't set
       const finalPlusOne = Boolean(plusOne || finalPlusOneName || finalPlusOneRelation)
@@ -123,8 +125,8 @@ export async function POST(request: NextRequest) {
         eventId,
         status: status,
         plusOne: finalPlusOne,
-        plusOneName: finalPlusOneName,
-        plusOneRelation: finalPlusOneRelation,
+        plusOneName: finalPlusOneName,  // Send the value, even if it might be empty
+        plusOneRelation: finalPlusOneRelation,  // Send the value, even if it might be empty
       }
     })
 
