@@ -765,6 +765,18 @@ export async function POST(request: NextRequest) {
       notes: rsvp.notes,
       editToken: rsvp.editToken,
       eventResponses: rsvp.eventResponses.map((er: any) => {
+        // CRITICAL: Log what we're receiving from Prisma
+        console.log(`[Submit API Response] Mapping event response ${er.eventId}:`, {
+          rawEr: JSON.stringify(er, null, 2),
+          allKeys: Object.keys(er),
+          plusOne: er.plusOne,
+          plusOneName: er.plusOneName,
+          plusOneRelation: er.plusOneRelation,
+          plusOneType: typeof er.plusOne,
+          plusOneNameType: typeof er.plusOneName,
+          plusOneRelationType: typeof er.plusOneRelation,
+        })
+        
         // Handle both camelCase and snake_case field names
         // Also check for null/undefined explicitly - be very thorough
         const plusOneRaw = er.plusOne !== undefined && er.plusOne !== null ? er.plusOne : 
@@ -774,27 +786,35 @@ export async function POST(request: NextRequest) {
         const plusOneRelationRaw = er.plusOneRelation !== undefined && er.plusOneRelation !== null ? er.plusOneRelation : 
                                   (er.plus_one_relation !== undefined && er.plus_one_relation !== null ? er.plus_one_relation : null)
         
-        // Ensure plusOne is true if there's a name or relation
-        const hasPlusOneName = plusOneNameRaw && 
-                              String(plusOneNameRaw).trim() !== '' && 
-                              String(plusOneNameRaw).trim() !== 'null' &&
-                              String(plusOneNameRaw).trim().toLowerCase() !== 'none'
-        const hasPlusOneRelation = plusOneRelationRaw && 
-                                  String(plusOneRelationRaw).trim() !== '' && 
-                                  String(plusOneRelationRaw).trim() !== 'null' &&
-                                  String(plusOneRelationRaw).trim().toLowerCase() !== 'none'
-        const plusOne = Boolean(plusOneRaw || hasPlusOneName || hasPlusOneRelation || false)
+        // CRITICAL: Don't validate - just return what we have
+        // Trim if they exist, but don't filter them out based on content
+        const plusOneName = plusOneNameRaw != null && plusOneNameRaw !== '' 
+          ? String(plusOneNameRaw).trim() 
+          : null
+        const plusOneRelation = plusOneRelationRaw != null && plusOneRelationRaw !== ''
+          ? String(plusOneRelationRaw).trim()
+          : null
         
-        // ALWAYS return the raw values - let frontend decide what to display
-        // Only trim if they exist, but don't filter them out
+        // Set plusOne to true if we have name/relation OR if the flag is true
+        const plusOne = Boolean(plusOneRaw || (plusOneName != null && plusOneName !== '') || (plusOneRelation != null && plusOneRelation !== ''))
+        
         const mapped = {
           eventId: er.eventId,
           eventName: er.event?.name || 'Unknown Event',
           status: er.status,
           plusOne: plusOne,
-          plusOneName: plusOneNameRaw != null && plusOneNameRaw !== '' ? String(plusOneNameRaw).trim() : null,
-          plusOneRelation: plusOneRelationRaw != null && plusOneRelationRaw !== '' ? String(plusOneRelationRaw).trim() : null,
+          plusOneName: plusOneName,  // Return the value, even if it's null
+          plusOneRelation: plusOneRelation,  // Return the value, even if it's null
         }
+        
+        console.log(`[Submit API Response] Mapped event response ${er.eventId}:`, {
+          mapped,
+          plusOneRaw,
+          plusOneNameRaw,
+          plusOneRelationRaw,
+          finalPlusOneName: mapped.plusOneName,
+          finalPlusOneRelation: mapped.plusOneRelation,
+        })
         
         console.log(`[Submit API Response] Mapping event response for ${er.eventId}:`, {
           raw: { plusOneRaw, plusOneNameRaw, plusOneRelationRaw },
