@@ -299,9 +299,20 @@ export async function POST(request: NextRequest) {
             })),
           })
           
-          await tx.rsvpEventResponse.createMany({
-            data: eventResponseData,
-          })
+          try {
+            await tx.rsvpEventResponse.createMany({
+              data: eventResponseData,
+            })
+            console.log('✅ SUCCESS: createMany completed for new schema')
+          } catch (createError: any) {
+            console.error('❌ ERROR: createMany failed for new schema:', {
+              error: createError.message,
+              code: createError.code,
+              meta: createError.meta,
+              data: eventResponseData,
+            })
+            throw createError
+          }
           
           console.log('✅ Created event responses with createMany, data:', JSON.stringify(eventResponseData, null, 2))
           
