@@ -515,11 +515,12 @@ export async function POST(request: NextRequest) {
             // Generate a unique ID for this response (using cuid-like format)
             const responseId = `c${Date.now().toString(36)}${Math.random().toString(36).substring(2, 15)}`
             
-            // CRITICAL: Use Prisma's queryRaw with proper parameter binding
-            // $executeRawUnsafe doesn't handle parameters correctly - use queryRaw instead
-            // But actually, let's use $executeRaw with proper SQL escaping
+            // CRITICAL: Database has BOTH camelCase AND snake_case columns
+            // We must insert into BOTH to avoid NOT NULL constraint violations
+            // The camelCase columns (rsvpId, eventId, createdAt, updatedAt) also need values
             const plusOneName = responseData.plusOneName || null
             const plusOneRelation = responseData.plusOneRelation || null
+            const now = new Date()
             
             console.log(`🔵 Raw SQL parameters:`, {
               responseId,
@@ -531,28 +532,36 @@ export async function POST(request: NextRequest) {
               plusOneRelation,
             })
             
-            // Use Prisma's $executeRaw with tagged template for proper parameter binding
+            // Insert into BOTH camelCase and snake_case columns to satisfy all NOT NULL constraints
             await tx.$executeRaw`
               INSERT INTO rsvp_event_responses (
                 id, 
+                "rsvpId",
+                "eventId",
                 rsvp_id, 
                 event_id, 
                 status, 
                 plus_one, 
                 plus_one_name, 
                 plus_one_relation, 
+                "createdAt",
+                "updatedAt",
                 created_at, 
                 updated_at
               ) VALUES (
                 ${responseId}::text,
                 ${responseData.rsvpId}::text,
                 ${responseData.eventId}::text,
+                ${responseData.rsvpId}::text,
+                ${responseData.eventId}::text,
                 ${responseData.status}::text,
                 ${responseData.plusOne}::boolean,
                 ${plusOneName}::text,
                 ${plusOneRelation}::text,
-                NOW(),
-                NOW()
+                ${now}::timestamp,
+                ${now}::timestamp,
+                ${now}::timestamp,
+                ${now}::timestamp
               )
             `
             
