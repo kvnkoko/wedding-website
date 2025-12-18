@@ -546,7 +546,7 @@ export default function AdminRSVPsPage() {
       {/* RSVPs List */}
       {rsvps.length === 0 ? (
         <div className="bg-white dark:bg-dark-card p-12 rounded-xl shadow-md border border-taupe/20 dark:border-dark-border text-center">
-          <Users className="w-16 h-16 text-charcoal/50 dark:text-dark-text-secondary/80 mx-auto mb-4" weight="duotone" />
+          <Users className="w-16 h-16 text-charcoal/60 dark:text-dark-text-secondary/80 mx-auto mb-4" weight="duotone" />
           <p className="font-sans text-lg text-charcoal/70 dark:text-dark-text-secondary">No RSVPs found</p>
           {(search || eventFilter || statusFilter) && (
             <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary mt-2">
