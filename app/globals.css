@@ -395,10 +395,10 @@ button, a, input, textarea, select {
 
 @keyframes pulseGlow {
   0%, 100% {
-    box-shadow: 0 0 5px rgba(156, 175, 136, 0.3);
+    box-shadow: 0 0 5px rgba(10, 186, 181, 0.3);
   }
   50% {
-    box-shadow: 0 0 20px rgba(156, 175, 136, 0.6);
+    box-shadow: 0 0 20px rgba(10, 186, 181, 0.6);
   }
 }
 
@@ -486,13 +486,13 @@ button, a, input, textarea, select {
 /* Input focus glow */
 .input-glow:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(156, 175, 136, 0.2), 0 0 20px rgba(156, 175, 136, 0.1);
+  box-shadow: 0 0 0 3px rgba(10, 186, 181, 0.2), 0 0 20px rgba(10, 186, 181, 0.1);
   transform: translateY(-1px);
 }
 
 /* Text gradient animation */
 .text-gradient {
-  background: linear-gradient(135deg, #2C2C2C 0%, #9CAF88 50%, #2C2C2C 100%);
+  background: linear-gradient(135deg, #2C2C2C 0%, #0ABAB5 50%, #2C2C2C 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -642,7 +642,7 @@ button, a, input, textarea, select {
 
 /* Enhanced focus visible */
 *:focus-visible {
-  outline: 2px solid rgba(156, 175, 136, 0.5);
+  outline: 2px solid rgba(10, 186, 181, 0.5);
   outline-offset: 2px;
   border-radius: 2px;
 }
@@ -673,10 +673,10 @@ button, a, input, textarea, select {
 
 .form-input:focus {
   outline: none;
-  border-color: #9CAF88;
+  border-color: #0ABAB5;
   box-shadow: 
-    0 0 0 4px rgba(156, 175, 136, 0.1),
-    0 4px 12px rgba(156, 175, 136, 0.15);
+    0 0 0 4px rgba(10, 186, 181, 0.1),
+    0 4px 12px rgba(10, 186, 181, 0.15);
   transform: translateY(-2px);
 }
 
@@ -727,8 +727,8 @@ button, a, input, textarea, select {
 }
 
 .radio-option:hover {
-  background: rgba(156, 175, 136, 0.05);
-  border-color: rgba(156, 175, 136, 0.2);
+  background: rgba(10, 186, 181, 0.05);
+  border-color: rgba(10, 186, 181, 0.2);
 }
 
 .dark .radio-option {
@@ -736,8 +736,8 @@ button, a, input, textarea, select {
 }
 
 .dark .radio-option:hover {
-  background: rgba(156, 175, 136, 0.15);
-  border-color: rgba(156, 175, 136, 0.3);
+  background: rgba(10, 186, 181, 0.15);
+  border-color: rgba(10, 186, 181, 0.3);
 }
 
 .radio-option input[type="radio"] {
@@ -745,12 +745,12 @@ button, a, input, textarea, select {
   height: 1.25rem;
   margin-right: 0.75rem;
   cursor: pointer;
-  accent-color: #9CAF88;
+  accent-color: #0ABAB5;
   transition: all 0.3s ease;
 }
 
 .radio-option input[type="radio"]:checked + span {
-  color: #9CAF88;
+  color: #0ABAB5;
   font-weight: 600;
 }
 
@@ -770,7 +770,7 @@ button, a, input, textarea, select {
 }
 
 .checkbox-option:hover {
-  background: rgba(156, 175, 136, 0.05);
+  background: rgba(10, 186, 181, 0.05);
 }
 
 .dark .checkbox-option {
@@ -778,7 +778,7 @@ button, a, input, textarea, select {
 }
 
 .dark .checkbox-option:hover {
-  background: rgba(156, 175, 136, 0.15);
+  background: rgba(10, 186, 181, 0.15);
 }
 
 .checkbox-option input[type="checkbox"] {
@@ -786,7 +786,7 @@ button, a, input, textarea, select {
   height: 1.25rem;
   margin-right: 0.75rem;
   cursor: pointer;
-  accent-color: #9CAF88;
+  accent-color: #0ABAB5;
   transition: all 0.3s ease;
 }
 
@@ -807,7 +807,7 @@ button, a, input, textarea, select {
   color: #2C2C2C;
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239CAF88'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230ABAB5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 1rem center;
   background-size: 1.25rem;
@@ -822,10 +822,10 @@ button, a, input, textarea, select {
 
 .form-select:focus {
   outline: none;
-  border-color: #9CAF88;
+  border-color: #0ABAB5;
   box-shadow: 
-    0 0 0 4px rgba(156, 175, 136, 0.1),
-    0 4px 12px rgba(156, 175, 136, 0.15);
+    0 0 0 4px rgba(10, 186, 181, 0.1),
+    0 4px 12px rgba(10, 186, 181, 0.15);
   transform: translateY(-2px);
 }
 
@@ -857,10 +857,10 @@ button, a, input, textarea, select {
 
 .form-textarea:focus {
   outline: none;
-  border-color: #9CAF88;
+  border-color: #0ABAB5;
   box-shadow: 
-    0 0 0 4px rgba(156, 175, 136, 0.1),
-    0 4px 12px rgba(156, 175, 136, 0.15);
+    0 0 0 4px rgba(10, 186, 181, 0.1),
+    0 4px 12px rgba(10, 186, 181, 0.15);
   transform: translateY(-2px);
 }
 
@@ -907,7 +907,7 @@ button, a, input, textarea, select {
   color: #2C2C2C;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid rgba(156, 175, 136, 0.2);
+  border-bottom: 2px solid rgba(10, 186, 181, 0.2);
   position: relative;
   letter-spacing: -0.01em;
   line-height: 1.4;
@@ -915,7 +915,7 @@ button, a, input, textarea, select {
 
 .dark .form-section-title {
   color: #E8E8E8;
-  border-bottom-color: rgba(156, 175, 136, 0.3);
+  border-bottom-color: rgba(10, 186, 181, 0.3);
 }
 
 .form-section-title::after {
@@ -925,7 +925,7 @@ button, a, input, textarea, select {
   left: 0;
   width: 60px;
   height: 2px;
-  background: #9CAF88;
+  background: #0ABAB5;
   transition: width 0.3s ease;
 }
 
@@ -956,16 +956,16 @@ button, a, input, textarea, select {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(to right, transparent, #9CAF88, transparent);
+  background: linear-gradient(to right, transparent, #0ABAB5, transparent);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
 
 .event-card:hover {
-  border-color: rgba(156, 175, 136, 0.5);
+  border-color: rgba(10, 186, 181, 0.5);
   box-shadow: 
     0 8px 24px rgba(0, 0, 0, 0.08),
-    0 0 0 1px rgba(156, 175, 136, 0.1);
+    0 0 0 1px rgba(10, 186, 181, 0.1);
   transform: translateY(-4px);
 }
 
@@ -1072,7 +1072,7 @@ button, a, input, textarea, select {
 @media (max-width: 768px) {
   /* Enhanced touch feedback */
   button, a, input, textarea, select {
-    -webkit-tap-highlight-color: rgba(156, 175, 136, 0.2);
+    -webkit-tap-highlight-color: rgba(10, 186, 181, 0.2);
     touch-action: manipulation;
   }
 
@@ -1191,7 +1191,7 @@ button, a, input, textarea, select {
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(156, 175, 136, 0.3);
+  background: rgba(10, 186, 181, 0.3);
   transform: translate(-50%, -50%);
   pointer-events: none;
 }
@@ -1257,15 +1257,15 @@ button, a, input, textarea, select {
 @keyframes mobileInputFocus {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(156, 175, 136, 0);
+    box-shadow: 0 0 0 0 rgba(10, 186, 181, 0);
   }
   50% {
     transform: scale(1.02);
-    box-shadow: 0 0 0 8px rgba(156, 175, 136, 0.1);
+    box-shadow: 0 0 0 8px rgba(10, 186, 181, 0.1);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 4px rgba(156, 175, 136, 0.15);
+    box-shadow: 0 0 0 4px rgba(10, 186, 181, 0.15);
   }
 }
 
@@ -1438,10 +1438,10 @@ button, a, input, textarea, select {
 /* Mobile touch feedback glow */
 @keyframes mobileTouchGlow {
   0% {
-    box-shadow: 0 0 0 0 rgba(156, 175, 136, 0.4);
+    box-shadow: 0 0 0 0 rgba(10, 186, 181, 0.4);
   }
   100% {
-    box-shadow: 0 0 0 20px rgba(156, 175, 136, 0);
+    box-shadow: 0 0 0 20px rgba(10, 186, 181, 0);
   }
 }
 
