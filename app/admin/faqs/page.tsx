@@ -460,7 +460,7 @@ export default function AdminFAQsPage() {
                             : 'hover:border-sage/50'
                         }`}
                       >
-                        <span className="text-charcoal/40 text-sm">⋮⋮</span>
+                        <span className="text-charcoal/60 text-sm">⋮⋮</span>
                         <div
                           className="w-6 h-6 rounded-full border border-taupe/30"
                           style={{ backgroundColor: hex }}
@@ -518,7 +518,7 @@ export default function AdminFAQsPage() {
                     <p className="font-sans text-xs text-charcoal/70 mb-2">Or select specific events (multi-select):</p>
                     {events.length === 0 ? (
                       <div className="space-y-2">
-                        <p className="font-sans text-xs text-charcoal/50 italic">Loading events...</p>
+                        <p className="font-sans text-xs text-charcoal/70 italic">Loading events...</p>
                         <p className="font-sans text-xs text-red-500">If events don't load, check the browser console for errors.</p>
                       </div>
                     ) : (
@@ -547,7 +547,7 @@ export default function AdminFAQsPage() {
                           </label>
                         ))}
                         {events.length === 0 && (
-                          <p className="font-sans text-xs text-charcoal/50">No events found. Please create events first in the Events admin page.</p>
+                          <p className="font-sans text-xs text-charcoal/70">No events found. Please create events first in the Events admin page.</p>
                         )}
                       </div>
                     )}
@@ -648,7 +648,7 @@ export default function AdminFAQsPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                  <span className="text-charcoal/40">⋮⋮</span>
+                  <span className="text-charcoal/60">⋮⋮</span>
                   <button
                     type="button"
                     onClick={(e) => {

@@ -92,7 +92,7 @@ export default function AdminDashboard() {
               <Users className="w-6 h-6 text-white" weight="duotone" />
             </div>
             <div className="text-right">
-              <p className="font-sans text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">
+              <p className="font-sans text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">
                 Total RSVPs
               </p>
               <p className="font-title text-4xl text-sage dark:text-sage/90">{stats.totals.totalRsvps}</p>
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
               <UserPlus className="w-6 h-6 text-white" weight="duotone" />
             </div>
             <div className="text-right">
-              <p className="font-sans text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">
+              <p className="font-sans text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">
                 Total Plus-Ones
               </p>
               <p className="font-title text-4xl text-sage dark:text-sage/90">{stats.totals.totalPlusOnes}</p>
@@ -211,7 +211,7 @@ export default function AdminDashboard() {
                         style={{ width: `${Math.min(capacityPercent, 100)}%` }}
                       ></div>
                     </div>
-                    <p className="font-sans text-xs text-charcoal/50 dark:text-dark-text-secondary text-right">
+                    <p className="font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary text-right">
                       {capacityPercent.toFixed(1)}% capacity
                     </p>
                   </div>
@@ -239,7 +239,7 @@ export default function AdminDashboard() {
               </p>
             </div>
           </div>
-          <ArrowRight className="w-5 h-5 text-charcoal/40 dark:text-dark-text-secondary group-hover:text-sage transition-colors duration-200" />
+          <ArrowRight className="w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary group-hover:text-sage transition-colors duration-200" />
         </Link>
 
         <Link
@@ -257,7 +257,7 @@ export default function AdminDashboard() {
               </p>
             </div>
           </div>
-          <ArrowRight className="w-5 h-5 text-charcoal/40 dark:text-dark-text-secondary group-hover:text-sage transition-colors duration-200" />
+          <ArrowRight className="w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary group-hover:text-sage transition-colors duration-200" />
         </Link>
       </div>
 

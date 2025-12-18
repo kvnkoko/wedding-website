@@ -442,7 +442,7 @@ export default function AdminPhotosPage() {
                     ) : (
                       <div className="space-y-2">
                         <svg
-                          className="mx-auto h-12 w-12 text-charcoal/40"
+                          className="mx-auto h-12 w-12 text-charcoal/60"
                           stroke="currentColor"
                           fill="none"
                           viewBox="0 0 48 48"
@@ -457,7 +457,7 @@ export default function AdminPhotosPage() {
                         <p className="font-sans text-sm text-charcoal/70">
                           Click to upload or drag and drop
                         </p>
-                        <p className="font-sans text-xs text-charcoal/50">
+                        <p className="font-sans text-xs text-charcoal/70">
                           PNG, JPG, GIF up to 10MB each (multiple files supported)
                         </p>
                       </div>
@@ -553,13 +553,13 @@ export default function AdminPhotosPage() {
                     {photo.url}
                   </p>
                   {photo.alt && (
-                    <p className="font-sans text-xs text-charcoal/50 mt-1">
+                    <p className="font-sans text-xs text-charcoal/70 mt-1">
                       Alt: {photo.alt}
                     </p>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-charcoal/40">⋮⋮</span>
+                  <span className="text-charcoal/60">⋮⋮</span>
                   <button
                     onClick={() => handleDeletePhoto(photo.id)}
                     className="bg-red-100 text-red-600 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 transition-all"

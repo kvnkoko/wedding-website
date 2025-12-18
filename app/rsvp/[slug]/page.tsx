@@ -144,7 +144,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
           <div className="flex flex-col items-center justify-center">
             {/* Center Content */}
             <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-4 md:py-12 lg:py-20 -mt-16 sm:-mt-8 md:mt-0 w-full">
-              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/50 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed mobile-text-reveal">
+              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/70 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed mobile-text-reveal">
                 Together with our families
               </p>
               
@@ -183,7 +183,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 </Link>
               </div>
               
-              <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/50 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up animate-delay-1000 scale-on-hover hero-float-delayed">
+              <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/70 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up animate-delay-1000 scale-on-hover hero-float-delayed">
                 #tiffandko
               </p>
             </div>
@@ -485,21 +485,21 @@ export default function RSVPFormPage() {
                   </h2>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
-                      <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Name</p>
+                      <p className="text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">Name</p>
                       <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.name}</p>
                     </div>
                     <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
-                      <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Phone</p>
+                      <p className="text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">Phone</p>
                       <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.phone}</p>
                     </div>
                     {submissionData.email && (
                       <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
-                        <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Email</p>
+                        <p className="text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">Email</p>
                         <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.email}</p>
                       </div>
                     )}
                     <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
-                      <p className="text-xs uppercase tracking-wider text-charcoal/50 dark:text-dark-text-secondary mb-1">Side</p>
+                      <p className="text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">Side</p>
                       <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.side}</p>
                     </div>
                 </div>
@@ -576,7 +576,7 @@ export default function RSVPFormPage() {
                             {normalizedEr.status === 'YES' ? (
                               <CheckCircle className="w-6 h-6 text-sage" weight="fill" />
                             ) : (
-                              <X className="w-6 h-6 text-charcoal/40 dark:text-dark-text-secondary/60" weight="bold" />
+                              <X className="w-6 h-6 text-charcoal/60 dark:text-dark-text-secondary/80" weight="bold" />
                             )}
                           </div>
                         </div>

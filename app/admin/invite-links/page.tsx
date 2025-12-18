@@ -287,7 +287,7 @@ export default function AdminInviteLinksPage() {
                 )}
               </div>
               {typeof window !== 'undefined' && window.location.hostname.includes('-kevin-kokos-projects.vercel.app') && (
-                <p className="font-sans text-xs text-charcoal/50 italic">
+                <p className="font-sans text-xs text-charcoal/70 italic">
                   ⚠️ Preview URLs require Vercel login. Use production URL above for sharing.
                 </p>
               )}

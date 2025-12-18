@@ -155,7 +155,7 @@ export default function FAQPage() {
         {faqs.length === 0 ? (
           <div className="bg-white/90 dark:bg-dark-card/90 backdrop-blur-sm p-12 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border text-center animate-fade-in-up animate-delay-200 card-hover">
             <div className="w-16 h-16 bg-taupe/10 dark:bg-dark-text/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Question className="w-8 h-8 text-charcoal/40 dark:text-dark-text-secondary/60" weight="duotone" />
+              <Question className="w-8 h-8 text-charcoal/60 dark:text-dark-text-secondary/80" weight="duotone" />
             </div>
             <p className="font-body text-lg text-charcoal/70 dark:text-dark-text-secondary transition-colors duration-600" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
               No FAQs available at this time. Please check back later or contact us directly.

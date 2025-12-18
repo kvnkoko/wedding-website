@@ -310,7 +310,7 @@ export default function AdminRSVPsPage() {
               Search
             </label>
             <div className="relative">
-              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/40 dark:text-dark-text-secondary" weight="duotone" />
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary" weight="duotone" />
               <input
                 type="text"
                 value={search}
@@ -338,7 +338,7 @@ export default function AdminRSVPsPage() {
                 ))}
               </select>
               <CaretDown 
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/50 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
                 weight="bold"
               />
             </div>
@@ -358,7 +358,7 @@ export default function AdminRSVPsPage() {
                 <option value="NO">Declined</option>
               </select>
               <CaretDown 
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/50 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
                 weight="bold"
               />
             </div>
@@ -434,7 +434,7 @@ export default function AdminRSVPsPage() {
                     <option value="Other">Other</option>
                   </select>
                   <CaretDown 
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/50 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
                     weight="bold"
                   />
                 </div>
@@ -462,7 +462,7 @@ export default function AdminRSVPsPage() {
                             <option value="MAYBE">Maybe</option>
                           </select>
                           <CaretDown 
-                            className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal/50 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal/60 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
                             weight="bold"
                           />
                         </div>
@@ -546,10 +546,10 @@ export default function AdminRSVPsPage() {
       {/* RSVPs List */}
       {rsvps.length === 0 ? (
         <div className="bg-white dark:bg-dark-card p-12 rounded-xl shadow-md border border-taupe/20 dark:border-dark-border text-center">
-          <Users className="w-16 h-16 text-charcoal/30 dark:text-dark-text-secondary mx-auto mb-4" weight="duotone" />
+          <Users className="w-16 h-16 text-charcoal/50 dark:text-dark-text-secondary/80 mx-auto mb-4" weight="duotone" />
           <p className="font-sans text-lg text-charcoal/70 dark:text-dark-text-secondary">No RSVPs found</p>
           {(search || eventFilter || statusFilter) && (
-            <p className="font-sans text-sm text-charcoal/50 dark:text-dark-text-secondary mt-2">
+            <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary mt-2">
               Try adjusting your filters
             </p>
           )}
