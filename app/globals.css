@@ -4,28 +4,28 @@
 
 /* Prevent flash of unstyled content - set initial background */
 html {
-  background-color: #F8F9FA !important;
+  background-color: #FAF8F3 !important;
 }
 
 html.dark {
-  background-color: #0F1419 !important;
+  background-color: #1A1A1A !important;
 }
 
 body {
-  background-color: #F8F9FA !important;
+  background-color: #FAF8F3 !important;
 }
 
 html.dark body {
-  background-color: #0F1419 !important;
+  background-color: #1A1A1A !important;
 }
 
 /* Main layout container - only set background on top level */
 body > div {
-  background-color: #F8F9FA !important;
+  background-color: #FAF8F3 !important;
 }
 
 html.dark body > div {
-  background-color: #0F1419 !important;
+  background-color: #1A1A1A !important;
 }
 
 /* Smooth dark mode transitions - but not for initial load */
@@ -492,7 +492,7 @@ button, a, input, textarea, select {
 
 /* Text gradient animation */
 .text-gradient {
-  background: linear-gradient(135deg, #1A1D29 0%, #0ABAB5 50%, #1A1D29 100%);
+  background: linear-gradient(135deg, #2C2C2C 0%, #0ABAB5 50%, #2C2C2C 100%);
   background-size: 200% 200%;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -658,17 +658,17 @@ button, a, input, textarea, select {
   padding: 1rem 1.25rem;
   font-size: 1rem;
   background: white;
-  border: 2px solid rgba(233, 236, 239, 0.6);
+  border: 2px solid rgba(232, 227, 216, 0.4);
   border-radius: 0.5rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  color: #1A1D29;
+  color: #2C2C2C;
 }
 
 .dark .form-input {
-  background: #1E2535;
-  border-color: #2D3748;
-  color: #F1F5F9;
+  background: #2A2A2A;
+  border-color: #3A3A3A;
+  color: #E8E8E8;
 }
 
 .form-input:focus {
@@ -681,8 +681,8 @@ button, a, input, textarea, select {
 }
 
 .form-input:hover:not(:focus) {
-  border-color: rgba(233, 236, 239, 0.9);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-color: rgba(232, 227, 216, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .form-label {
@@ -690,7 +690,7 @@ button, a, input, textarea, select {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 1rem;
   font-weight: 600;
-  color: #1A1D29;
+  color: #2C2C2C;
   margin-bottom: 0.5rem;
   letter-spacing: 0.01em;
   transition: all 0.3s ease;
@@ -698,7 +698,7 @@ button, a, input, textarea, select {
 }
 
 .dark .form-label {
-  color: #F1F5F9;
+  color: #E8E8E8;
 }
 
 .form-label-required::after {
@@ -732,7 +732,7 @@ button, a, input, textarea, select {
 }
 
 .dark .radio-option {
-  color: #F1F5F9;
+  color: #E8E8E8;
 }
 
 .dark .radio-option:hover {
@@ -774,7 +774,7 @@ button, a, input, textarea, select {
 }
 
 .dark .checkbox-option {
-  color: #F1F5F9;
+  color: #E8E8E8;
 }
 
 .dark .checkbox-option:hover {
@@ -800,11 +800,11 @@ button, a, input, textarea, select {
   padding: 1rem 1.25rem;
   font-size: 1rem;
   background: white;
-  border: 2px solid rgba(233, 236, 239, 0.6);
+  border: 2px solid rgba(232, 227, 216, 0.4);
   border-radius: 0.5rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  color: #1A1D29;
+  color: #2C2C2C;
   cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230ABAB5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
@@ -815,9 +815,9 @@ button, a, input, textarea, select {
 }
 
 .dark .form-select {
-  background-color: #1E2535;
-  border-color: #2D3748;
-  color: #F1F5F9;
+  background-color: #2A2A2A;
+  border-color: #3A3A3A;
+  color: #E8E8E8;
 }
 
 .form-select:focus {
@@ -830,8 +830,8 @@ button, a, input, textarea, select {
 }
 
 .form-select:hover:not(:focus) {
-  border-color: rgba(233, 236, 239, 0.9);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-color: rgba(232, 227, 216, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 /* Premium textarea styles */
@@ -840,19 +840,19 @@ button, a, input, textarea, select {
   padding: 1rem 1.25rem;
   font-size: 1rem;
   background: white;
-  border: 2px solid rgba(233, 236, 239, 0.6);
+  border: 2px solid rgba(232, 227, 216, 0.4);
   border-radius: 0.5rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  color: #1A1D29;
+  color: #2C2C2C;
   resize: vertical;
   min-height: 120px;
 }
 
 .dark .form-textarea {
-  background: #1E2535;
-  border-color: #2D3748;
-  color: #F1F5F9;
+  background: #2A2A2A;
+  border-color: #3A3A3A;
+  color: #E8E8E8;
 }
 
 .form-textarea:focus {
@@ -865,8 +865,8 @@ button, a, input, textarea, select {
 }
 
 .form-textarea:hover:not(:focus) {
-  border-color: rgba(233, 236, 239, 0.9);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-color: rgba(232, 227, 216, 0.8);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 /* Error message animation */
@@ -893,7 +893,7 @@ button, a, input, textarea, select {
 .form-section {
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid rgba(233, 236, 239, 0.5);
+  border-bottom: 1px solid rgba(232, 227, 216, 0.3);
 }
 
 .form-section:last-of-type {
@@ -904,7 +904,7 @@ button, a, input, textarea, select {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1A1D29;
+  color: #2C2C2C;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
   border-bottom: 2px solid rgba(10, 186, 181, 0.2);
@@ -914,7 +914,7 @@ button, a, input, textarea, select {
 }
 
 .dark .form-section-title {
-  color: #F1F5F9;
+  color: #E8E8E8;
   border-bottom-color: rgba(10, 186, 181, 0.3);
 }
 
@@ -935,8 +935,8 @@ button, a, input, textarea, select {
 
 /* Event card premium styling */
 .event-card {
-  background: linear-gradient(to bottom, white, rgba(248, 249, 250, 0.6));
-  border: 2px solid rgba(233, 236, 239, 0.5);
+  background: linear-gradient(to bottom, white, rgba(250, 248, 243, 0.5));
+  border: 2px solid rgba(232, 227, 216, 0.3);
   border-radius: 1rem;
   padding: 1.5rem;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -945,8 +945,8 @@ button, a, input, textarea, select {
 }
 
 .dark .event-card {
-  background: linear-gradient(to bottom, #1E2535, #1A1F2E);
-  border-color: #2D3748;
+  background: linear-gradient(to bottom, #2A2A2A, #242424);
+  border-color: #3A3A3A;
 }
 
 .event-card::before {
@@ -977,17 +977,17 @@ button, a, input, textarea, select {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   font-size: 1.5rem;
   font-weight: 600;
-  color: #1A1D29;
+  color: #2C2C2C;
   margin-bottom: 0.5rem;
 }
 
 .dark .event-card-title {
-  color: #F1F5F9;
+  color: #E8E8E8;
 }
 
 .event-card-details {
   font-size: 0.875rem;
-  color: rgba(26, 29, 41, 0.7);
+  color: rgba(44, 44, 44, 0.7);
   margin-bottom: 1rem;
   display: flex;
   align-items: center;
@@ -996,7 +996,7 @@ button, a, input, textarea, select {
 }
 
 .dark .event-card-details {
-  color: rgba(241, 245, 249, 0.7);
+  color: rgba(232, 232, 232, 0.7);
 }
 
 .event-card-details::before {
@@ -1012,7 +1012,7 @@ button, a, input, textarea, select {
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  background: linear-gradient(135deg, #1A1D29 0%, #0F1419 100%);
+  background: linear-gradient(135deg, #2C2C2C 0%, #1a1a1a 100%);
   color: white;
   border: none;
   border-radius: 0.5rem;

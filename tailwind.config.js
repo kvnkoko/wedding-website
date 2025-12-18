@@ -17,25 +17,24 @@ module.exports = {
         body: ['var(--font-artica)', 'system-ui', 'sans-serif'],
       },
       colors: {
-        // Light mode - refined neutrals that complement Tiffany blue
-        cream: '#F8F9FA', // Cool, clean white with slight blue-gray undertone
-        beige: '#F1F3F5', // Soft gray-beige for subtle backgrounds
-        taupe: '#E9ECEF', // Light gray-taupe for borders and dividers
+        cream: '#FAF8F3',
+        beige: '#F5F1E8',
+        taupe: '#E8E3D8',
         sage: '#0ABAB5', // Tiffany Blue - classic Tiffany & Co. color
-        charcoal: '#1A1D29', // Deep blue-gray for text (more sophisticated than pure black)
+        charcoal: '#2C2C2C',
         mint: '#B8E6B8',
         tan: '#D2B48C',
         brown: '#8B4513',
-        navy: '#1E293B', // Deep slate blue-gray
+        navy: '#2C3E50',
         pink: '#F4C2C2',
         mauve: '#E6B8D3',
-        // Dark mode colors - sophisticated dark palette with blue undertones
-        'dark-bg': '#0F1419', // Deep blue-black background (sophisticated, not pure black)
-        'dark-surface': '#1A1F2E', // Slightly lighter surface with blue-gray undertone
-        'dark-card': '#1E2535', // Card background with subtle blue tint
-        'dark-text': '#F1F5F9', // Soft blue-white for primary text
-        'dark-text-secondary': '#CBD5E1', // Cool gray for secondary text
-        'dark-border': '#2D3748', // Refined border color with blue-gray tone
+        // Dark mode colors
+        'dark-bg': '#1A1A1A',
+        'dark-surface': '#242424',
+        'dark-card': '#2A2A2A',
+        'dark-text': '#E8E8E8',
+        'dark-text-secondary': '#B8B8B8',
+        'dark-border': '#3A3A3A',
       },
     },
   },
