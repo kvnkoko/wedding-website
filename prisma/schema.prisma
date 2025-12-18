@@ -80,14 +80,14 @@ model Rsvp {
 
 model RsvpEventResponse {
   id              String   @id @default(cuid())
-  rsvpId          String
-  eventId         String
+  rsvpId          String   @map("rsvp_id")
+  eventId         String   @map("event_id")
   status          String   // "YES", "NO", "MAYBE"
-  plusOne         Boolean  @default(false)
-  plusOneName     String?
-  plusOneRelation String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  plusOne         Boolean  @default(false) @map("plus_one")
+  plusOneName     String?  @map("plus_one_name")
+  plusOneRelation String?  @map("plus_one_relation")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   rsvp  Rsvp  @relation(fields: [rsvpId], references: [id], onDelete: Cascade)
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
