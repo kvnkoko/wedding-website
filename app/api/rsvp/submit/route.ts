@@ -472,12 +472,78 @@ export async function POST(request: NextRequest) {
             throw new Error(`rsvpId mismatch: Not all responses have the correct rsvpId. Expected: ${newRsvp.id}`)
           }
           
+          // CRITICAL: Verify the rsvp_id column exists in the database
+          try {
+            const columnCheck = await tx.$queryRaw<Array<{ column_name: string }>>`
+              SELECT column_name 
+              FROM information_schema.columns 
+              WHERE table_schema = 'public'
+              AND table_name = 'rsvp_event_responses'
+              AND column_name = 'rsvp_id'
+            `
+            
+            if (columnCheck.length === 0) {
+              console.error('❌ CRITICAL: rsvp_id column does not exist in rsvp_event_responses table!')
+              throw new Error('Database column rsvp_id does not exist. Please run migrations.')
+            }
+            
+            console.log('✅ Verified rsvp_id column exists')
+          } catch (colCheckError: any) {
+            console.error('❌ Failed to verify rsvp_id column:', colCheckError.message)
+            throw new Error(`Database schema verification failed: ${colCheckError.message}`)
+          }
+          
           try {
             console.log('🔵 About to call createMany with', eventResponseData.length, 'responses')
             console.log('🔵 First response data:', JSON.stringify(eventResponseData[0], null, 2))
-            await tx.rsvpEventResponse.createMany({
-              data: eventResponseData,
-            })
+            console.log('🔵 All response data:', JSON.stringify(eventResponseData, null, 2))
+            
+            // CRITICAL: Try createMany first, but if it fails due to mapping issues, use individual creates
+            // Prisma should handle @map automatically, but sometimes createMany has issues with mapped fields
+            try {
+              const result = await tx.rsvpEventResponse.createMany({
+                data: eventResponseData,
+              })
+              console.log('✅ createMany result:', result)
+            } catch (createManyError: any) {
+              // If createMany fails with null constraint on rsvpId, try individual creates
+              // This can happen if Prisma's @map directive isn't working correctly with createMany
+              if (createManyError.code === 'P2011' && createManyError.meta?.constraint?.includes('rsvpId')) {
+                console.warn('⚠️ createMany failed with rsvpId null constraint, trying individual creates...')
+                console.warn('⚠️ This suggests Prisma @map directive may not be working with createMany')
+                
+                // Use individual create calls - Prisma handles @map better with create
+                const createdResponses = []
+                for (const responseData of eventResponseData) {
+                  console.log('🔵 Creating individual response:', {
+                    rsvpId: responseData.rsvpId,
+                    eventId: responseData.eventId,
+                    status: responseData.status,
+                    plusOne: responseData.plusOne,
+                    plusOneName: responseData.plusOneName,
+                    plusOneRelation: responseData.plusOneRelation,
+                  })
+                  
+                  const created = await tx.rsvpEventResponse.create({
+                    data: {
+                      rsvpId: responseData.rsvpId,
+                      eventId: responseData.eventId,
+                      status: responseData.status,
+                      plusOne: responseData.plusOne,
+                      plusOneName: responseData.plusOneName,
+                      plusOneRelation: responseData.plusOneRelation,
+                    },
+                  })
+                  createdResponses.push(created)
+                  console.log('✅ Created response:', created.id)
+                }
+                console.log('✅ Successfully created', createdResponses.length, 'responses individually')
+              } else {
+                // Re-throw if it's a different error
+                console.error('❌ createMany failed with different error:', createManyError)
+                throw createManyError
+              }
+            }
             console.log('✅ SUCCESS: createMany completed for new schema')
           } catch (createError: any) {
             console.error('❌ ERROR: createMany failed for new schema:', {
