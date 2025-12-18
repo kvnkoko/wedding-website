@@ -15,7 +15,8 @@ import {
   UserPlus,
   CheckCircle,
   XCircle,
-  X
+  X,
+  CaretDown
 } from 'phosphor-react'
 
 interface Rsvp {
@@ -317,34 +318,44 @@ export default function AdminRSVPsPage() {
             <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
               Event
             </label>
-            <select
-              value={eventFilter}
-              onChange={(e) => setEventFilter(e.target.value)}
-              className="w-full px-4 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50"
-              style={{ paddingRight: '2.5rem' }}
-            >
-              <option value="">All Events</option>
-              {events.map((event) => (
-                <option key={event.id} value={event.id}>
-                  {event.name}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={eventFilter}
+                onChange={(e) => setEventFilter(e.target.value)}
+                className="w-full pl-4 pr-10 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
+              >
+                <option value="">All Events</option>
+                {events.map((event) => (
+                  <option key={event.id} value={event.id}>
+                    {event.name}
+                  </option>
+                ))}
+              </select>
+              <CaretDown 
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/50 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
+                weight="bold"
+              />
+            </div>
           </div>
           <div>
             <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
               Status
             </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50"
-              style={{ paddingRight: '2.5rem' }}
-            >
-              <option value="">All Statuses</option>
-              <option value="YES">Attending</option>
-              <option value="NO">Declined</option>
-            </select>
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full pl-4 pr-10 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
+              >
+                <option value="">All Statuses</option>
+                <option value="YES">Attending</option>
+                <option value="NO">Declined</option>
+              </select>
+              <CaretDown 
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/50 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
+                weight="bold"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -405,17 +416,22 @@ export default function AdminRSVPsPage() {
                 <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                   Side
                 </label>
-                <select
-                  name="side"
-                  defaultValue={editing.side}
-                  className="w-full px-4 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50"
-                  style={{ paddingRight: '2.5rem' }}
-                >
-                  <option value="Bride">Bride</option>
-                  <option value="Groom">Groom</option>
-                  <option value="Both">Both</option>
-                  <option value="Other">Other</option>
-                </select>
+                <div className="relative">
+                  <select
+                    name="side"
+                    defaultValue={editing.side}
+                    className="w-full pl-4 pr-10 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
+                  >
+                    <option value="Bride">Bride</option>
+                    <option value="Groom">Groom</option>
+                    <option value="Both">Both</option>
+                    <option value="Other">Other</option>
+                  </select>
+                  <CaretDown 
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/50 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
+                    weight="bold"
+                  />
+                </div>
               </div>
             </div>
             <div>
@@ -426,15 +442,21 @@ export default function AdminRSVPsPage() {
                 {editing.eventResponses.map((er) => (
                   <div key={er.event.id} className="flex items-center gap-3">
                     <span className="font-sans text-sm text-charcoal dark:text-dark-text w-32 flex-shrink-0">{er.event.name}:</span>
-                    <select
-                      name={`event-${er.event.id}`}
-                      defaultValue={er.status}
-                      className="flex-1 px-3 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-bg dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50"
-                      style={{ paddingRight: '2rem' }}
-                    >
-                      <option value="YES">Yes</option>
-                      <option value="NO">No</option>
-                    </select>
+                    <div className="relative flex-1">
+                      <select
+                        name={`event-${er.event.id}`}
+                        defaultValue={er.status}
+                        className="w-full pl-3 pr-8 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-bg dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
+                      >
+                        <option value="YES">Yes</option>
+                        <option value="NO">No</option>
+                        <option value="MAYBE">Maybe</option>
+                      </select>
+                      <CaretDown 
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal/50 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
+                        weight="bold"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
