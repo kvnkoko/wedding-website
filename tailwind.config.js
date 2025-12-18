@@ -20,7 +20,7 @@ module.exports = {
         cream: '#FAF8F3',
         beige: '#F5F1E8',
         taupe: '#E8E3D8',
-        sage: '#0ABAB5', // Tiffany Blue - classic Tiffany & Co. color
+        sage: '#6B9B9A', // Muted earthy Tiffany blue - subtle cyan-teal with gray undertones
         charcoal: '#2C2C2C',
         mint: '#B8E6B8',
         tan: '#D2B48C',
