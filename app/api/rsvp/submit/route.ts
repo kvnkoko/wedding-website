@@ -493,69 +493,42 @@ export async function POST(request: NextRequest) {
             throw new Error(`Database schema verification failed: ${colCheckError.message}`)
           }
           
-          try {
-            console.log('🔵 About to call createMany with', eventResponseData.length, 'responses')
-            console.log('🔵 First response data:', JSON.stringify(eventResponseData[0], null, 2))
-            console.log('🔵 All response data:', JSON.stringify(eventResponseData, null, 2))
+          // CRITICAL: Use individual create() calls instead of createMany
+          // Prisma's createMany has known issues with @map directives - it doesn't always map camelCase to snake_case correctly
+          // Individual create() calls handle @map directives reliably
+          // Also, if createMany fails, the transaction is aborted and we can't retry within the same transaction
+          console.log('🔵 Creating', eventResponseData.length, 'event responses using individual create() calls')
+          console.log('🔵 First response data:', JSON.stringify(eventResponseData[0], null, 2))
+          
+          const createdResponses = []
+          for (let i = 0; i < eventResponseData.length; i++) {
+            const responseData = eventResponseData[i]
             
-            // CRITICAL: Try createMany first, but if it fails due to mapping issues, use individual creates
-            // Prisma should handle @map automatically, but sometimes createMany has issues with mapped fields
-            try {
-              const result = await tx.rsvpEventResponse.createMany({
-                data: eventResponseData,
-              })
-              console.log('✅ createMany result:', result)
-            } catch (createManyError: any) {
-              // If createMany fails with null constraint on rsvpId, try individual creates
-              // This can happen if Prisma's @map directive isn't working correctly with createMany
-              if (createManyError.code === 'P2011' && createManyError.meta?.constraint?.includes('rsvpId')) {
-                console.warn('⚠️ createMany failed with rsvpId null constraint, trying individual creates...')
-                console.warn('⚠️ This suggests Prisma @map directive may not be working with createMany')
-                
-                // Use individual create calls - Prisma handles @map better with create
-                const createdResponses = []
-                for (const responseData of eventResponseData) {
-                  console.log('🔵 Creating individual response:', {
-                    rsvpId: responseData.rsvpId,
-                    eventId: responseData.eventId,
-                    status: responseData.status,
-                    plusOne: responseData.plusOne,
-                    plusOneName: responseData.plusOneName,
-                    plusOneRelation: responseData.plusOneRelation,
-                  })
-                  
-                  const created = await tx.rsvpEventResponse.create({
-                    data: {
-                      rsvpId: responseData.rsvpId,
-                      eventId: responseData.eventId,
-                      status: responseData.status,
-                      plusOne: responseData.plusOne,
-                      plusOneName: responseData.plusOneName,
-                      plusOneRelation: responseData.plusOneRelation,
-                    },
-                  })
-                  createdResponses.push(created)
-                  console.log('✅ Created response:', created.id)
-                }
-                console.log('✅ Successfully created', createdResponses.length, 'responses individually')
-              } else {
-                // Re-throw if it's a different error
-                console.error('❌ createMany failed with different error:', createManyError)
-                throw createManyError
-              }
-            }
-            console.log('✅ SUCCESS: createMany completed for new schema')
-          } catch (createError: any) {
-            console.error('❌ ERROR: createMany failed for new schema:', {
-              error: createError.message,
-              code: createError.code,
-              meta: createError.meta,
-              data: eventResponseData,
+            console.log(`🔵 Creating response ${i + 1}/${eventResponseData.length}:`, {
+              rsvpId: responseData.rsvpId,
+              eventId: responseData.eventId,
+              status: responseData.status,
+              plusOne: responseData.plusOne,
+              plusOneName: responseData.plusOneName,
+              plusOneRelation: responseData.plusOneRelation,
             })
-            throw createError
+            
+            const created = await tx.rsvpEventResponse.create({
+              data: {
+                rsvpId: responseData.rsvpId,
+                eventId: responseData.eventId,
+                status: responseData.status,
+                plusOne: responseData.plusOne,
+                plusOneName: responseData.plusOneName,
+                plusOneRelation: responseData.plusOneRelation,
+              },
+            })
+            createdResponses.push(created)
+            console.log(`✅ Created response ${i + 1}:`, created.id)
           }
           
-          console.log('✅ Created event responses with createMany, data:', JSON.stringify(eventResponseData, null, 2))
+          console.log('✅ Successfully created', createdResponses.length, 'event responses')
+          console.log('✅ Created event responses, data:', JSON.stringify(eventResponseData, null, 2))
           
           // CRITICAL: Immediately verify what was actually saved using raw query to see actual DB values
           const verifySavedRaw = await tx.$queryRawUnsafe<Array<any>>(
