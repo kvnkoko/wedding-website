@@ -514,14 +514,68 @@ export async function PUT(request: NextRequest) {
         where: { rsvpId: rsvp.id },
       })
 
-      // Create new responses
-      await prisma.rsvpEventResponse.createMany({
-        data: Object.entries(eventResponses).map(([eventId, status]) => ({
-          rsvpId: rsvp.id,
-          eventId,
-          status: status as string,
-        })),
+      // Prepare event responses data with Plus One information
+      const eventResponsesData = Object.entries(eventResponses).map(([eventId, response]) => {
+        // Handle both old format (string) and new format (object with Plus One data)
+        if (typeof response === 'string') {
+          return {
+            rsvpId: rsvp.id,
+            eventId,
+            status: response,
+            plusOne: false,
+            plusOneName: null,
+            plusOneRelation: null,
+          }
+        } else {
+          const responseData = response as any
+          return {
+            rsvpId: rsvp.id,
+            eventId,
+            status: responseData.status,
+            plusOne: responseData.plusOne || false,
+            plusOneName: responseData.plusOneName && responseData.plusOneName.trim() ? responseData.plusOneName.trim() : null,
+            plusOneRelation: responseData.plusOneRelation && responseData.plusOneRelation.trim() ? responseData.plusOneRelation.trim() : null,
+          }
+        }
       })
+
+      // Create new responses using raw SQL to handle both column sets
+      for (const responseData of eventResponsesData) {
+        const responseId = `c${Date.now().toString(36)}${Math.random().toString(36).substring(2, 15)}`
+        const now = new Date()
+        
+        await prisma.$executeRaw`
+          INSERT INTO rsvp_event_responses (
+            id, 
+            "rsvpId",
+            "eventId",
+            rsvp_id, 
+            event_id, 
+            status, 
+            plus_one, 
+            plus_one_name, 
+            plus_one_relation, 
+            "createdAt",
+            "updatedAt",
+            created_at, 
+            updated_at
+          ) VALUES (
+            ${responseId}::text,
+            ${responseData.rsvpId}::text,
+            ${responseData.eventId}::text,
+            ${responseData.rsvpId}::text,
+            ${responseData.eventId}::text,
+            ${responseData.status}::text,
+            ${responseData.plusOne}::boolean,
+            ${responseData.plusOneName}::text,
+            ${responseData.plusOneRelation}::text,
+            ${now}::timestamp,
+            ${now}::timestamp,
+            ${now}::timestamp,
+            ${now}::timestamp
+          )
+        `
+      }
     }
 
     const updatedRsvp = await prisma.rsvp.findUnique({

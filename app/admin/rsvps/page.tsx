@@ -186,12 +186,21 @@ export default function AdminRSVPsPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
-    const eventResponses: Record<string, string> = {}
+    const eventResponses: Record<string, any> = {}
 
     editing?.eventResponses.forEach((er) => {
-      const value = formData.get(`event-${er.event.id}`) as string
-      if (value) {
-        eventResponses[er.event.id] = value
+      const status = formData.get(`event-${er.event.id}`) as string
+      const plusOne = formData.get(`plusOne-${er.event.id}`) === 'on'
+      const plusOneName = formData.get(`plusOneName-${er.event.id}`) as string
+      const plusOneRelation = formData.get(`plusOneRelation-${er.event.id}`) as string
+      
+      if (status) {
+        eventResponses[er.event.id] = {
+          status,
+          plusOne: plusOne || false,
+          plusOneName: plusOneName && plusOneName.trim() ? plusOneName.trim() : null,
+          plusOneRelation: plusOneRelation && plusOneRelation.trim() ? plusOneRelation.trim() : null,
+        }
       }
     })
 
@@ -201,9 +210,6 @@ export default function AdminRSVPsPage() {
       phone: formData.get('phone'),
       email: formData.get('email') || null,
       side: formData.get('side'),
-      plusOne: formData.get('plusOne') === 'on',
-      plusOneName: formData.get('plusOneName') || null,
-      plusOneRelation: formData.get('plusOneRelation') || null,
       notes: formData.get('notes') || null,
       eventResponses,
     }
@@ -436,26 +442,69 @@ export default function AdminRSVPsPage() {
             </div>
             <div>
               <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-4">
-                Event Responses
+                Event Responses & Plus One Information
               </label>
-              <div className="grid md:grid-cols-2 gap-3 border border-taupe/30 dark:border-dark-border rounded-lg p-4 bg-taupe/5 dark:bg-dark-surface">
+              <div className="space-y-4 border border-taupe/30 dark:border-dark-border rounded-lg p-4 bg-taupe/5 dark:bg-dark-surface">
                 {editing.eventResponses.map((er) => (
-                  <div key={er.event.id} className="flex items-center gap-3">
-                    <span className="font-sans text-sm text-charcoal dark:text-dark-text w-32 flex-shrink-0">{er.event.name}:</span>
-                    <div className="relative flex-1">
-                      <select
-                        name={`event-${er.event.id}`}
-                        defaultValue={er.status}
-                        className="w-full pl-3 pr-8 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-bg dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
-                      >
-                        <option value="YES">Yes</option>
-                        <option value="NO">No</option>
-                        <option value="MAYBE">Maybe</option>
-                      </select>
-                      <CaretDown 
-                        className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal/50 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
-                        weight="bold"
-                      />
+                  <div key={er.event.id} className="border-b border-taupe/20 dark:border-dark-border pb-4 last:border-b-0 last:pb-0">
+                    <div className="mb-3">
+                      <h4 className="font-sans text-sm font-semibold text-charcoal dark:text-dark-text mb-2">{er.event.name}</h4>
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="font-sans text-sm text-charcoal dark:text-dark-text w-24 flex-shrink-0">Status:</span>
+                        <div className="relative flex-1">
+                          <select
+                            name={`event-${er.event.id}`}
+                            defaultValue={er.status}
+                            className="w-full pl-3 pr-8 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-bg dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
+                          >
+                            <option value="YES">Yes</option>
+                            <option value="NO">No</option>
+                            <option value="MAYBE">Maybe</option>
+                          </select>
+                          <CaretDown 
+                            className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal/50 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
+                            weight="bold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          name={`plusOne-${er.event.id}`}
+                          defaultChecked={er.plusOne || false}
+                          id={`plusOne-${er.event.id}`}
+                          className="w-4 h-4 text-sage border-taupe/30 rounded focus:ring-sage focus:ring-2 cursor-pointer"
+                        />
+                        <label htmlFor={`plusOne-${er.event.id}`} className="font-sans text-sm text-charcoal dark:text-dark-text cursor-pointer">
+                          Has Plus One
+                        </label>
+                      </div>
+                      <div>
+                        <label className="block font-sans text-xs font-medium text-charcoal/70 dark:text-dark-text-secondary mb-1.5">
+                          Plus One Name
+                        </label>
+                        <input
+                          type="text"
+                          name={`plusOneName-${er.event.id}`}
+                          defaultValue={er.plusOneName || ''}
+                          placeholder="Enter plus one name"
+                          className="w-full px-3 py-2 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                        />
+                      </div>
+                      <div>
+                        <label className="block font-sans text-xs font-medium text-charcoal/70 dark:text-dark-text-secondary mb-1.5">
+                          Plus One Relationship
+                        </label>
+                        <input
+                          type="text"
+                          name={`plusOneRelation-${er.event.id}`}
+                          defaultValue={er.plusOneRelation || ''}
+                          placeholder="e.g., Spouse, Partner, Friend"
+                          className="w-full px-3 py-2 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}
