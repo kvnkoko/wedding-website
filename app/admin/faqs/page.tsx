@@ -46,6 +46,7 @@ export default function AdminFAQsPage() {
   })
   const [newColorHex, setNewColorHex] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [draggedColorIndex, setDraggedColorIndex] = useState<number | null>(null)
 
   useEffect(() => {
     fetchFAQs()
@@ -332,6 +333,31 @@ export default function AdminFAQsPage() {
     })
   }
 
+  const handleColorDragStart = (index: number) => {
+    setDraggedColorIndex(index)
+  }
+
+  const handleColorDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault()
+    if (draggedColorIndex === null) return
+
+    const newColors = [...formData.colorHexCodes]
+    const draggedColor = newColors[draggedColorIndex]
+
+    newColors.splice(draggedColorIndex, 1)
+    newColors.splice(index, 0, draggedColor)
+
+    setFormData({
+      ...formData,
+      colorHexCodes: newColors,
+    })
+    setDraggedColorIndex(index)
+  }
+
+  const handleColorDragEnd = () => {
+    setDraggedColorIndex(null)
+  }
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -424,8 +450,17 @@ export default function AdminFAQsPage() {
                     {formData.colorHexCodes.map((hex, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-2 bg-white px-3 py-2 rounded-sm border border-taupe/20"
+                        draggable
+                        onDragStart={() => handleColorDragStart(index)}
+                        onDragOver={(e) => handleColorDragOver(e, index)}
+                        onDragEnd={handleColorDragEnd}
+                        className={`flex items-center gap-2 bg-white px-3 py-2 rounded-sm border border-taupe/20 cursor-move transition-all ${
+                          draggedColorIndex === index
+                            ? 'border-sage bg-sage/10 opacity-50'
+                            : 'hover:border-sage/50'
+                        }`}
                       >
+                        <span className="text-charcoal/40 text-sm">⋮⋮</span>
                         <div
                           className="w-6 h-6 rounded-full border border-taupe/30"
                           style={{ backgroundColor: hex }}
@@ -433,14 +468,23 @@ export default function AdminFAQsPage() {
                         <span className="font-mono text-xs text-charcoal">{hex}</span>
                         <button
                           type="button"
-                          onClick={() => handleRemoveColor(index)}
-                          className="text-red-500 hover:text-red-700 text-sm"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleRemoveColor(index)
+                          }}
+                          onDragStart={(e) => e.stopPropagation()}
+                          className="text-red-500 hover:text-red-700 text-sm ml-1"
                         >
                           ×
                         </button>
                       </div>
                     ))}
                   </div>
+                )}
+                {formData.colorHexCodes.length > 0 && (
+                  <p className="mt-2 font-sans text-xs text-charcoal/60">
+                    Drag colors to reorder them. The order will be saved when you submit the form.
+                  </p>
                 )}
               </div>
               <p className="mt-1 font-sans text-xs text-charcoal/60">
