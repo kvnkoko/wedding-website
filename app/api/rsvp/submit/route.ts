@@ -327,15 +327,41 @@ export async function POST(request: NextRequest) {
             const hasRelation = plusOneRelation != null && plusOneRelation !== ''
             const plusOne = Boolean(responseData.plusOne || hasName || hasRelation || false)
             
+            // CRITICAL: Verify rsvpId is not null/undefined/empty before using it
+            if (!newRsvp.id || typeof newRsvp.id !== 'string' || newRsvp.id.trim() === '') {
+              console.error(`❌ CRITICAL: newRsvp.id is invalid for event ${responseData.eventId}:`, {
+                rsvpId: newRsvp.id,
+                rsvpIdType: typeof newRsvp.id,
+                newRsvp: JSON.stringify(newRsvp, null, 2),
+              })
+              throw new Error(`Cannot create event response: rsvpId is invalid (${newRsvp.id}) for event ${responseData.eventId}`)
+            }
+            
             // Don't include updatedAt - Prisma will handle it automatically with @updatedAt
             // Only include fields that we're explicitly setting
+            // Use camelCase field names - Prisma will map to snake_case via @map directives
             const data: any = {
-              rsvpId: newRsvp.id,
-              eventId: responseData.eventId,
-              status: responseData.status,
-              plusOne: plusOne,
+              rsvpId: String(newRsvp.id).trim(),  // Explicitly convert to string and trim
+              eventId: String(responseData.eventId).trim(),  // Ensure eventId is also a string
+              status: String(responseData.status).trim(),  // Ensure status is a string
+              plusOne: Boolean(plusOne),
               plusOneName: plusOneName,  // Save the value, even if it's empty
               plusOneRelation: plusOneRelation,  // Save the value, even if it's empty
+            }
+            
+            // CRITICAL: Verify all required fields are present and valid
+            if (!data.rsvpId || data.rsvpId === '' || !data.eventId || data.eventId === '' || !data.status || data.status === '') {
+              console.error('❌ Missing or invalid required fields in event response data:', {
+                rsvpId: data.rsvpId,
+                eventId: data.eventId,
+                status: data.status,
+                rsvpIdValid: !!data.rsvpId && data.rsvpId !== '',
+                eventIdValid: !!data.eventId && data.eventId !== '',
+                statusValid: !!data.status && data.status !== '',
+                fullData: data,
+                newRsvpId: newRsvp.id,
+              })
+              throw new Error(`Missing or invalid required fields for event response: rsvpId="${data.rsvpId}", eventId="${data.eventId}", status="${data.status}"`)
             }
             
             // Only add createdAt if the column exists, otherwise let Prisma handle it
@@ -388,22 +414,67 @@ export async function POST(request: NextRequest) {
             })),
           })
           
-          // CRITICAL: Verify all event responses have valid rsvpId
-          const invalidResponses = eventResponseData.filter(r => !r.rsvpId || !r.eventId || !r.status)
+          // CRITICAL: Verify all event responses have valid rsvpId, eventId, and status
+          const invalidResponses = eventResponseData.filter(r => {
+            const hasRsvpId = r.rsvpId && typeof r.rsvpId === 'string' && r.rsvpId.trim() !== ''
+            const hasEventId = r.eventId && typeof r.eventId === 'string' && r.eventId.trim() !== ''
+            const hasStatus = r.status && typeof r.status === 'string' && r.status.trim() !== ''
+            return !hasRsvpId || !hasEventId || !hasStatus
+          })
+          
           if (invalidResponses.length > 0) {
-            console.error('❌ Invalid event responses found:', invalidResponses)
-            throw new Error(`Invalid event responses: ${invalidResponses.length} responses missing required fields (rsvpId, eventId, or status)`)
+            console.error('❌ Invalid event responses found:', {
+              invalidCount: invalidResponses.length,
+              invalidResponses: invalidResponses.map(r => ({
+                rsvpId: r.rsvpId,
+                rsvpIdType: typeof r.rsvpId,
+                rsvpIdValid: r.rsvpId && typeof r.rsvpId === 'string' && r.rsvpId.trim() !== '',
+                eventId: r.eventId,
+                eventIdValid: r.eventId && typeof r.eventId === 'string' && r.eventId.trim() !== '',
+                status: r.status,
+                statusValid: r.status && typeof r.status === 'string' && r.status.trim() !== '',
+              })),
+              expectedRsvpId: newRsvp.id,
+              allResponses: eventResponseData,
+            })
+            throw new Error(`Invalid event responses: ${invalidResponses.length} responses missing or invalid required fields (rsvpId, eventId, or status)`)
           }
           
-          // Double-check rsvpId is set for all responses
-          console.log('🔵 Verifying rsvpId for all responses:', {
-            rsvpId: newRsvp.id,
-            allRsvpIds: eventResponseData.map(r => r.rsvpId),
-            allValid: eventResponseData.every(r => r.rsvpId === newRsvp.id && r.rsvpId != null),
+          // Double-check rsvpId is set for all responses and matches newRsvp.id
+          const allRsvpIdsMatch = eventResponseData.every(r => {
+            const matches = r.rsvpId === newRsvp.id && r.rsvpId != null && r.rsvpId !== ''
+            if (!matches) {
+              console.error('❌ rsvpId mismatch:', {
+                responseRsvpId: r.rsvpId,
+                expectedRsvpId: newRsvp.id,
+                match: r.rsvpId === newRsvp.id,
+              })
+            }
+            return matches
           })
+          
+          console.log('🔵 Final verification before createMany:', {
+            rsvpId: newRsvp.id,
+            rsvpIdType: typeof newRsvp.id,
+            rsvpIdLength: newRsvp.id?.length,
+            responseCount: eventResponseData.length,
+            allRsvpIds: eventResponseData.map(r => ({ rsvpId: r.rsvpId, type: typeof r.rsvpId, length: r.rsvpId?.length })),
+            allRsvpIdsMatch: allRsvpIdsMatch,
+            allValid: eventResponseData.every(r => 
+              r.rsvpId && typeof r.rsvpId === 'string' && r.rsvpId.trim() !== '' &&
+              r.eventId && typeof r.eventId === 'string' && r.eventId.trim() !== '' &&
+              r.status && typeof r.status === 'string' && r.status.trim() !== ''
+            ),
+            sampleData: eventResponseData[0],
+          })
+          
+          if (!allRsvpIdsMatch) {
+            throw new Error(`rsvpId mismatch: Not all responses have the correct rsvpId. Expected: ${newRsvp.id}`)
+          }
           
           try {
             console.log('🔵 About to call createMany with', eventResponseData.length, 'responses')
+            console.log('🔵 First response data:', JSON.stringify(eventResponseData[0], null, 2))
             await tx.rsvpEventResponse.createMany({
               data: eventResponseData,
             })
