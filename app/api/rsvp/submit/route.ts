@@ -373,7 +373,16 @@ export async function POST(request: NextRequest) {
           
           console.log('✅ Created event responses with createMany, data:', JSON.stringify(eventResponseData, null, 2))
           
-          // CRITICAL: Immediately verify what was actually saved
+          // CRITICAL: Immediately verify what was actually saved using raw query to see actual DB values
+          const verifySavedRaw = await tx.$queryRawUnsafe<Array<any>>(
+            `SELECT event_id, status, plus_one, plus_one_name, plus_one_relation
+             FROM rsvp_event_responses 
+             WHERE rsvp_id = $1`,
+            newRsvp.id
+          )
+          console.log('✅ IMMEDIATELY AFTER SAVE - Raw database values:', JSON.stringify(verifySavedRaw, null, 2))
+          
+          // Also verify with Prisma
           const verifySaved = await tx.rsvpEventResponse.findMany({
             where: { rsvpId: newRsvp.id },
             select: {
@@ -384,7 +393,30 @@ export async function POST(request: NextRequest) {
               plusOneRelation: true,
             },
           })
-          console.log('✅ IMMEDIATELY AFTER SAVE - Verified saved data:', JSON.stringify(verifySaved, null, 2))
+          console.log('✅ IMMEDIATELY AFTER SAVE - Prisma query result:', JSON.stringify(verifySaved, null, 2))
+          
+          // Compare raw vs Prisma
+          if (verifySavedRaw.length > 0 && verifySaved.length > 0) {
+            const raw = verifySavedRaw[0]
+            const prisma = verifySaved[0]
+            console.log('🔍 COMPARISON - Raw DB vs Prisma:', {
+              raw: {
+                plus_one: raw.plus_one,
+                plus_one_name: raw.plus_one_name,
+                plus_one_relation: raw.plus_one_relation,
+              },
+              prisma: {
+                plusOne: prisma.plusOne,
+                plusOneName: prisma.plusOneName,
+                plusOneRelation: prisma.plusOneRelation,
+              },
+              match: {
+                plusOne: raw.plus_one === prisma.plusOne,
+                plusOneName: raw.plus_one_name === prisma.plusOneName,
+                plusOneRelation: raw.plus_one_relation === prisma.plusOneRelation,
+              },
+            })
+          }
           
           // Verify data was saved correctly - use raw query to see actual database values
           // First detect actual column names
