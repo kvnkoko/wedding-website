@@ -53,47 +53,69 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    // Generate CSV
+    // Generate CSV - create one row per event response to include Plus One info per event
     const headers = [
       'Name',
       'Phone',
       'Email',
       'Side',
+      'Event',
+      'Event Status',
       'Plus One',
       'Plus One Name',
       'Plus One Relation',
       'Dietary Requirements',
       'Notes',
       'Invite Link',
-      'Event Responses',
       'Created At',
     ]
 
-    const rows = rsvps.map((rsvp) => {
-      const eventResponses = rsvp.eventResponses
-        .map((er) => `${er.event.name}: ${er.status}`)
-        .join('; ')
-
-      return [
-        rsvp.name,
-        rsvp.phone,
-        rsvp.email || '',
-        rsvp.side,
-        rsvp.plusOne ? 'Yes' : 'No',
-        rsvp.plusOneName || '',
-        rsvp.plusOneRelation || '',
-        rsvp.dietaryRequirements || '',
-        rsvp.notes || '',
-        rsvp.inviteLinkConfig.slug,
-        eventResponses,
-        rsvp.createdAt.toISOString(),
-      ]
+    const rows: any[] = []
+    
+    rsvps.forEach((rsvp) => {
+      if (rsvp.eventResponses.length === 0) {
+        // If no event responses, still include the RSVP with empty event fields
+        rows.push([
+          rsvp.name,
+          rsvp.phone,
+          rsvp.email || '',
+          rsvp.side,
+          '',
+          '',
+          '',
+          '',
+          '',
+          rsvp.dietaryRequirements || '',
+          rsvp.notes || '',
+          rsvp.inviteLinkConfig.slug,
+          rsvp.createdAt.toISOString(),
+        ])
+      } else {
+        // Create one row per event response to show Plus One info for each event
+        rsvp.eventResponses.forEach((er) => {
+          rows.push([
+            rsvp.name,
+            rsvp.phone,
+            rsvp.email || '',
+            rsvp.side,
+            er.event.name,
+            er.status,
+            er.plusOne ? 'Yes' : 'No',
+            er.plusOneName || '',
+            er.plusOneRelation || '',
+            rsvp.dietaryRequirements || '',
+            rsvp.notes || '',
+            rsvp.inviteLinkConfig.slug,
+            rsvp.createdAt.toISOString(),
+          ])
+        })
+      }
     })
 
     const csv = [
       headers.join(','),
       ...rows.map((row) =>
-        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
+        row.map((cell: any) => `"${String(cell).replace(/"/g, '""')}"`).join(',')
       ),
     ].join('\n')
 

@@ -320,7 +320,8 @@ export default function AdminRSVPsPage() {
             <select
               value={eventFilter}
               onChange={(e) => setEventFilter(e.target.value)}
-              className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+              className="w-full px-4 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50"
+              style={{ paddingRight: '2.5rem' }}
             >
               <option value="">All Events</option>
               {events.map((event) => (
@@ -337,7 +338,8 @@ export default function AdminRSVPsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+              className="w-full px-4 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50"
+              style={{ paddingRight: '2.5rem' }}
             >
               <option value="">All Statuses</option>
               <option value="YES">Attending</option>
@@ -406,7 +408,8 @@ export default function AdminRSVPsPage() {
                 <select
                   name="side"
                   defaultValue={editing.side}
-                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                  className="w-full px-4 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50"
+                  style={{ paddingRight: '2.5rem' }}
                 >
                   <option value="Bride">Bride</option>
                   <option value="Groom">Groom</option>
@@ -426,7 +429,8 @@ export default function AdminRSVPsPage() {
                     <select
                       name={`event-${er.event.id}`}
                       defaultValue={er.status}
-                      className="flex-1 px-3 py-2 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-bg dark:text-dark-text transition-all duration-200"
+                      className="flex-1 px-3 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-bg dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50"
+                      style={{ paddingRight: '2rem' }}
                     >
                       <option value="YES">Yes</option>
                       <option value="NO">No</option>
