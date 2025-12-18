@@ -515,10 +515,25 @@ export async function POST(request: NextRequest) {
             // Generate a unique ID for this response (using cuid-like format)
             const responseId = `c${Date.now().toString(36)}${Math.random().toString(36).substring(2, 15)}`
             
-            // Use raw SQL to insert directly with explicit snake_case column names
-            // This bypasses Prisma's @map directive which is causing the issue
-            await tx.$executeRawUnsafe(
-              `INSERT INTO rsvp_event_responses (
+            // CRITICAL: Use Prisma's queryRaw with proper parameter binding
+            // $executeRawUnsafe doesn't handle parameters correctly - use queryRaw instead
+            // But actually, let's use $executeRaw with proper SQL escaping
+            const plusOneName = responseData.plusOneName || null
+            const plusOneRelation = responseData.plusOneRelation || null
+            
+            console.log(`🔵 Raw SQL parameters:`, {
+              responseId,
+              rsvpId: responseData.rsvpId,
+              eventId: responseData.eventId,
+              status: responseData.status,
+              plusOne: responseData.plusOne,
+              plusOneName,
+              plusOneRelation,
+            })
+            
+            // Use Prisma's $executeRaw with tagged template for proper parameter binding
+            await tx.$executeRaw`
+              INSERT INTO rsvp_event_responses (
                 id, 
                 rsvp_id, 
                 event_id, 
@@ -528,15 +543,18 @@ export async function POST(request: NextRequest) {
                 plus_one_relation, 
                 created_at, 
                 updated_at
-              ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())`,
-              responseId,
-              responseData.rsvpId,  // Explicitly use rsvp_id column
-              responseData.eventId,  // Explicitly use event_id column
-              responseData.status,
-              responseData.plusOne,
-              responseData.plusOneName || null,
-              responseData.plusOneRelation || null
-            )
+              ) VALUES (
+                ${responseId}::text,
+                ${responseData.rsvpId}::text,
+                ${responseData.eventId}::text,
+                ${responseData.status}::text,
+                ${responseData.plusOne}::boolean,
+                ${plusOneName}::text,
+                ${plusOneRelation}::text,
+                NOW(),
+                NOW()
+              )
+            `
             
             createdIds.push(responseId)
             console.log(`✅ Created response ${i + 1} with ID:`, responseId)
