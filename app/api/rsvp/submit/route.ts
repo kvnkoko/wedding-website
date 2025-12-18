@@ -493,18 +493,17 @@ export async function POST(request: NextRequest) {
             throw new Error(`Database schema verification failed: ${colCheckError.message}`)
           }
           
-          // CRITICAL: Use individual create() calls instead of createMany
-          // Prisma's createMany has known issues with @map directives - it doesn't always map camelCase to snake_case correctly
-          // Individual create() calls handle @map directives reliably
-          // Also, if createMany fails, the transaction is aborted and we can't retry within the same transaction
-          console.log('🔵 Creating', eventResponseData.length, 'event responses using individual create() calls')
+          // CRITICAL: Database has BOTH camelCase (rsvpId) and snake_case (rsvp_id) columns
+          // Prisma's @map is confused about which to use, causing null constraint violations
+          // Use raw SQL to insert directly with explicit column names to bypass Prisma's mapping
+          console.log('🔵 Creating', eventResponseData.length, 'event responses using raw SQL (bypassing Prisma mapping)')
           console.log('🔵 First response data:', JSON.stringify(eventResponseData[0], null, 2))
           
-          const createdResponses = []
+          const createdIds: string[] = []
           for (let i = 0; i < eventResponseData.length; i++) {
             const responseData = eventResponseData[i]
             
-            console.log(`🔵 Creating response ${i + 1}/${eventResponseData.length}:`, {
+            console.log(`🔵 Creating response ${i + 1}/${eventResponseData.length} with raw SQL:`, {
               rsvpId: responseData.rsvpId,
               eventId: responseData.eventId,
               status: responseData.status,
@@ -513,21 +512,37 @@ export async function POST(request: NextRequest) {
               plusOneRelation: responseData.plusOneRelation,
             })
             
-            const created = await tx.rsvpEventResponse.create({
-              data: {
-                rsvpId: responseData.rsvpId,
-                eventId: responseData.eventId,
-                status: responseData.status,
-                plusOne: responseData.plusOne,
-                plusOneName: responseData.plusOneName,
-                plusOneRelation: responseData.plusOneRelation,
-              },
-            })
-            createdResponses.push(created)
-            console.log(`✅ Created response ${i + 1}:`, created.id)
+            // Generate a unique ID for this response (using cuid-like format)
+            const responseId = `c${Date.now().toString(36)}${Math.random().toString(36).substring(2, 15)}`
+            
+            // Use raw SQL to insert directly with explicit snake_case column names
+            // This bypasses Prisma's @map directive which is causing the issue
+            await tx.$executeRawUnsafe(
+              `INSERT INTO rsvp_event_responses (
+                id, 
+                rsvp_id, 
+                event_id, 
+                status, 
+                plus_one, 
+                plus_one_name, 
+                plus_one_relation, 
+                created_at, 
+                updated_at
+              ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())`,
+              responseId,
+              responseData.rsvpId,  // Explicitly use rsvp_id column
+              responseData.eventId,  // Explicitly use event_id column
+              responseData.status,
+              responseData.plusOne,
+              responseData.plusOneName || null,
+              responseData.plusOneRelation || null
+            )
+            
+            createdIds.push(responseId)
+            console.log(`✅ Created response ${i + 1} with ID:`, responseId)
           }
           
-          console.log('✅ Successfully created', createdResponses.length, 'event responses')
+          console.log('✅ Successfully created', createdIds.length, 'event responses using raw SQL')
           console.log('✅ Created event responses, data:', JSON.stringify(eventResponseData, null, 2))
           
           // CRITICAL: Immediately verify what was actually saved using raw query to see actual DB values
