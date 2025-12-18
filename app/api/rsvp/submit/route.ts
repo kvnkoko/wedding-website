@@ -262,25 +262,53 @@ export async function POST(request: NextRequest) {
       // Create RSVP and event responses in a transaction
       rsvp = await prisma.$transaction(async (tx) => {
         // First create the RSVP
+        console.log('🔵 Creating RSVP with data:', {
+          inviteLinkConfigId,
+          name,
+          phone,
+          email,
+          side,
+          hasAnyPlusOne,
+          editToken: editToken ? '***' : null,
+        })
+        
         const newRsvp = await tx.rsvp.create({
-      data: {
-        inviteLinkConfigId,
-        name,
-        phone,
-        email: email || null,
-        side,
+          data: {
+            inviteLinkConfigId,
+            name,
+            phone,
+            email: email || null,
+            side,
             plusOne: hasAnyPlusOne || false,
             plusOneName: null,
             plusOneRelation: null,
-        dietaryRequirements: dietaryRequirements || null,
-        notes: notes || null,
-        editToken,
+            dietaryRequirements: dietaryRequirements || null,
+            notes: notes || null,
+            editToken,
           },
         })
+        
+        console.log('✅ RSVP created successfully:', {
+          id: newRsvp.id,
+          name: newRsvp.name,
+          hasId: !!newRsvp.id,
+          idType: typeof newRsvp.id,
+          idLength: newRsvp.id?.length,
+        })
+        
+        // CRITICAL: Verify newRsvp.id exists before proceeding
+        if (!newRsvp.id) {
+          console.error('❌ CRITICAL ERROR: newRsvp.id is null or undefined!', {
+            newRsvp: JSON.stringify(newRsvp, null, 2),
+          })
+          throw new Error('Failed to create RSVP: ID was not generated')
+        }
 
         // Create event responses - use the schema we detected
         if (hasNewSchema) {
           // New schema - include plus one fields using Prisma
+          console.log(`🔵 Preparing ${eventResponsesData.length} event responses with rsvpId: ${newRsvp.id}`)
+          
           const eventResponseData = eventResponsesData.map((responseData) => {
             // Get raw values - don't filter them out
             const rawPlusOneName = responseData.plusOneName
@@ -345,11 +373,13 @@ export async function POST(request: NextRequest) {
             return data
           })
           
-          console.log('Creating event responses with plus one data:', {
+          console.log('🔵 Creating event responses with plus one data:', {
             count: eventResponseData.length,
+            rsvpId: newRsvp.id,
             sample: eventResponseData[0],
             allWithPlusOne: eventResponseData.filter(r => r.plusOne || r.plusOneName),
             allData: eventResponseData.map(r => ({
+              rsvpId: r.rsvpId,
               eventId: r.eventId,
               status: r.status,
               plusOne: r.plusOne,
@@ -358,7 +388,22 @@ export async function POST(request: NextRequest) {
             })),
           })
           
+          // CRITICAL: Verify all event responses have valid rsvpId
+          const invalidResponses = eventResponseData.filter(r => !r.rsvpId || !r.eventId || !r.status)
+          if (invalidResponses.length > 0) {
+            console.error('❌ Invalid event responses found:', invalidResponses)
+            throw new Error(`Invalid event responses: ${invalidResponses.length} responses missing required fields (rsvpId, eventId, or status)`)
+          }
+          
+          // Double-check rsvpId is set for all responses
+          console.log('🔵 Verifying rsvpId for all responses:', {
+            rsvpId: newRsvp.id,
+            allRsvpIds: eventResponseData.map(r => r.rsvpId),
+            allValid: eventResponseData.every(r => r.rsvpId === newRsvp.id && r.rsvpId != null),
+          })
+          
           try {
+            console.log('🔵 About to call createMany with', eventResponseData.length, 'responses')
             await tx.rsvpEventResponse.createMany({
               data: eventResponseData,
             })
