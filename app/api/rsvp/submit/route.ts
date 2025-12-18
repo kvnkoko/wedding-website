@@ -168,6 +168,54 @@ export async function POST(request: NextRequest) {
       const hasNewSchema = true
       console.log('Using Prisma with @map directives - schema mapping handled automatically')
 
+      // CRITICAL: Ensure Plus One columns exist before creating event responses
+      // Check and create columns if they don't exist
+      try {
+        const columnCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
+          SELECT column_name 
+          FROM information_schema.columns 
+          WHERE table_name = 'rsvp_event_responses' 
+          AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation', 'updated_at')
+        `
+        
+        const existingColumns = columnCheck.map(c => c.column_name)
+        const missingColumns: string[] = []
+        
+        if (!existingColumns.includes('plus_one')) {
+          missingColumns.push('plus_one BOOLEAN DEFAULT false')
+        }
+        if (!existingColumns.includes('plus_one_name')) {
+          missingColumns.push('plus_one_name TEXT')
+        }
+        if (!existingColumns.includes('plus_one_relation')) {
+          missingColumns.push('plus_one_relation TEXT')
+        }
+        if (!existingColumns.includes('updated_at')) {
+          missingColumns.push('updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
+        }
+        
+        if (missingColumns.length > 0) {
+          console.log('⚠️ Missing columns detected, adding them automatically:', missingColumns)
+          for (const columnDef of missingColumns) {
+            const columnName = columnDef.split(' ')[0]
+            try {
+              await prisma.$executeRawUnsafe(`ALTER TABLE rsvp_event_responses ADD COLUMN IF NOT EXISTS ${columnDef}`)
+              console.log(`✅ Added column: ${columnName}`)
+            } catch (addError: any) {
+              console.error(`❌ Failed to add column ${columnName}:`, addError.message)
+              // Continue anyway - might already exist
+            }
+          }
+          // Regenerate Prisma client to pick up new columns
+          console.log('⚠️ Columns added - Prisma client may need regeneration on next deployment')
+        } else {
+          console.log('✅ All Plus One columns exist')
+        }
+      } catch (columnCheckError: any) {
+        console.warn('⚠️ Could not check/add columns (non-fatal):', columnCheckError.message)
+        // Continue anyway - columns might exist
+      }
+
       // Create RSVP and event responses in a transaction
       rsvp = await prisma.$transaction(async (tx) => {
         // First create the RSVP
