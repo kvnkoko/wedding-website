@@ -87,7 +87,7 @@ model RsvpEventResponse {
   plusOneName     String?  @map("plus_one_name")
   plusOneRelation String?  @map("plus_one_relation")
   createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  updatedAt       DateTime? @map("updated_at")
 
   rsvp  Rsvp  @relation(fields: [rsvpId], references: [id], onDelete: Cascade)
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)

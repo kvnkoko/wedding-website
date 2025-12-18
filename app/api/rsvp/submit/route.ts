@@ -208,7 +208,9 @@ export async function POST(request: NextRequest) {
             const hasRelation = plusOneRelation != null && plusOneRelation !== ''
             const plusOne = Boolean(responseData.plusOne || hasName || hasRelation || false)
             
-            const data = {
+            // Don't include updatedAt - Prisma will handle it automatically with @updatedAt
+            // Only include fields that we're explicitly setting
+            const data: any = {
               rsvpId: newRsvp.id,
               eventId: responseData.eventId,
               status: responseData.status,
@@ -216,6 +218,9 @@ export async function POST(request: NextRequest) {
               plusOneName: plusOneName,  // Save the value, even if it's empty
               plusOneRelation: plusOneRelation,  // Save the value, even if it's empty
             }
+            
+            // Only add createdAt if the column exists, otherwise let Prisma handle it
+            // Don't include updatedAt - @updatedAt directive handles it
             
             console.log(`[Submit] Creating event response for event ${responseData.eventId}:`, {
               original: responseData,
