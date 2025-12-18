@@ -168,52 +168,95 @@ export async function POST(request: NextRequest) {
       const hasNewSchema = true
       console.log('Using Prisma with @map directives - schema mapping handled automatically')
 
-      // CRITICAL: Ensure Plus One columns exist before creating event responses
-      // Check and create columns if they don't exist
+      // CRITICAL: Ensure ALL required columns exist before creating event responses
+      // Check what columns actually exist and create missing ones
       try {
-        const columnCheck = await prisma.$queryRaw<Array<{ column_name: string }>>`
-          SELECT column_name 
-          FROM information_schema.columns 
-          WHERE table_name = 'rsvp_event_responses' 
-          AND column_name IN ('plus_one', 'plus_one_name', 'plus_one_relation', 'updated_at')
+        // First, check if table exists
+        const tableExists = await prisma.$queryRaw<Array<{ exists: boolean }>>`
+          SELECT EXISTS (
+            SELECT FROM information_schema.tables 
+            WHERE table_schema = 'public' 
+            AND table_name = 'rsvp_event_responses'
+          ) as exists
         `
         
-        const existingColumns = columnCheck.map(c => c.column_name)
+        if (!tableExists[0]?.exists) {
+          console.error('❌ Table rsvp_event_responses does not exist!')
+          throw new Error('Table rsvp_event_responses does not exist. Please run Prisma migrations.')
+        }
+        
+        // Get ALL columns in the table
+        const allColumns = await prisma.$queryRaw<Array<{ column_name: string; data_type: string }>>`
+          SELECT column_name, data_type
+          FROM information_schema.columns 
+          WHERE table_schema = 'public'
+          AND table_name = 'rsvp_event_responses'
+          ORDER BY ordinal_position
+        `
+        
+        console.log('📋 Current table columns:', allColumns.map(c => `${c.column_name} (${c.data_type})`).join(', '))
+        
+        const existingColumnNames = allColumns.map(c => c.column_name.toLowerCase())
+        
+        // Define ALL required columns with their definitions
+        const requiredColumns: Array<{ name: string; definition: string; optional?: boolean }> = [
+          { name: 'id', definition: 'TEXT PRIMARY KEY', optional: false },
+          { name: 'rsvp_id', definition: 'TEXT NOT NULL', optional: false },
+          { name: 'event_id', definition: 'TEXT NOT NULL', optional: false },
+          { name: 'status', definition: 'TEXT NOT NULL', optional: false },
+          { name: 'created_at', definition: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP', optional: false },
+          { name: 'plus_one', definition: 'BOOLEAN DEFAULT false', optional: true },
+          { name: 'plus_one_name', definition: 'TEXT', optional: true },
+          { name: 'plus_one_relation', definition: 'TEXT', optional: true },
+          { name: 'updated_at', definition: 'TIMESTAMP DEFAULT CURRENT_TIMESTAMP', optional: true },
+        ]
+        
         const missingColumns: string[] = []
         
-        if (!existingColumns.includes('plus_one')) {
-          missingColumns.push('plus_one BOOLEAN DEFAULT false')
-        }
-        if (!existingColumns.includes('plus_one_name')) {
-          missingColumns.push('plus_one_name TEXT')
-        }
-        if (!existingColumns.includes('plus_one_relation')) {
-          missingColumns.push('plus_one_relation TEXT')
-        }
-        if (!existingColumns.includes('updated_at')) {
-          missingColumns.push('updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP')
+        for (const col of requiredColumns) {
+          const exists = existingColumnNames.includes(col.name.toLowerCase())
+          if (!exists) {
+            if (col.optional) {
+              missingColumns.push(`${col.name} ${col.definition}`)
+              console.log(`⚠️ Missing optional column: ${col.name}`)
+            } else {
+              console.error(`❌ CRITICAL: Missing required column: ${col.name}`)
+              missingColumns.push(`${col.name} ${col.definition}`)
+            }
+          } else {
+            console.log(`✅ Column exists: ${col.name}`)
+          }
         }
         
         if (missingColumns.length > 0) {
-          console.log('⚠️ Missing columns detected, adding them automatically:', missingColumns)
+          console.log('🔧 Adding missing columns:', missingColumns)
           for (const columnDef of missingColumns) {
             const columnName = columnDef.split(' ')[0]
             try {
-              await prisma.$executeRawUnsafe(`ALTER TABLE rsvp_event_responses ADD COLUMN IF NOT EXISTS ${columnDef}`)
-              console.log(`✅ Added column: ${columnName}`)
+              // Use IF NOT EXISTS to avoid errors if column was added concurrently
+              await prisma.$executeRawUnsafe(
+                `ALTER TABLE rsvp_event_responses ADD COLUMN IF NOT EXISTS ${columnDef}`
+              )
+              console.log(`✅ Successfully added column: ${columnName}`)
             } catch (addError: any) {
-              console.error(`❌ Failed to add column ${columnName}:`, addError.message)
-              // Continue anyway - might already exist
+              // If column already exists (race condition), that's fine
+              if (addError.message?.includes('already exists') || addError.code === '42701') {
+                console.log(`ℹ️ Column ${columnName} already exists (race condition)`)
+              } else {
+                console.error(`❌ Failed to add column ${columnName}:`, addError.message)
+                throw addError // Re-throw if it's a real error
+              }
             }
           }
-          // Regenerate Prisma client to pick up new columns
-          console.log('⚠️ Columns added - Prisma client may need regeneration on next deployment')
+          console.log('✅ All missing columns have been added')
         } else {
-          console.log('✅ All Plus One columns exist')
+          console.log('✅ All required columns exist')
         }
       } catch (columnCheckError: any) {
-        console.warn('⚠️ Could not check/add columns (non-fatal):', columnCheckError.message)
-        // Continue anyway - columns might exist
+        console.error('❌ CRITICAL: Column check/creation failed:', columnCheckError.message)
+        console.error('Stack:', columnCheckError.stack)
+        // Don't continue if we can't ensure columns exist - this will cause the createMany to fail anyway
+        throw new Error(`Database schema issue: ${columnCheckError.message}. Please ensure the rsvp_event_responses table has all required columns.`)
       }
 
       // Create RSVP and event responses in a transaction
