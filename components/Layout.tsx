@@ -197,10 +197,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                         {item.label}
                       </span>
                       {isActive && (
-                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sage transition-all duration-500 shadow-[0_0_8px_rgba(156,175,136,0.4)]" />
+                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sage transition-all duration-500 shadow-[0_0_8px_rgba(10,186,181,0.4)]" />
                       )}
                       {!isActive && (
-                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sage scale-x-0 transition-transform duration-500 hover:scale-x-100 origin-left group-hover:shadow-[0_0_8px_rgba(156,175,136,0.4)]" />
+                        <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-sage scale-x-0 transition-transform duration-500 hover:scale-x-100 origin-left group-hover:shadow-[0_0_8px_rgba(10,186,181,0.4)]" />
                       )}
                     </Link>
                   )
