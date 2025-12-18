@@ -361,7 +361,7 @@ export default function AdminFAQsPage() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="font-sans text-lg text-charcoal/70">Loading...</p>
+        <p className="font-sans text-lg text-charcoal/70 dark:text-dark-text-secondary">Loading...</p>
       </div>
     )
   }
@@ -369,7 +369,7 @@ export default function AdminFAQsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="flex justify-between items-center mb-8">
-        <h1 className="font-serif text-5xl text-charcoal">FAQs</h1>
+        <h1 className="font-serif text-5xl text-charcoal dark:text-dark-text">FAQs</h1>
         <button
           onClick={() => {
             setShowAddForm(true)
@@ -384,14 +384,14 @@ export default function AdminFAQsPage() {
       </div>
 
       {showAddForm && (
-        <div className="bg-white p-6 rounded-sm shadow-sm mb-6">
-          <h2 className="font-serif text-2xl text-charcoal mb-4">
+        <div className="bg-white dark:bg-dark-card p-6 rounded-sm shadow-sm mb-6 border border-taupe/20 dark:border-dark-border">
+          <h2 className="font-serif text-2xl text-charcoal dark:text-dark-text mb-4">
             {editingFAQ ? 'Edit FAQ' : 'Add New FAQ'}
           </h2>
           
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+              <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                 Question <span className="text-red-500">*</span>
               </label>
               <input
@@ -400,12 +400,12 @@ export default function AdminFAQsPage() {
                 onChange={(e) => setFormData({ ...formData, question: e.target.value })}
                 placeholder="Enter the question"
                 required
-                className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                className="w-full px-4 py-2 border border-taupe/30 dark:border-dark-border rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
               />
             </div>
 
             <div>
-              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+              <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                 Answer <span className="text-red-500">*</span>
               </label>
               <textarea
@@ -414,12 +414,12 @@ export default function AdminFAQsPage() {
                 placeholder="Enter the answer"
                 required
                 rows={4}
-                className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                className="w-full px-4 py-2 border border-taupe/30 dark:border-dark-border rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
               />
             </div>
 
             <div>
-              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+              <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                 Color Hex Codes (Optional)
               </label>
               <div className="space-y-3">
@@ -429,7 +429,7 @@ export default function AdminFAQsPage() {
                     value={newColorHex}
                     onChange={(e) => setNewColorHex(e.target.value)}
                     placeholder="#A8D5BA"
-                    className="flex-1 px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                    className="flex-1 px-4 py-2 border border-taupe/30 dark:border-dark-border rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault()
@@ -440,13 +440,13 @@ export default function AdminFAQsPage() {
                   <button
                     type="button"
                     onClick={handleAddColor}
-                    className="bg-sage/20 text-sage px-4 py-2 rounded-sm font-sans text-sm hover:bg-sage/30 transition-all"
+                    className="bg-sage/20 dark:bg-sage/30 text-sage dark:text-sage/90 px-4 py-2 rounded-sm font-sans text-sm hover:bg-sage/30 dark:hover:bg-sage/40 transition-all"
                   >
                     Add Color
                   </button>
                 </div>
                 {formData.colorHexCodes.length > 0 && (
-                  <div className="flex flex-wrap gap-2 p-3 bg-taupe/10 rounded-sm">
+                  <div className="flex flex-wrap gap-2 p-3 bg-taupe/10 dark:bg-dark-surface rounded-sm">
                     {formData.colorHexCodes.map((hex, index) => (
                       <div
                         key={index}
@@ -454,18 +454,18 @@ export default function AdminFAQsPage() {
                         onDragStart={() => handleColorDragStart(index)}
                         onDragOver={(e) => handleColorDragOver(e, index)}
                         onDragEnd={handleColorDragEnd}
-                        className={`flex items-center gap-2 bg-white px-3 py-2 rounded-sm border border-taupe/20 cursor-move transition-all ${
+                        className={`flex items-center gap-2 bg-white dark:bg-dark-card px-3 py-2 rounded-sm border border-taupe/20 dark:border-dark-border cursor-move transition-all ${
                           draggedColorIndex === index
-                            ? 'border-sage bg-sage/10 opacity-50'
+                            ? 'border-sage bg-sage/10 dark:bg-sage/20 opacity-50'
                             : 'hover:border-sage/50'
                         }`}
                       >
-                        <span className="text-charcoal/60 text-sm">⋮⋮</span>
+                        <span className="text-charcoal/60 dark:text-dark-text-secondary text-sm">⋮⋮</span>
                         <div
-                          className="w-6 h-6 rounded-full border border-taupe/30"
+                          className="w-6 h-6 rounded-full border border-taupe/30 dark:border-dark-border"
                           style={{ backgroundColor: hex }}
                         />
-                        <span className="font-mono text-xs text-charcoal">{hex}</span>
+                        <span className="font-mono text-xs text-charcoal dark:text-dark-text">{hex}</span>
                         <button
                           type="button"
                           onClick={(e) => {
@@ -473,7 +473,7 @@ export default function AdminFAQsPage() {
                             handleRemoveColor(index)
                           }}
                           onDragStart={(e) => e.stopPropagation()}
-                          className="text-red-500 hover:text-red-700 text-sm ml-1"
+                          className="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm ml-1"
                         >
                           ×
                         </button>
@@ -482,18 +482,18 @@ export default function AdminFAQsPage() {
                   </div>
                 )}
                 {formData.colorHexCodes.length > 0 && (
-                  <p className="mt-2 font-sans text-xs text-charcoal/60">
+                  <p className="mt-2 font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary">
                     Drag colors to reorder them. The order will be saved when you submit the form.
                   </p>
                 )}
               </div>
-              <p className="mt-1 font-sans text-xs text-charcoal/60">
+              <p className="mt-1 font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary">
                 Add hex color codes (e.g., #A8D5BA) to display color swatches in the FAQ. These will appear below the answer.
               </p>
             </div>
 
             <div>
-              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+              <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                 Show for Events
               </label>
               <div className="space-y-3">
@@ -508,18 +508,18 @@ export default function AdminFAQsPage() {
                         setFormData({ ...formData, isGlobal: false })
                       }
                     }}
-                    className="w-4 h-4 text-sage border-taupe/30 rounded focus:ring-sage"
+                    className="w-4 h-4 text-sage border-taupe/30 dark:border-dark-border rounded focus:ring-sage"
                   />
-                  <span className="font-sans text-sm text-charcoal">General FAQ (shows on all pages)</span>
+                  <span className="font-sans text-sm text-charcoal dark:text-dark-text">General FAQ (shows on all pages)</span>
                 </label>
                 
                 {!formData.isGlobal && (
-                  <div className="pl-6 space-y-2 border-l-2 border-taupe/20">
-                    <p className="font-sans text-xs text-charcoal/70 mb-2">Or select specific events (multi-select):</p>
+                  <div className="pl-6 space-y-2 border-l-2 border-taupe/20 dark:border-dark-border">
+                    <p className="font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary mb-2">Or select specific events (multi-select):</p>
                     {events.length === 0 ? (
                       <div className="space-y-2">
-                        <p className="font-sans text-xs text-charcoal/70 italic">Loading events...</p>
-                        <p className="font-sans text-xs text-red-500">If events don't load, check the browser console for errors.</p>
+                        <p className="font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary italic">Loading events...</p>
+                        <p className="font-sans text-xs text-red-500 dark:text-red-400">If events don't load, check the browser console for errors.</p>
                       </div>
                     ) : (
                       <div className="space-y-2">
@@ -541,20 +541,20 @@ export default function AdminFAQsPage() {
                                   })
                                 }
                               }}
-                              className="w-4 h-4 text-sage border-taupe/30 rounded focus:ring-sage"
+                              className="w-4 h-4 text-sage border-taupe/30 dark:border-dark-border rounded focus:ring-sage"
                             />
-                            <span className="font-sans text-sm text-charcoal">{event.name}</span>
+                            <span className="font-sans text-sm text-charcoal dark:text-dark-text">{event.name}</span>
                           </label>
                         ))}
                         {events.length === 0 && (
-                          <p className="font-sans text-xs text-charcoal/70">No events found. Please create events first in the Events admin page.</p>
+                          <p className="font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary">No events found. Please create events first in the Events admin page.</p>
                         )}
                       </div>
                     )}
                   </div>
                 )}
               </div>
-              <p className="mt-2 font-sans text-xs text-charcoal/60">
+              <p className="mt-2 font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary">
                 Select "General FAQ" for a global FAQ that shows on all pages, or choose specific events. FAQs tied to events will only show on slug pages that include those events.
               </p>
             </div>
@@ -563,7 +563,7 @@ export default function AdminFAQsPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="bg-charcoal text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? 'Saving...' : editingFAQ ? 'Update FAQ' : 'Add FAQ'}
               </button>
@@ -571,7 +571,7 @@ export default function AdminFAQsPage() {
                 type="button"
                 onClick={handleCancel}
                 disabled={submitting}
-                className="bg-taupe/20 text-charcoal px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Cancel
               </button>
@@ -580,12 +580,12 @@ export default function AdminFAQsPage() {
         </div>
       )}
 
-      <div className="bg-white p-6 rounded-sm shadow-sm mb-6">
-        <p className="font-sans text-sm text-charcoal/70 mb-4">
+      <div className="bg-white dark:bg-dark-card p-6 rounded-sm shadow-sm mb-6 border border-taupe/20 dark:border-dark-border">
+        <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary mb-4">
           Drag and drop FAQs below to reorder them. The order will be saved automatically.
         </p>
         {faqs.length === 0 ? (
-          <p className="font-sans text-lg text-charcoal/70 text-center py-12">
+          <p className="font-sans text-lg text-charcoal/70 dark:text-dark-text-secondary text-center py-12">
             No FAQs yet. Add your first FAQ above!
           </p>
         ) : (
@@ -607,31 +607,31 @@ export default function AdminFAQsPage() {
                 onDragEnd={handleDragEnd}
                 className={`flex items-start gap-4 p-4 border-2 rounded-sm cursor-move transition-all ${
                   draggedIndex === index
-                    ? 'border-sage bg-sage/10 opacity-50'
-                    : 'border-taupe/30 hover:border-sage/50'
+                    ? 'border-sage bg-sage/10 dark:bg-sage/20 opacity-50'
+                    : 'border-taupe/30 dark:border-dark-border hover:border-sage/50'
                 }`}
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <p className="font-sans text-sm font-medium text-charcoal">
+                    <p className="font-sans text-sm font-medium text-charcoal dark:text-dark-text">
                       Order: {index + 1}
                     </p>
                     {faq.events && faq.events.length > 0 ? (
                       faq.events.map((faqEvent) => (
-                        <span key={faqEvent.event.id} className="px-2 py-1 bg-sage/20 text-sage text-xs rounded-sm">
+                        <span key={faqEvent.event.id} className="px-2 py-1 bg-sage/20 dark:bg-sage/30 text-sage dark:text-sage/90 text-xs rounded-sm">
                           {faqEvent.event.name}
                         </span>
                       ))
                     ) : (
-                      <span className="px-2 py-1 bg-charcoal/20 text-charcoal text-xs rounded-sm">
+                      <span className="px-2 py-1 bg-charcoal/20 dark:bg-dark-border text-charcoal dark:text-dark-text text-xs rounded-sm">
                         General FAQ (All Events)
                       </span>
                     )}
                   </div>
-                  <h3 className="font-serif text-lg text-charcoal mb-2">
+                  <h3 className="font-serif text-lg text-charcoal dark:text-dark-text mb-2">
                     {faq.question}
                   </h3>
-                  <p className="font-sans text-sm text-charcoal/70 mb-2">
+                  <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary mb-2">
                     {faq.answer}
                   </p>
                   {faq.colorHexCodes && faq.colorHexCodes.length > 0 && (
@@ -639,7 +639,7 @@ export default function AdminFAQsPage() {
                       {faq.colorHexCodes.map((hex, idx) => (
                         <div
                           key={idx}
-                          className="w-4 h-4 rounded-full border border-taupe/30"
+                          className="w-4 h-4 rounded-full border border-taupe/30 dark:border-dark-border"
                           style={{ backgroundColor: hex }}
                           title={hex}
                         />
@@ -648,7 +648,7 @@ export default function AdminFAQsPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                  <span className="text-charcoal/60">⋮⋮</span>
+                  <span className="text-charcoal/60 dark:text-dark-text-secondary">⋮⋮</span>
                   <button
                     type="button"
                     onClick={(e) => {
@@ -657,7 +657,7 @@ export default function AdminFAQsPage() {
                       console.log('Edit button clicked for FAQ:', faq.id)
                       handleEdit(faq)
                     }}
-                    className="bg-sage/20 text-sage px-4 py-2 rounded-sm font-sans text-xs hover:bg-sage/30 transition-all"
+                    className="bg-sage/20 dark:bg-sage/30 text-sage dark:text-sage/90 px-4 py-2 rounded-sm font-sans text-xs hover:bg-sage/30 dark:hover:bg-sage/40 transition-all"
                   >
                     Edit
                   </button>
@@ -685,7 +685,7 @@ export default function AdminFAQsPage() {
                       e.stopPropagation()
                     }}
                     draggable={false}
-                    className="bg-red-100 text-red-600 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 transition-all cursor-pointer"
+                    className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 dark:hover:bg-red-900/50 transition-all cursor-pointer border border-red-200 dark:border-red-800"
                     style={{ pointerEvents: 'auto', position: 'relative', zIndex: 1000 }}
                   >
                     Delete
