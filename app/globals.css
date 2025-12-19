@@ -1097,19 +1097,43 @@ button, a, input, textarea, select {
     text-rendering: optimizeLegibility;
   }
 
-  /* Improved form inputs on mobile */
+  /* Improved form inputs on mobile - smaller, more compact */
   input, textarea, select {
-    font-size: 16px !important; /* Prevents zoom on iOS */
-    padding: 14px 16px !important; /* Larger touch targets */
-    border-radius: 12px !important; /* More modern, rounded */
+    font-size: 14px !important; /* Smaller text, still prevents zoom on iOS */
+    padding: 10px 12px !important; /* More compact padding */
+    border-radius: 8px !important; /* Slightly less rounded */
   }
 
-  /* Enhanced button interactions */
+  /* Enhanced button interactions - more compact */
   button {
-    padding: 14px 24px !important;
-    border-radius: 12px !important;
+    padding: 10px 16px !important;
+    border-radius: 8px !important;
     font-weight: 500 !important;
-    letter-spacing: 0.3px !important;
+    font-size: 14px !important;
+    letter-spacing: 0.2px !important;
+  }
+
+  /* Reduce text sizes on mobile for better fit */
+  h1 {
+    font-size: 1.75rem !important; /* Smaller headings */
+  }
+
+  h2 {
+    font-size: 1.5rem !important;
+  }
+
+  h3 {
+    font-size: 1.25rem !important;
+  }
+
+  p, span, div {
+    font-size: 0.875rem !important; /* 14px base text */
+  }
+
+  /* But keep minimum touch targets for buttons */
+  button, a[role="button"] {
+    min-height: 44px !important;
+    min-width: 44px !important;
   }
 
   /* Better spacing for mobile */
@@ -1121,15 +1145,23 @@ button, a, input, textarea, select {
     margin-top: 1.75rem !important;
   }
 
-  /* Improved card padding */
+  /* Improved card padding - more compact on mobile */
   .p-6 {
+    padding: 1rem !important;
+  }
+
+  .p-8 {
+    padding: 1.25rem !important;
+  }
+
+  .p-12 {
     padding: 1.5rem !important;
   }
 
-  /* Better section spacing */
+  /* Better section spacing - reduced on mobile */
   section {
-    padding-top: 3rem !important;
-    padding-bottom: 3rem !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
   }
 }
 

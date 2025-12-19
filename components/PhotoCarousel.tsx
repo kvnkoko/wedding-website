@@ -162,10 +162,10 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }
 
   return (
-    <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-cream dark:bg-dark-bg">
+    <section className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-cream dark:bg-dark-bg">
       {/* Main Carousel Container */}
       <div 
-        className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12"
+        className="relative w-full h-full flex items-center justify-center gap-2 sm:gap-4 md:gap-6 lg:gap-8 px-2 sm:px-4 md:px-8 lg:px-12"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -177,9 +177,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           <div 
             className="relative h-full flex items-stretch"
             style={{
-              transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}vw - ${currentIndex * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px))`,
+              transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}% - ${currentIndex * (photosToShow === 1 ? 0 : photosToShow === 2 ? 8 : 12)}px))`,
               transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              width: `calc(${sortedPhotos.length * (100 / photosToShow)}vw + ${sortedPhotos.length * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px)`,
+              width: `calc(${sortedPhotos.length * (100 / photosToShow)}% + ${sortedPhotos.length * (photosToShow === 1 ? 0 : photosToShow === 2 ? 8 : 12)}px)`,
               willChange: 'transform',
             }}
           >
@@ -197,9 +197,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 position = sortedPhotos.length - currentIndex + index
               }
 
-              // Container width - each photo takes up 1/photosToShow of the viewport width
-              const gapSize = photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16
-              const containerWidth = `calc(${100 / photosToShow}vw - ${gapSize * (photosToShow - 1) / photosToShow}px)`
+              // Container width - use percentage instead of vw for better mobile support
+              const gapSize = photosToShow === 1 ? 0 : photosToShow === 2 ? 8 : 12
+              const containerWidth = `calc(${100 / photosToShow}% - ${gapSize * (photosToShow - 1) / photosToShow}px)`
 
               return (
                 <div
@@ -221,13 +221,8 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                             src={photo.url}
                             alt=""
                             aria-hidden="true"
-                            className="absolute inset-0"
+                            className="absolute inset-0 w-full h-full object-cover"
                             style={{
-                              height: '100%',
-                              width: 'auto',
-                              maxWidth: '100%',
-                              objectFit: 'contain',
-                              objectPosition: 'center',
                               filter: 'blur(20px)',
                               transform: 'scale(1.05)',
                               opacity: 0.6,
@@ -239,7 +234,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                         <img
                           src={photo.url}
                           alt={photo.alt || `Photo ${index + 1}`}
-                          className={`relative transition-all duration-700 ease-in-out image-reveal ${
+                          className={`relative w-full h-full object-cover transition-all duration-700 ease-in-out image-reveal ${
                             loadedImages.has(photo.id)
                               ? 'opacity-100 loaded'
                               : 'opacity-0'
@@ -248,13 +243,6 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                               ? 'pan-zoom-horizontal'
                               : ''
                           }`}
-                          style={{
-                            height: '100%',
-                            width: 'auto',
-                            maxWidth: '100%',
-                            objectFit: 'contain',
-                            objectPosition: 'center',
-                          }}
                           loading={isVisible && position === 0 ? 'eager' : 'lazy'}
                           fetchPriority={isVisible && position === 0 ? 'high' : isVisible ? 'auto' : 'low'}
                           decoding={isVisible && position === 0 ? 'sync' : 'async'}

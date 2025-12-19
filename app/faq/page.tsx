@@ -179,41 +179,41 @@ export default function FAQPage() {
                   {/* Elegant top accent line */}
                   <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sage via-sage/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
-                  <div className="p-6 sm:p-8 md:p-10 lg:p-12">
-                    {/* Question with elegant styling */}
-                    <div className="flex items-start gap-4 mb-6">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-full bg-sage/10 dark:bg-sage/20 flex items-center justify-center mt-1 group-hover:bg-sage/20 dark:group-hover:bg-sage/30 transition-colors duration-300">
-                        <svg className="w-5 h-5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="p-4 sm:p-6 md:p-8 lg:p-12">
+                    {/* Question with elegant styling - mobile optimized */}
+                    <div className="flex items-start gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 md:mb-6">
+                      <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-sage/10 dark:bg-sage/20 flex items-center justify-center mt-0.5 sm:mt-1 group-hover:bg-sage/20 dark:group-hover:bg-sage/30 transition-colors duration-300">
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <h2 className="font-title text-2xl md:text-3xl text-charcoal dark:text-dark-text leading-tight group-hover:text-sage transition-colors duration-300 flex-1">
+                      <h2 className="font-title text-lg sm:text-xl md:text-2xl lg:text-3xl text-charcoal dark:text-dark-text leading-tight group-hover:text-sage transition-colors duration-300 flex-1">
                         {faq.question}
                       </h2>
                     </div>
                     
-                    {/* Answer with beautiful typography */}
-                    <div className="ml-14">
-                      <p className="text-base md:text-lg text-charcoal/75 dark:text-dark-text leading-relaxed whitespace-pre-line mb-8 transition-colors duration-600" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                    {/* Answer with beautiful typography - mobile optimized */}
+                    <div className="ml-0 sm:ml-10 md:ml-14">
+                      <p className="text-sm sm:text-base md:text-lg text-charcoal/75 dark:text-dark-text leading-relaxed whitespace-pre-line mb-4 sm:mb-6 md:mb-8 transition-colors duration-600" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                         {faq.answer}
                       </p>
                       
-                      {/* Color swatches with premium design */}
+                      {/* Color swatches with premium design - mobile optimized */}
                       {faq.colorHexCodes && faq.colorHexCodes.length > 0 && (
-                        <div className="mt-8 pt-8 border-t border-taupe/20 dark:border-dark-border">
-                        <div className="flex items-center gap-6 flex-wrap">
-                          <h3 className="text-sm font-semibold text-charcoal/60 dark:text-dark-text-secondary uppercase tracking-widest whitespace-nowrap flex items-center gap-2" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                        <div className="mt-4 sm:mt-6 md:mt-8 pt-4 sm:pt-6 md:pt-8 border-t border-taupe/20 dark:border-dark-border">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 md:gap-6 flex-wrap">
+                          <h3 className="text-xs sm:text-sm font-semibold text-charcoal/60 dark:text-dark-text-secondary uppercase tracking-widest flex items-center gap-2" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                             <span className="w-1 h-1 rounded-full bg-sage"></span>
                             Colors to Wear
                           </h3>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-wrap">
                               {faq.colorHexCodes.map((hex, colorIndex) => (
                                 <div
                                   key={colorIndex}
                                   className="relative group/color"
                                 >
                                   <div
-                                    className="relative w-14 h-14 rounded-full flex-shrink-0 cursor-pointer transition-all duration-500 hover:scale-125 hover:z-10 hover:shadow-2xl"
+                                    className="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex-shrink-0 cursor-pointer transition-all duration-500 hover:scale-125 hover:z-10 hover:shadow-2xl"
                                     style={{
                                       backgroundColor: hex,
                                       boxShadow: `
