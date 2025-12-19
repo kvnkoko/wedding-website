@@ -148,6 +148,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 Together with our families
               </p>
               
+              {/* Main Names - Large Impactful Typography */}
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
                 <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal">
                   <span className="block sm:inline">Kevin</span> <span className="block sm:inline">Koko</span>
@@ -160,7 +161,8 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 </h1>
               </div>
               
-              <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up animate-delay-800 scale-on-hover hero-float-delayed">
+              {/* Invitation Line */}
+              <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up animate-delay-800 scale-on-hover hero-float-delayed mobile-text-reveal">
                 Invite you to celebrate with us
               </p>
               
