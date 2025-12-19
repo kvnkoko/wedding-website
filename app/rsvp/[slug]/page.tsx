@@ -432,7 +432,7 @@ export default function RSVPFormPage() {
     return (
       <Suspense fallback={
         <div className="min-h-screen bg-cream dark:bg-dark-bg flex items-center justify-center">
-          <p className="font-body text-lg text-charcoal/70 dark:text-dark-text-secondary">Loading...</p>
+          <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>Loading...</p>
         </div>
       }>
         <HomeScreenWithCarousel slug={slug} config={config} />
