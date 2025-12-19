@@ -1133,8 +1133,16 @@ button, a, input, textarea, select {
   }
 
   /* Ensure hero names are large and prominent on mobile - MUCH LARGER */
+  /* Only apply clamp on mobile, let Tailwind classes handle desktop */
   h1.font-title {
     font-size: clamp(5.5rem, 18vw, 9rem) !important; /* MUCH larger, prominent names on mobile - minimum 5.5rem (88px) */
+  }
+
+  /* On larger screens, let Tailwind classes take over */
+  @media (min-width: 640px) {
+    h1.font-title {
+      font-size: inherit !important; /* Let Tailwind text-4xl, text-5xl, etc. work on desktop */
+    }
   }
 
   /* Force spans inside hero names to inherit the large size */
