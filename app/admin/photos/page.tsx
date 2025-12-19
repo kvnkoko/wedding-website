@@ -304,29 +304,29 @@ export default function AdminPhotosPage() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <p className="font-sans text-lg text-charcoal/70">Loading...</p>
+        <p className="font-sans text-lg text-charcoal/70 dark:text-dark-text-secondary">Loading...</p>
       </div>
     )
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="font-serif text-5xl text-charcoal">Photo Gallery</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+        <h1 className="font-serif text-5xl text-charcoal dark:text-dark-text">Photo Gallery</h1>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-sage text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-sage/90 transition-all"
+          className="bg-sage text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-sage/90 transition-all w-full sm:w-auto"
         >
           {showAddForm ? 'Cancel' : 'Add Photo'}
         </button>
       </div>
 
       {showAddForm && (
-        <div className="bg-white p-6 rounded-sm shadow-sm mb-6">
-          <h2 className="font-serif text-2xl text-charcoal mb-4">Add New Photo</h2>
+        <div className="bg-white dark:bg-dark-card p-6 rounded-sm shadow-sm mb-6 border border-taupe/20 dark:border-dark-border">
+          <h2 className="font-serif text-2xl text-charcoal dark:text-dark-text mb-4">Add New Photo</h2>
           
           {/* Upload Method Toggle */}
-          <div className="flex gap-4 mb-6 border-b border-taupe/30 pb-4">
+          <div className="flex gap-4 mb-6 border-b border-taupe/30 dark:border-dark-border pb-4">
             <button
               type="button"
               onClick={() => {
@@ -338,7 +338,7 @@ export default function AdminPhotosPage() {
               className={`px-4 py-2 rounded-sm font-sans text-sm transition-all ${
                 uploadMethod === 'upload'
                   ? 'bg-sage text-white'
-                  : 'bg-taupe/20 text-charcoal hover:bg-taupe/30'
+                  : 'bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text hover:bg-taupe/30 dark:hover:bg-dark-border/80'
               }`}
             >
               Upload Files
@@ -353,7 +353,7 @@ export default function AdminPhotosPage() {
               className={`px-4 py-2 rounded-sm font-sans text-sm transition-all ${
                 uploadMethod === 'url'
                   ? 'bg-sage text-white'
-                  : 'bg-taupe/20 text-charcoal hover:bg-taupe/30'
+                  : 'bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text hover:bg-taupe/30 dark:hover:bg-dark-border/80'
               }`}
             >
               Enter URL
@@ -363,7 +363,7 @@ export default function AdminPhotosPage() {
           <form onSubmit={handleUploadPhoto} className="space-y-4">
             {uploadMethod === 'upload' ? (
               <div>
-                <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                   Select Photos <span className="text-red-500">*</span>
                 </label>
                 <div
@@ -372,8 +372,8 @@ export default function AdminPhotosPage() {
                   onDrop={handleFileDrop}
                   className={`border-2 border-dashed rounded-sm p-6 text-center transition-colors ${
                     isDragging
-                      ? 'border-sage bg-sage/10'
-                      : 'border-taupe/30 hover:border-sage/50'
+                      ? 'border-sage bg-sage/10 dark:bg-sage/20'
+                      : 'border-taupe/30 dark:border-dark-border hover:border-sage/50'
                   }`}
                 >
                   <input
@@ -393,7 +393,7 @@ export default function AdminPhotosPage() {
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                           {selectedFiles.map((file, index) => (
                             <div key={index} className="relative group">
-                              <div className="relative w-full aspect-square rounded-sm overflow-hidden bg-taupe/20">
+                              <div className="relative w-full aspect-square rounded-sm overflow-hidden bg-taupe/20 dark:bg-dark-surface">
                                 <Image
                                   src={previewUrls[index]}
                                   alt={file.name}
@@ -412,16 +412,16 @@ export default function AdminPhotosPage() {
                               >
                                 ×
                               </button>
-                              <p className="mt-1 font-sans text-xs text-charcoal/70 truncate">
+                              <p className="mt-1 font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary truncate">
                                 {file.name}
                               </p>
                             </div>
                           ))}
                         </div>
-                        <div className="flex gap-2 justify-center">
+                        <div className="flex flex-col sm:flex-row gap-2 justify-center">
                           <label
                             htmlFor="file-upload"
-                            className="bg-sage text-white px-4 py-2 rounded-sm font-sans text-sm hover:bg-sage/90 transition-all cursor-pointer"
+                            className="bg-sage text-white px-4 py-2 rounded-sm font-sans text-sm hover:bg-sage/90 transition-all cursor-pointer text-center"
                           >
                             Add More Photos
                           </label>
@@ -433,7 +433,7 @@ export default function AdminPhotosPage() {
                               const input = document.getElementById('file-upload') as HTMLInputElement
                               if (input) input.value = ''
                             }}
-                            className="bg-taupe/20 text-charcoal px-4 py-2 rounded-sm font-sans text-sm hover:bg-taupe/30 transition-all"
+                            className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-4 py-2 rounded-sm font-sans text-sm hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all"
                           >
                             Clear All
                           </button>
@@ -442,7 +442,7 @@ export default function AdminPhotosPage() {
                     ) : (
                       <div className="space-y-2">
                         <svg
-                          className="mx-auto h-12 w-12 text-charcoal/60"
+                          className="mx-auto h-12 w-12 text-charcoal/60 dark:text-dark-text-secondary"
                           stroke="currentColor"
                           fill="none"
                           viewBox="0 0 48 48"
@@ -454,10 +454,10 @@ export default function AdminPhotosPage() {
                             strokeLinejoin="round"
                           />
                         </svg>
-                        <p className="font-sans text-sm text-charcoal/70">
+                        <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary">
                           Click to upload or drag and drop
                         </p>
-                        <p className="font-sans text-xs text-charcoal/70">
+                        <p className="font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary">
                           PNG, JPG, GIF up to 10MB each (multiple files supported)
                         </p>
                       </div>
@@ -467,7 +467,7 @@ export default function AdminPhotosPage() {
               </div>
             ) : (
               <div>
-                <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+                <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                   Photo URL <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -476,16 +476,16 @@ export default function AdminPhotosPage() {
                   onChange={(e) => setNewPhotoUrl(e.target.value)}
                   placeholder="https://example.com/photo.jpg"
                   required={uploadMethod === 'url'}
-                  className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                  className="w-full px-4 py-2 border border-taupe/30 dark:border-dark-border rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                 />
-                <p className="mt-1 font-sans text-xs text-charcoal/60">
+                <p className="mt-1 font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary">
                   Enter the full URL of the image
                 </p>
               </div>
             )}
 
             <div>
-              <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+              <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                 Alt Text (Optional)
               </label>
               <input
@@ -493,13 +493,13 @@ export default function AdminPhotosPage() {
                 value={newPhotoAlt}
                 onChange={(e) => setNewPhotoAlt(e.target.value)}
                 placeholder="Description of the photo"
-                className="w-full px-4 py-2 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+                className="w-full px-4 py-2 border border-taupe/30 dark:border-dark-border rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
               />
             </div>
             <button
               type="submit"
               disabled={uploading || (uploadMethod === 'upload' && selectedFiles.length === 0)}
-              className="bg-charcoal text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
             >
               {uploading 
                 ? `Uploading ${selectedFiles.length > 0 ? `${selectedFiles.length} ` : ''}photo${selectedFiles.length > 1 ? 's' : ''}...` 
@@ -511,12 +511,12 @@ export default function AdminPhotosPage() {
         </div>
       )}
 
-      <div className="bg-white p-6 rounded-sm shadow-sm mb-6">
-        <p className="font-sans text-sm text-charcoal/70 mb-4">
+      <div className="bg-white dark:bg-dark-card p-6 rounded-sm shadow-sm mb-6 border border-taupe/20 dark:border-dark-border">
+        <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary mb-4">
           Drag and drop photos to reorder them. The order will be saved automatically.
         </p>
         {photos.length === 0 ? (
-          <p className="font-sans text-lg text-charcoal/70 text-center py-12">
+          <p className="font-sans text-lg text-charcoal/70 dark:text-dark-text-secondary text-center py-12">
             No photos yet. Add your first photo above!
           </p>
         ) : (
@@ -528,14 +528,14 @@ export default function AdminPhotosPage() {
                 onDragStart={() => handleDragStart(index)}
                 onDragOver={(e) => handleDragOver(e, index)}
                 onDragEnd={handleDragEnd}
-                className={`flex items-center gap-4 p-4 border-2 rounded-sm cursor-move transition-all ${
+                className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border-2 rounded-sm cursor-move transition-all ${
                   draggedIndex === index
-                    ? 'border-sage bg-sage/10 opacity-50'
-                    : 'border-taupe/30 hover:border-sage/50'
+                    ? 'border-sage bg-sage/10 dark:bg-sage/20 opacity-50'
+                    : 'border-taupe/30 dark:border-dark-border hover:border-sage/50'
                 }`}
               >
                 <div className="flex-shrink-0">
-                  <div className="w-16 h-16 md:w-24 md:h-24 relative rounded-sm overflow-hidden bg-taupe/20">
+                  <div className="w-16 h-16 md:w-24 md:h-24 relative rounded-sm overflow-hidden bg-taupe/20 dark:bg-dark-surface">
                     <Image
                       src={photo.url}
                       alt={photo.alt || `Photo ${index + 1}`}
@@ -546,23 +546,23 @@ export default function AdminPhotosPage() {
                   </div>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-sans text-sm font-medium text-charcoal mb-1">
+                  <p className="font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-1">
                     Order: {index + 1}
                   </p>
-                  <p className="font-sans text-xs text-charcoal/60 truncate">
+                  <p className="font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary truncate">
                     {photo.url}
                   </p>
                   {photo.alt && (
-                    <p className="font-sans text-xs text-charcoal/70 mt-1">
+                    <p className="font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary mt-1">
                       Alt: {photo.alt}
                     </p>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-charcoal/60">⋮⋮</span>
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <span className="text-charcoal/60 dark:text-dark-text-secondary">⋮⋮</span>
                   <button
                     onClick={() => handleDeletePhoto(photo.id)}
-                    className="bg-red-100 text-red-600 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 transition-all"
+                    className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 dark:hover:bg-red-900/50 transition-all border border-red-200 dark:border-red-800 w-full sm:w-auto"
                   >
                     Delete
                   </button>

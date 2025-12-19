@@ -124,35 +124,35 @@ function HomeContent() {
         <div className="max-w-7xl mx-auto w-full relative z-10">
           <div className="flex flex-col items-center justify-center">
             {/* Center Content */}
-            <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-4 md:py-12 lg:py-20 -mt-16 sm:-mt-8 md:mt-0 w-full">
-              {/* Subtitle */}
-              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/70 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed mobile-text-reveal">
+            <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-8 sm:py-12 md:py-12 lg:py-20 -mt-8 sm:-mt-4 md:mt-0 w-full px-4">
+              {/* Subtitle - Mobile optimized */}
+              <p className="font-body text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-charcoal/70 dark:text-dark-text-secondary tracking-[0.15em] sm:tracking-[0.2em] uppercase mb-2 sm:mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed mobile-text-reveal px-2">
                 Together with our families
               </p>
               
-              {/* Main Names - Large Impactful Typography */}
-              <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal">
+              {/* Main Names - Mobile-first responsive typography */}
+              <div className="flex flex-col items-center space-y-3 sm:space-y-4 md:space-y-6 px-2">
+                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[10rem] text-charcoal dark:text-dark-text leading-[0.85] sm:leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal">
                   <span className="block sm:inline">Kevin</span> <span className="block sm:inline">Koko</span>
                 </h1>
-                <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed mobile-text-reveal">
+                <p className="font-script text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-charcoal dark:text-dark-text mt-2 sm:mt-4 md:mt-6 lg:mt-8 xl:mt-10 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed mobile-text-reveal">
                   And
                 </p>
-                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal">
+                <h1 className="font-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[10rem] text-charcoal dark:text-dark-text leading-[0.85] sm:leading-[0.9] tracking-tight animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal">
                   <span className="block sm:inline">Tiffany</span> <span className="block sm:inline">Min</span>
                 </h1>
               </div>
               
-              {/* Invitation Line */}
-              <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up animate-delay-800 scale-on-hover hero-float-delayed mobile-text-reveal">
+              {/* Invitation Line - Mobile optimized */}
+              <p className="font-script text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-charcoal/70 dark:text-dark-text-secondary mt-3 sm:mt-4 md:mt-6 lg:mt-8 animate-fade-in-up animate-delay-800 scale-on-hover hero-float-delayed mobile-text-reveal px-2">
                 Invite you to celebrate with us
               </p>
               
               {/* No date or RSVP button on main page - this is the public site */}
               {/* Event information is only shown on personalized slug pages */}
               
-              {/* Hashtag - Subtle bottom placement, balanced size */}
-              <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/70 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up animate-delay-1000 scale-on-hover hero-float-delayed mobile-text-reveal">
+              {/* Hashtag - Mobile optimized spacing */}
+              <p className="font-script text-xs sm:text-sm md:text-base lg:text-lg text-charcoal/70 dark:text-dark-text-secondary mt-8 sm:mt-12 md:mt-16 animate-fade-in-up animate-delay-1000 scale-on-hover hero-float-delayed mobile-text-reveal px-2">
                 #tiffandko
               </p>
             </div>

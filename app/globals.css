@@ -1070,21 +1070,118 @@ button, a, input, textarea, select {
 
 /* Mobile-optimized touch interactions */
 @media (max-width: 768px) {
-  /* Enhanced touch feedback */
-  button, a, input, textarea, select {
-    -webkit-tap-highlight-color: rgba(107, 155, 154, 0.2);
+  /* Enhanced touch feedback - larger tap targets */
+  button, a, input[type="button"], input[type="submit"], input[type="checkbox"], input[type="radio"] {
+    -webkit-tap-highlight-color: rgba(107, 155, 154, 0.25);
     touch-action: manipulation;
+    min-height: 44px; /* iOS recommended minimum */
+    min-width: 44px;
   }
 
-  /* Smooth mobile scroll */
+  /* Smooth mobile scroll with momentum */
   html {
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    scroll-padding-top: 80px; /* Account for sticky nav */
   }
 
-  /* Mobile-optimized transitions */
+  /* Mobile-optimized transitions - smoother, faster */
   * {
-    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+    transition-timing-function: cubic-bezier(0.4, 0.0, 0.2, 1) !important;
+  }
+
+  /* Better text rendering on mobile */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Improved form inputs on mobile */
+  input, textarea, select {
+    font-size: 16px !important; /* Prevents zoom on iOS */
+    padding: 14px 16px !important; /* Larger touch targets */
+    border-radius: 12px !important; /* More modern, rounded */
+  }
+
+  /* Enhanced button interactions */
+  button {
+    padding: 14px 24px !important;
+    border-radius: 12px !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  /* Better spacing for mobile */
+  .space-y-4 > * + * {
+    margin-top: 1.25rem !important;
+  }
+
+  .space-y-6 > * + * {
+    margin-top: 1.75rem !important;
+  }
+
+  /* Improved card padding */
+  .p-6 {
+    padding: 1.5rem !important;
+  }
+
+  /* Better section spacing */
+  section {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+  }
+}
+
+/* Mobile-specific animations */
+@media (max-width: 768px) {
+  /* Smooth fade-in for mobile */
+  @keyframes mobileFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Staggered reveal for mobile lists */
+  .mobile-reveal {
+    animation: mobileFadeIn 0.6s cubic-bezier(0.4, 0.0, 0.2, 1) forwards;
+    opacity: 0;
+  }
+
+  .mobile-reveal:nth-child(1) { animation-delay: 0.05s; }
+  .mobile-reveal:nth-child(2) { animation-delay: 0.1s; }
+  .mobile-reveal:nth-child(3) { animation-delay: 0.15s; }
+  .mobile-reveal:nth-child(4) { animation-delay: 0.2s; }
+  .mobile-reveal:nth-child(5) { animation-delay: 0.25s; }
+  .mobile-reveal:nth-child(6) { animation-delay: 0.3s; }
+
+  /* Enhanced touch ripple effect */
+  .touch-ripple {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .touch-ripple::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(107, 155, 154, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .touch-ripple:active::after {
+    width: 300px;
+    height: 300px;
   }
 }
 

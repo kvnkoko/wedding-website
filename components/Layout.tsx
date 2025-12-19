@@ -241,10 +241,10 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 </div>
               </button>
               
-              {/* Mobile Menu Button */}
+              {/* Mobile Menu Button - Enhanced touch target */}
               <button 
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="text-charcoal dark:text-dark-text p-2.5 rounded-xl transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-95 touch-ripple relative overflow-hidden"
+                className="text-charcoal dark:text-dark-text p-3 rounded-xl transition-all duration-300 hover:bg-taupe/30 dark:hover:bg-dark-border active:scale-90 touch-ripple relative overflow-hidden min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Menu"
                 aria-expanded={mobileMenuOpen}
               >
@@ -279,9 +279,9 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 onClick={() => setMobileMenuOpen(false)}
                 aria-hidden="true"
               />
-              {/* Menu Container - positioned below nav */}
+              {/* Menu Container - positioned below nav with enhanced mobile styling */}
               <div className="absolute top-16 left-0 right-0 bg-white dark:bg-dark-surface backdrop-blur-xl border-b border-taupe/30 dark:border-dark-border shadow-2xl mobile-menu-container">
-                <div className="px-4 py-3 space-y-0.5">
+                <div className="px-4 py-4 space-y-1">
                   {navItems.map((item, index) => {
                     let isActive = item.href === pathname || item.href.split('?')[0] === pathname
                     
