@@ -132,13 +132,13 @@ function HomeContent() {
               
               {/* Main Names - Large Impactful Typography */}
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                <h1 className="font-title text-7xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal">
+                <h1 className="font-title text-8xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(3rem, 12vw, 9rem)' }}>
                   <span className="block sm:inline">Kevin</span> <span className="block sm:inline">Koko</span>
                 </h1>
                 <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed mobile-text-reveal">
                   And
                 </p>
-                <h1 className="font-title text-7xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal">
+                <h1 className="font-title text-8xl sm:text-6xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(3rem, 12vw, 9rem)' }}>
                   <span className="block sm:inline">Tiffany</span> <span className="block sm:inline">Min</span>
                 </h1>
               </div>

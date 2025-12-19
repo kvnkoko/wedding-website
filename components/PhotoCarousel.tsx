@@ -291,7 +291,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           </div>
         </div>
 
-        {/* Navigation Dots - Tiny and subtle on mobile */}
+        {/* Navigation Dots - Tiny on mobile, normal on desktop */}
         {sortedPhotos.length > photosToShow && (
           <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-1 sm:space-x-1.5 md:space-x-2 lg:space-x-3">
             {Array.from({ length: Math.max(1, sortedPhotos.length - photosToShow + 1) }).map((_, index) => (
@@ -300,14 +300,18 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                 onClick={() => goToSlide(index)}
                 className={`transition-all duration-500 ease-out rounded-full ${
                   index === currentIndex
-                    ? 'w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 lg:w-2.5 lg:h-2.5 bg-white dark:bg-dark-text shadow-sm dark:shadow-md'
-                    : 'w-0.5 h-0.5 sm:w-1 sm:h-1 md:w-1.5 md:h-1.5 lg:w-2 lg:h-2 bg-white/30 dark:bg-dark-text/30 hover:bg-white/50 dark:hover:bg-dark-text/50'
+                    ? 'bg-white dark:bg-dark-text shadow-sm dark:shadow-md'
+                    : 'bg-white/30 dark:bg-dark-text/30 hover:bg-white/50 dark:hover:bg-dark-text/50'
                 }`}
                 style={{
                   minWidth: '0 !important',
                   minHeight: '0 !important',
-                  width: index === currentIndex ? '4px' : '2px',
-                  height: index === currentIndex ? '4px' : '2px',
+                  width: index === currentIndex 
+                    ? 'clamp(3px, 1vw, 10px)' 
+                    : 'clamp(2px, 0.75vw, 8px)',
+                  height: index === currentIndex 
+                    ? 'clamp(3px, 1vw, 10px)' 
+                    : 'clamp(2px, 0.75vw, 8px)',
                 }}
                 aria-label={`Go to slide ${index + 1}`}
               />
