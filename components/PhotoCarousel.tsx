@@ -175,14 +175,13 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           className="relative w-full h-full overflow-hidden"
         >
           <div 
-            className="relative h-full flex items-stretch"
+            className="relative h-full flex items-stretch md:px-0"
             style={{
               transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}vw - ${currentIndex * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px))`,
               transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
               width: `calc(${sortedPhotos.length * (100 / photosToShow)}vw + ${sortedPhotos.length * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px)`,
               willChange: 'transform',
             }}
-            className="md:px-0"
           >
             {sortedPhotos.map((photo, index) => {
               // Calculate if this photo should be visible
