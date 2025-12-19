@@ -91,6 +91,24 @@ html.dark-mode-initialized select {
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-elgraine);
   }
+}
+
+/* Admin portal uses system-ui for better readability */
+.admin-portal,
+.admin-portal * {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Admin portal headings still use title font */
+.admin-portal h1, 
+.admin-portal h2, 
+.admin-portal h3, 
+.admin-portal h4, 
+.admin-portal h5, 
+.admin-portal h6,
+.admin-portal .font-title {
+  font-family: var(--font-elgraine) !important;
+}
   
   .font-script {
     font-family: var(--font-script);

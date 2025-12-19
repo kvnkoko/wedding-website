@@ -101,7 +101,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   ]
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-dark-bg transition-colors duration-300">
+    <div className="admin-portal min-h-screen bg-cream dark:bg-dark-bg transition-colors duration-300">
       {/* Top Header */}
       <header className="bg-white dark:bg-dark-surface border-b border-taupe/30 dark:border-dark-border shadow-sm sticky top-0 z-50 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
