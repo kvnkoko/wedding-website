@@ -109,10 +109,9 @@ html.dark-mode-initialized select {
 .admin-portal .font-title {
   font-family: var(--font-elgraine) !important;
 }
-  
-  .font-script {
-    font-family: var(--font-script);
-  }
+
+.font-script {
+  font-family: var(--font-script);
 }
 
 @layer utilities {
