@@ -1132,6 +1132,11 @@ button, a, input, textarea, select {
     font-size: 1.75rem !important; /* Smaller headings, but not hero titles */
   }
 
+  /* Ensure hero names are large and prominent on mobile */
+  h1.font-title {
+    font-size: clamp(4.5rem, 15vw, 9rem) !important; /* Large, prominent names on mobile */
+  }
+
   h2 {
     font-size: 1.5rem !important;
   }
