@@ -144,7 +144,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
           <div className="flex flex-col items-center justify-center">
             {/* Center Content */}
             <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-4 md:py-12 lg:py-20 -mt-16 sm:-mt-8 md:mt-0 w-full">
-              <p className="font-body text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-charcoal/70 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed mobile-text-reveal">
+              <p className="font-body text-charcoal/70 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.5rem)' }}>
                 Together with our families
               </p>
               
@@ -153,7 +153,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 <h1 className="font-title text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(5.5rem, 18vw, 9rem) !important' }}>
                   <span className="block sm:inline" style={{ fontSize: 'inherit !important' }}>Kevin</span> <span className="block sm:inline" style={{ fontSize: 'inherit !important' }}>Koko</span>
                 </h1>
-                <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed mobile-text-reveal">
+                <p className="font-script text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(1.25rem, 4vw, 3rem)' }}>
                   And
                 </p>
                 <h1 className="font-title text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(5.5rem, 18vw, 9rem) !important' }}>
@@ -162,30 +162,33 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
               </div>
               
               {/* Invitation Line */}
-              <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up animate-delay-800 scale-on-hover hero-float-delayed mobile-text-reveal">
+              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up animate-delay-800 scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(1.125rem, 3.5vw, 2.5rem)' }}>
                 Invite you to celebrate with us
               </p>
               
               {/* Date - Reserve space to prevent layout shift */}
-              <div className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal/60 dark:text-dark-text-secondary mt-6 md:mt-10 tracking-wide min-h-[1.5em] animate-fade-in-up animate-delay-900 hero-float-delayed">
+              <div className="font-title text-charcoal/60 dark:text-dark-text-secondary mt-6 md:mt-10 tracking-wide min-h-[1.5em] animate-fade-in-up animate-delay-900 hero-float-delayed" style={{ fontSize: 'clamp(1rem, 2.5vw, 1.5rem)' }}>
                 {dateRange ? (
-                  <p>{dateRange}</p>
+                  <p style={{ fontSize: 'inherit' }}>{dateRange}</p>
                 ) : (
-                  <p className="invisible">January 22 - March 22, 2025</p>
+                  <p className="invisible" style={{ fontSize: 'inherit' }}>January 22 - March 22, 2025</p>
                 )}
               </div>
               
               <div className="mt-8 md:mt-12 animate-fade-in-up animate-delay-1000 hero-float-delayed">
                 <Link
                   href={`/rsvp/${slug}?form=true`}
-                  className="inline-block bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-8 md:px-12 py-3 md:py-4 rounded-sm text-xs md:text-sm tracking-[0.15em] uppercase btn-hover-lift btn-glow magnetic shadow-lift ripple transition-all duration-300"
-                  style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}
+                  className="inline-block bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 md:px-12 py-3 md:py-4 rounded-sm tracking-[0.15em] uppercase btn-hover-lift btn-glow magnetic shadow-lift ripple transition-all duration-300"
+                  style={{ 
+                    fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                    fontSize: 'clamp(0.75rem, 2vw, 0.875rem)'
+                  }}
                 >
                   RSVP
                 </Link>
               </div>
               
-              <p className="font-script text-sm md:text-base lg:text-lg text-charcoal/70 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up animate-delay-1000 scale-on-hover hero-float-delayed">
+              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up animate-delay-1000 scale-on-hover hero-float-delayed" style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)' }}>
                 #tiffandko
               </p>
             </div>

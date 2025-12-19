@@ -1160,6 +1160,23 @@ button, a, input, textarea, select {
     font-size: inherit !important; /* Inherit the large size from parent h1 */
   }
 
+  /* Hero section text - make readable on mobile, exclude from small font rule */
+  section[class*="hero"] p,
+  section[class*="min-h-screen"] p:not([class*="form"]),
+  .hero-float-delayed,
+  .mobile-text-reveal {
+    font-size: inherit !important; /* Let Tailwind classes control size */
+  }
+
+  /* Specific hero text sizes for mobile readability */
+  section[class*="min-h-screen"] .font-body {
+    font-size: clamp(0.875rem, 2.5vw, 1.5rem) !important; /* Subtitle: 14px-24px */
+  }
+
+  section[class*="min-h-screen"] .font-script {
+    font-size: clamp(1.125rem, 3vw, 2rem) !important; /* Script text: 18px-32px */
+  }
+
   /* But keep minimum touch targets for buttons - exclude navigation dots */
   button:not([aria-label*="slide"]), a[role="button"] {
     min-height: 44px !important;
