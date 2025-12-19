@@ -313,9 +313,30 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           </div>
         )}
 
-        {/* Navigation Arrows - Hidden on mobile, shown on desktop */}
+        {/* Navigation Arrows - Minimal on mobile, full on desktop */}
         {sortedPhotos.length > photosToShow && (
           <>
+            {/* Mobile: Minimal arrows */}
+            <button
+              onClick={() => navigatePhotos('prev')}
+              className="md:hidden absolute left-2 top-1/2 -translate-y-1/2 z-30 bg-white/80 dark:bg-dark-card/80 text-charcoal dark:text-dark-text p-2 rounded-full transition-all duration-300 active:scale-95 backdrop-blur-sm"
+              aria-label="Previous photos"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onClick={() => navigatePhotos('next')}
+              className="md:hidden absolute right-2 top-1/2 -translate-y-1/2 z-30 bg-white/80 dark:bg-dark-card/80 text-charcoal dark:text-dark-text p-2 rounded-full transition-all duration-300 active:scale-95 backdrop-blur-sm"
+              aria-label="Next photos"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+            
+            {/* Desktop: Full arrows */}
             <button
               onClick={() => navigatePhotos('prev')}
               className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-white/90 dark:bg-dark-card/90 hover:bg-white dark:hover:bg-dark-card text-charcoal dark:text-dark-text p-3 rounded-full transition-all duration-500 hover:scale-110 active:scale-95 shadow-lg dark:shadow-2xl backdrop-blur-md magnetic glass group"
