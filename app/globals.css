@@ -1136,6 +1136,36 @@ button, a, input, textarea, select {
     min-width: 44px !important;
   }
 
+  /* Form inputs - smaller on mobile */
+  .form-input, .form-select, .form-textarea {
+    font-size: 14px !important;
+    padding: 10px 12px !important;
+    border-radius: 8px !important;
+  }
+
+  .form-label {
+    font-size: 0.875rem !important; /* 14px */
+  }
+
+  .form-section-title {
+    font-size: 1.25rem !important; /* 20px */
+    margin-bottom: 1rem !important;
+  }
+
+  .form-section {
+    margin-bottom: 2rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  /* Event cards - more compact */
+  .event-card {
+    padding: 1rem !important;
+  }
+
+  .event-card-title {
+    font-size: 1.125rem !important; /* 18px */
+  }
+
   /* Better spacing for mobile */
   .space-y-4 > * + * {
     margin-top: 1.25rem !important;
