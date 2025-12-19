@@ -291,17 +291,17 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           </div>
         </div>
 
-        {/* Navigation Dots */}
+        {/* Navigation Dots - Smaller and more subtle */}
         {sortedPhotos.length > photosToShow && (
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-3">
+          <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-1.5 sm:space-x-2 md:space-x-3">
             {Array.from({ length: Math.max(1, sortedPhotos.length - photosToShow + 1) }).map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
-                className={`transition-all duration-500 ease-out rounded-full magnetic ${
+                className={`transition-all duration-500 ease-out rounded-full ${
                   index === currentIndex
-                    ? 'w-3 h-3 bg-white dark:bg-dark-text shadow-lg dark:shadow-2xl scale-110'
-                    : 'w-2 h-2 bg-white/50 dark:bg-dark-text/50 hover:bg-white/75 dark:hover:bg-dark-text/75 hover:scale-110'
+                    ? 'w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-2.5 md:h-2.5 bg-white dark:bg-dark-text shadow-md dark:shadow-lg'
+                    : 'w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-white/40 dark:bg-dark-text/40 hover:bg-white/60 dark:hover:bg-dark-text/60'
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
               />
