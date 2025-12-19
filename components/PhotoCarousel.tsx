@@ -162,10 +162,10 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }
 
   return (
-    <section className="relative w-full h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden bg-cream dark:bg-dark-bg">
+    <section className="relative w-full h-[70vh] md:h-[600px] lg:h-[700px] overflow-hidden bg-cream dark:bg-dark-bg">
       {/* Main Carousel Container */}
       <div 
-        className="relative w-full h-full flex items-center justify-center gap-4 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12"
+        className="relative w-full h-full flex items-center justify-center gap-0 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -182,6 +182,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
               width: `calc(${sortedPhotos.length * (100 / photosToShow)}vw + ${sortedPhotos.length * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px)`,
               willChange: 'transform',
             }}
+            className="md:px-0"
           >
             {sortedPhotos.map((photo, index) => {
               // Calculate if this photo should be visible
@@ -212,7 +213,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     marginRight: index < sortedPhotos.length - 1 ? `${gapSize}px` : '0',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-sm overflow-hidden shadow-lg dark:shadow-2xl flex items-center justify-center bg-cream dark:bg-dark-card card-hover transition-all duration-500">
+                  <div className="relative w-full h-full rounded-none md:rounded-sm overflow-hidden shadow-none md:shadow-lg dark:md:shadow-2xl flex items-center justify-center bg-cream dark:bg-dark-card transition-all duration-500">
                     {photo.url && (
                       <>
                         {/* Low-quality blurred placeholder - shows immediately while loading */}
@@ -291,9 +292,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           </div>
         </div>
 
-        {/* Navigation Dots - Same size as desktop, properly circular */}
+        {/* Navigation Dots - Hidden on mobile, shown on desktop */}
         {sortedPhotos.length > photosToShow && (
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-3">
+          <div className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-20 space-x-3">
             {Array.from({ length: Math.max(1, sortedPhotos.length - photosToShow + 1) }).map((_, index) => (
               <button
                 key={index}
@@ -313,12 +314,12 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           </div>
         )}
 
-        {/* Navigation Arrows */}
+        {/* Navigation Arrows - Hidden on mobile, shown on desktop */}
         {sortedPhotos.length > photosToShow && (
           <>
             <button
               onClick={() => navigatePhotos('prev')}
-              className="absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-white/90 dark:bg-dark-card/90 hover:bg-white dark:hover:bg-dark-card text-charcoal dark:text-dark-text p-3 rounded-full transition-all duration-500 hover:scale-110 active:scale-95 shadow-lg dark:shadow-2xl backdrop-blur-md magnetic glass group"
+              className="hidden md:block absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-white/90 dark:bg-dark-card/90 hover:bg-white dark:hover:bg-dark-card text-charcoal dark:text-dark-text p-3 rounded-full transition-all duration-500 hover:scale-110 active:scale-95 shadow-lg dark:shadow-2xl backdrop-blur-md magnetic glass group"
               aria-label="Previous photos"
             >
               <svg className="w-6 h-6 transition-transform duration-300 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -327,7 +328,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
             </button>
             <button
               onClick={() => navigatePhotos('next')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-white/90 dark:bg-dark-card/90 hover:bg-white dark:hover:bg-dark-card text-charcoal dark:text-dark-text p-3 rounded-full transition-all duration-500 hover:scale-110 active:scale-95 shadow-lg dark:shadow-2xl backdrop-blur-md magnetic glass group"
+              className="hidden md:block absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-white/90 dark:bg-dark-card/90 hover:bg-white dark:hover:bg-dark-card text-charcoal dark:text-dark-text p-3 rounded-full transition-all duration-500 hover:scale-110 active:scale-95 shadow-lg dark:shadow-2xl backdrop-blur-md magnetic glass group"
               aria-label="Next photos"
             >
               <svg className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,9 +338,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           </>
         )}
 
-        {/* Progress Bar */}
+        {/* Progress Bar - Hidden on mobile, shown on desktop */}
         {isAutoPlaying && sortedPhotos.length > photosToShow && (
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 dark:bg-dark-text/20 z-20">
+          <div className="hidden md:block absolute bottom-0 left-0 right-0 h-1 bg-white/20 dark:bg-dark-text/20 z-20">
             <div
               className="h-full bg-white dark:bg-dark-text transition-all duration-5000 ease-linear"
               style={{
