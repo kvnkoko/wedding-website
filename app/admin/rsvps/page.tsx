@@ -752,8 +752,8 @@ export default function AdminRSVPsPage() {
                                             )}
                                             {displayRelation && (
                                               <div>
-                                                <p className="text-xs uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Relationship</p>
-                                                <p className="text-sm text-charcoal dark:text-dark-text">
+                                                <p className="text-[10px] uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Relationship</p>
+                                                <p className="text-xs text-charcoal dark:text-dark-text font-semibold">
                                                   {displayRelation}
                                                 </p>
                                               </div>
