@@ -291,18 +291,22 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           </div>
         </div>
 
-        {/* Navigation Dots - Smaller and more subtle */}
+        {/* Navigation Dots - Tiny and subtle on mobile */}
         {sortedPhotos.length > photosToShow && (
-          <div className="absolute bottom-4 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-1.5 sm:space-x-2 md:space-x-3">
+          <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-1 sm:space-x-1.5 md:space-x-2 lg:space-x-3">
             {Array.from({ length: Math.max(1, sortedPhotos.length - photosToShow + 1) }).map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
                 className={`transition-all duration-500 ease-out rounded-full ${
                   index === currentIndex
-                    ? 'w-1.5 h-1.5 sm:w-2 sm:h-2 md:w-2.5 md:h-2.5 bg-white dark:bg-dark-text shadow-md dark:shadow-lg'
-                    : 'w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 bg-white/40 dark:bg-dark-text/40 hover:bg-white/60 dark:hover:bg-dark-text/60'
+                    ? 'w-1 h-1 sm:w-1.5 sm:h-1.5 md:w-2 md:h-2 lg:w-2.5 lg:h-2.5 bg-white dark:bg-dark-text shadow-sm dark:shadow-md'
+                    : 'w-0.5 h-0.5 sm:w-1 sm:h-1 md:w-1.5 md:h-1.5 lg:w-2 lg:h-2 bg-white/30 dark:bg-dark-text/30 hover:bg-white/50 dark:hover:bg-dark-text/50'
                 }`}
+                style={{
+                  minWidth: index === currentIndex ? '4px' : '2px',
+                  minHeight: index === currentIndex ? '4px' : '2px',
+                }}
                 aria-label={`Go to slide ${index + 1}`}
               />
             ))}
