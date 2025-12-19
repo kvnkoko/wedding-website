@@ -304,8 +304,10 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     : 'w-0.5 h-0.5 sm:w-1 sm:h-1 md:w-1.5 md:h-1.5 lg:w-2 lg:h-2 bg-white/30 dark:bg-dark-text/30 hover:bg-white/50 dark:hover:bg-dark-text/50'
                 }`}
                 style={{
-                  minWidth: index === currentIndex ? '4px' : '2px',
-                  minHeight: index === currentIndex ? '4px' : '2px',
+                  minWidth: '0 !important',
+                  minHeight: '0 !important',
+                  width: index === currentIndex ? '4px' : '2px',
+                  height: index === currentIndex ? '4px' : '2px',
                 }}
                 aria-label={`Go to slide ${index + 1}`}
               />

@@ -1127,9 +1127,9 @@ button, a, input, textarea, select {
     letter-spacing: 0.2px !important;
   }
 
-  /* Reduce text sizes on mobile for better fit */
-  h1 {
-    font-size: 1.75rem !important; /* Smaller headings */
+  /* Reduce text sizes on mobile for better fit - but exclude hero section */
+  h1:not(.font-title) {
+    font-size: 1.75rem !important; /* Smaller headings, but not hero titles */
   }
 
   h2 {
@@ -1144,8 +1144,8 @@ button, a, input, textarea, select {
     font-size: 0.875rem !important; /* 14px base text */
   }
 
-  /* But keep minimum touch targets for buttons */
-  button, a[role="button"] {
+  /* But keep minimum touch targets for buttons - exclude navigation dots */
+  button:not([aria-label*="slide"]), a[role="button"] {
     min-height: 44px !important;
     min-width: 44px !important;
   }
