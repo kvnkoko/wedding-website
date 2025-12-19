@@ -628,11 +628,11 @@ export default function AdminRSVPsPage() {
 
                   {/* Event Responses */}
                   <div>
-                    <h4 className="font-sans text-sm font-semibold text-charcoal dark:text-dark-text mb-3 flex items-center gap-2">
+                    <h4 className="font-sans text-sm font-semibold text-charcoal dark:text-dark-text mb-2 flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-sage" weight="duotone" />
                       Event Responses
                     </h4>
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {(() => {
                         console.log(`[Admin Frontend] Rendering event responses for RSVP ${rsvp.name}:`, {
                           eventResponses: rsvp.eventResponses,
@@ -653,9 +653,9 @@ export default function AdminRSVPsPage() {
                         return (
                           <div
                             key={idx}
-                            className="p-3 rounded-lg bg-taupe/5 dark:bg-dark-surface border border-taupe/20 dark:border-dark-border"
+                            className="p-2.5 rounded-lg bg-taupe/5 dark:bg-dark-surface border border-taupe/20 dark:border-dark-border"
                           >
-                          <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center justify-between mb-1.5">
                             <span className="font-sans text-sm font-medium text-charcoal dark:text-dark-text">
                               {er.event.name}
                             </span>
@@ -733,19 +733,19 @@ export default function AdminRSVPsPage() {
                               // Only show if we have at least name or relation to display
                               if (displayName || displayRelation) {
                                 return (
-                                  <div className="mt-3 pt-3 border-t border-taupe/20 dark:border-dark-border">
-                                    <div className="bg-sage/10 dark:bg-sage/20 rounded-lg p-3 border border-sage/20 dark:border-sage/30">
-                                      <div className="flex items-start gap-2.5">
-                                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-sage/20 dark:bg-sage/30 flex items-center justify-center mt-0.5">
-                                          <UserPlus className="w-3.5 h-3.5 text-sage dark:text-sage/90" weight="duotone" />
+                                  <div className="mt-2 pt-2 border-t border-taupe/20 dark:border-dark-border">
+                                    <div className="bg-sage/10 dark:bg-sage/20 rounded-md p-2 border border-sage/20 dark:border-sage/30">
+                                      <div className="flex items-start gap-2">
+                                        <div className="flex-shrink-0 w-5 h-5 rounded-full bg-sage/20 dark:bg-sage/30 flex items-center justify-center mt-0.5">
+                                          <UserPlus className="w-3 h-3 text-sage dark:text-sage/90" weight="duotone" />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                          <p className="text-xs uppercase tracking-wider text-sage dark:text-sage/90 font-semibold mb-2">Plus One</p>
-                                          <div className="space-y-1.5">
+                                          <p className="text-[10px] uppercase tracking-wider text-sage dark:text-sage/90 font-semibold mb-1.5">Plus One</p>
+                                          <div className="space-y-1">
                                             {displayName && (
                                               <div>
-                                                <p className="text-xs uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Name</p>
-                                                <p className="text-sm text-charcoal dark:text-dark-text font-semibold">
+                                                <p className="text-[10px] uppercase tracking-wide text-charcoal/60 dark:text-dark-text-secondary mb-0.5">Name</p>
+                                                <p className="text-xs text-charcoal dark:text-dark-text font-semibold">
                                                   {displayName}
                                                 </p>
                                               </div>
