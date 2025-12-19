@@ -1132,9 +1132,15 @@ button, a, input, textarea, select {
     font-size: 1.75rem !important; /* Smaller headings, but not hero titles */
   }
 
-  /* Ensure hero names are large and prominent on mobile */
+  /* Ensure hero names are large and prominent on mobile - MUCH LARGER */
   h1.font-title {
-    font-size: clamp(4.5rem, 15vw, 9rem) !important; /* Large, prominent names on mobile */
+    font-size: clamp(5.5rem, 18vw, 9rem) !important; /* MUCH larger, prominent names on mobile - minimum 5.5rem (88px) */
+  }
+
+  /* Force spans inside hero names to inherit the large size */
+  h1.font-title > span {
+    font-size: inherit !important;
+    display: inline-block;
   }
 
   h2 {
@@ -1147,6 +1153,11 @@ button, a, input, textarea, select {
 
   p, span, div {
     font-size: 0.875rem !important; /* 14px base text */
+  }
+
+  /* CRITICAL: Exclude spans inside hero h1 from the small font size rule */
+  h1.font-title span {
+    font-size: inherit !important; /* Inherit the large size from parent h1 */
   }
 
   /* But keep minimum touch targets for buttons - exclude navigation dots */
