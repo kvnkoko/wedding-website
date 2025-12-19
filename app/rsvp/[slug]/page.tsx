@@ -144,7 +144,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
           <div className="flex flex-col items-center justify-center">
             {/* Center Content */}
             <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-4 md:py-12 lg:py-20 -mt-16 sm:-mt-8 md:mt-0 w-full">
-              <p className="font-body text-charcoal/70 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.5rem)' }}>
+              <p className="text-charcoal/70 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up animate-delay-300 scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.5rem)', fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                 Together with our families
               </p>
               
