@@ -153,12 +153,12 @@ html.dark-mode-initialized select {
 }
 
 .animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
+  animation: fadeInUp 0.7s ease-out forwards;
   opacity: 0;
 }
 
 .animate-fade-in {
-  animation: fadeIn 1.2s ease-out forwards;
+  animation: fadeIn 0.7s ease-out forwards;
   opacity: 0;
 }
 
