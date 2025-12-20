@@ -153,7 +153,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-400 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(5.5rem, 18vw, 9rem)' }}>
                   <span className="block sm:inline" style={{ fontSize: 'inherit !important' }}>Kevin</span> <span className="block sm:inline" style={{ fontSize: 'inherit !important' }}>Koko</span>
                 </h1>
-                <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(1.75rem, 5vw, 3rem)' }}>
+                <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up animate-delay-600 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(2.25rem, 6vw, 3rem)' }}>
                   And
                 </p>
                 <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up animate-delay-700 hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(5.5rem, 18vw, 9rem)' }}>
@@ -162,7 +162,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
               </div>
               
               {/* Invitation Line */}
-              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up animate-delay-800 scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(1.5rem, 4.5vw, 2.5rem)' }}>
+              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up animate-delay-800 scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(1.875rem, 5.5vw, 2.5rem)' }}>
                 Invite you to celebrate with us
               </p>
               
