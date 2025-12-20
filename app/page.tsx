@@ -51,80 +51,83 @@ function HomeContent() {
         {/* Background Calla Lilies - Filling the space with elegant botanical illustrations */}
         {/* Mobile: Single large calla lily filling entire background */}
         <div 
-          className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center animate-fade-in"
+          className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
           style={{ 
-            opacity: 0.25,
-            animationDelay: '0.1s',
-            animationDuration: '0.8s',
+            opacity: 0,
+            animation: 'fadeIn 0.8s ease-out 0.1s forwards',
           }}
         >
-          <img
-            src="/calla lily 1.png"
-            alt=""
-            className="object-contain w-full h-full"
-            style={{ 
-              minWidth: '100%',
-              minHeight: '100%',
-            }}
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              if (target) {
-                target.style.display = 'none'
-              }
-            }}
-          />
+          <div style={{ opacity: 0.25, width: '100%', height: '100%' }}>
+            <img
+              src="/calla lily 1.png"
+              alt=""
+              className="object-contain w-full h-full"
+              style={{ 
+                minWidth: '100%',
+                minHeight: '100%',
+              }}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                if (target) {
+                  target.style.display = 'none'
+                }
+              }}
+            />
+          </div>
         </div>
 
         {/* Desktop: Left Calla Lily Illustration */}
         <div 
-          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none parallax-slow animate-fade-in"
+          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none parallax-slow"
           style={{ 
-            opacity: 0.25,
+            opacity: 0,
             width: 'clamp(600px, 50vw, 900px)',
             height: 'auto',
-            willChange: 'transform',
+            willChange: 'transform, opacity',
             transform: `rotate(-2deg) translateY(${scrollY * 0.3}px)`,
-            animationDelay: '0.1s',
-            animationDuration: '0.8s',
+            animation: 'fadeIn 0.8s ease-out 0.1s forwards',
           }}
         >
-          <img
-            src="/calla lily 1.png"
-            alt=""
-            className="object-contain w-full h-auto"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              if (target) {
-                target.style.display = 'none'
-              }
-            }}
-          />
+          <div style={{ opacity: 0.25 }}>
+            <img
+              src="/calla lily 1.png"
+              alt=""
+              className="object-contain w-full h-auto"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                if (target) {
+                  target.style.display = 'none'
+                }
+              }}
+            />
+          </div>
         </div>
 
         {/* Right Calla Lily Illustration - Desktop only (both would be too crowded on mobile) */}
         <div 
-          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none parallax-slow animate-fade-in"
+          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none parallax-slow"
           style={{ 
-            opacity: 0.25,
+            opacity: 0,
             width: 'clamp(580px, 48vw, 880px)',
             height: 'auto',
-            willChange: 'transform',
+            willChange: 'transform, opacity',
             transform: `rotate(3deg) translateY(${scrollY * 0.2}px)`,
-            animationDelay: '0.2s',
-            animationDuration: '0.8s',
+            animation: 'fadeIn 0.8s ease-out 0.2s forwards',
           }}
         >
-          <img
-            src="/calla lilly 2.png"
-            alt=""
-            className="object-contain w-full h-auto"
-            onError={(e) => {
-              const target = e.target as HTMLImageElement
-              if (target) {
-                target.style.display = 'none'
-              }
-            }}
-          />
+          <div style={{ opacity: 0.25 }}>
+            <img
+              src="/calla lilly 2.png"
+              alt=""
+              className="object-contain w-full h-auto"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement
+                if (target) {
+                  target.style.display = 'none'
+                }
+              }}
+            />
+          </div>
         </div>
 
         <div className="max-w-7xl mx-auto w-full relative z-10">
