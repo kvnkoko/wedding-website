@@ -148,7 +148,7 @@ export default function FAQPage() {
     <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-20 animate-fade-in-up">
-          <h1 className="font-title text-5xl sm:text-6xl md:text-7xl text-charcoal dark:text-dark-text mb-4 tracking-tight">Frequently Asked Questions</h1>
+          <h1 className="font-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-charcoal dark:text-dark-text mb-4 tracking-tight">Frequently Asked Questions</h1>
           <div className="w-24 h-1 bg-sage dark:bg-sage/80 mx-auto mt-6 rounded-full"></div>
         </div>
         

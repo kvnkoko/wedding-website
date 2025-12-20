@@ -401,7 +401,7 @@ export default function RSVPFormPage() {
     return (
       <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg flex items-center justify-center">
         <div className="max-w-2xl mx-auto text-center bg-white dark:bg-dark-card p-12 rounded-2xl shadow-xl dark:shadow-2xl border border-taupe/20 dark:border-dark-border">
-          <h1 className="font-title text-5xl text-charcoal dark:text-dark-text mb-6">RSVP Changes</h1>
+          <h1 className="font-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal dark:text-dark-text mb-6">RSVP Changes</h1>
           <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary mb-4 leading-relaxed" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
             To make changes to your RSVP, please contact us directly.
           </p>
@@ -475,7 +475,7 @@ export default function RSVPFormPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
-              <h1 className="font-title text-4xl md:text-5xl text-charcoal dark:text-dark-text mb-4 animate-fade-in-up animate-delay-200">Thank You!</h1>
+                <h1 className="font-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal dark:text-dark-text mb-4 animate-fade-in-up animate-delay-200">Thank You!</h1>
               <p className="text-lg text-charcoal/70 dark:text-dark-text-secondary animate-fade-in-up animate-delay-300" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
               Your RSVP has been received. We are looking forward to celebrating with you!
             </p>
@@ -766,7 +766,7 @@ export default function RSVPFormPage() {
                 <CheckCircle className="w-6 h-6 text-sage" weight="fill" />
               </div>
               <div>
-                <h1 className="font-title text-4xl md:text-5xl text-charcoal dark:text-dark-text mb-2">RSVP</h1>
+                <h1 className="font-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-charcoal dark:text-dark-text mb-2">RSVP</h1>
           {config.label && (
                   <p className="text-sm text-charcoal/60 dark:text-dark-text-secondary uppercase tracking-widest" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                     {config.label.replace(/\s+Only\s*$/i, '')}
