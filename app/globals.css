@@ -1154,15 +1154,31 @@ button, a, input, textarea, select {
   }
 
   /* Ensure hero names are large and prominent on mobile - MUCH LARGER */
-  /* Only apply clamp on mobile, let Tailwind classes handle desktop */
-  h1.font-title {
+  /* Only apply to hero section titles (with specific classes or in hero sections) */
+  /* FAQ and RSVP page titles should NOT use this - they use Tailwind responsive classes */
+  section[class*="min-h-screen"] h1.font-title,
+  .hero-float-delayed h1.font-title,
+  h1.font-title[style*="clamp(5.5rem"] {
     font-size: clamp(5.5rem, 18vw, 9rem) !important; /* MUCH larger, prominent names on mobile - minimum 5.5rem (88px) */
   }
 
-  /* On larger screens, let Tailwind classes take over */
+  /* On larger screens, let Tailwind classes take over for hero titles */
   @media (min-width: 640px) {
-    h1.font-title {
+    section[class*="min-h-screen"] h1.font-title,
+    .hero-float-delayed h1.font-title,
+    h1.font-title[style*="clamp(5.5rem"] {
       font-size: inherit !important; /* Let Tailwind text-4xl, text-5xl, etc. work on desktop */
+    }
+  }
+
+  /* FAQ and RSVP page titles - use smaller, professional sizes on mobile */
+  h1.font-title:not([style*="clamp(5.5rem"]):not(.hero-float-delayed) {
+    font-size: 1.5rem !important; /* 24px - professional and readable on mobile */
+  }
+
+  @media (min-width: 640px) {
+    h1.font-title:not([style*="clamp(5.5rem"]):not(.hero-float-delayed) {
+      font-size: inherit !important; /* Let Tailwind responsive classes work on larger screens */
     }
   }
 
