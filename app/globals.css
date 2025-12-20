@@ -141,6 +141,15 @@ html.dark-mode-initialized select {
   }
 }
 
+@keyframes fadeInToQuarter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.25;
+  }
+}
+
 @keyframes fadeInSlow {
   from {
     opacity: 0;

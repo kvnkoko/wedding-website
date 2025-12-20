@@ -54,26 +54,24 @@ function HomeContent() {
           className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
           style={{ 
             opacity: 0,
-            animation: 'fadeIn 0.8s ease-out 0.1s forwards',
+            animation: 'fadeInToQuarter 0.8s ease-out 0.1s forwards',
           }}
         >
-          <div style={{ opacity: 0.25, width: '100%', height: '100%' }}>
-            <img
-              src="/calla lily 1.png"
-              alt=""
-              className="object-contain w-full h-full"
-              style={{ 
-                minWidth: '100%',
-                minHeight: '100%',
-              }}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                if (target) {
-                  target.style.display = 'none'
-                }
-              }}
-            />
-          </div>
+          <img
+            src="/calla lily 1.png"
+            alt=""
+            className="object-contain w-full h-full"
+            style={{ 
+              minWidth: '100%',
+              minHeight: '100%',
+            }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none'
+              }
+            }}
+          />
         </div>
 
         {/* Desktop: Left Calla Lily Illustration */}
@@ -85,22 +83,20 @@ function HomeContent() {
             height: 'auto',
             willChange: 'transform, opacity',
             transform: `rotate(-2deg) translateY(${scrollY * 0.3}px)`,
-            animation: 'fadeIn 0.8s ease-out 0.1s forwards',
+            animation: 'fadeInToQuarter 0.8s ease-out 0.1s forwards',
           }}
         >
-          <div style={{ opacity: 0.25 }}>
-            <img
-              src="/calla lily 1.png"
-              alt=""
-              className="object-contain w-full h-auto"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                if (target) {
-                  target.style.display = 'none'
-                }
-              }}
-            />
-          </div>
+          <img
+            src="/calla lily 1.png"
+            alt=""
+            className="object-contain w-full h-auto"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none'
+              }
+            }}
+          />
         </div>
 
         {/* Right Calla Lily Illustration - Desktop only (both would be too crowded on mobile) */}
@@ -112,22 +108,20 @@ function HomeContent() {
             height: 'auto',
             willChange: 'transform, opacity',
             transform: `rotate(3deg) translateY(${scrollY * 0.2}px)`,
-            animation: 'fadeIn 0.8s ease-out 0.2s forwards',
+            animation: 'fadeInToQuarter 0.8s ease-out 0.2s forwards',
           }}
         >
-          <div style={{ opacity: 0.25 }}>
-            <img
-              src="/calla lilly 2.png"
-              alt=""
-              className="object-contain w-full h-auto"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement
-                if (target) {
-                  target.style.display = 'none'
-                }
-              }}
-            />
-          </div>
+          <img
+            src="/calla lilly 2.png"
+            alt=""
+            className="object-contain w-full h-auto"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none'
+              }
+            }}
+          />
         </div>
 
         <div className="max-w-7xl mx-auto w-full relative z-10">
