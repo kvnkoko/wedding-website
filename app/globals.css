@@ -406,7 +406,16 @@ button, a, input, textarea, select {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes floatSubtle {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-3px);
   }
 }
 
@@ -464,9 +473,10 @@ button, a, input, textarea, select {
 /* Combined animation that handles both fade-in and float without conflict */
 .animate-fade-in-up.hero-float-delayed {
   /* Combine both animations - fade-in first, then float starts after 2s */
+  /* Using slower, more subtle float animation for professional look */
   animation: 
     fadeInUp 0.8s ease-out forwards,
-    float 3s ease-in-out 2s infinite;
+    floatSubtle 5s ease-in-out 2s infinite;
   /* Keep the initial opacity: 0 for fade-in to work */
   opacity: 0;
 }
