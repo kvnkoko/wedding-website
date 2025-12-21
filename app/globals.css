@@ -415,7 +415,7 @@ button, a, input, textarea, select {
     transform: translateY(0px);
   }
   50% {
-    transform: translateY(-3px);
+    transform: translateY(-1.5px);
   }
 }
 
@@ -473,10 +473,10 @@ button, a, input, textarea, select {
 /* Combined animation that handles both fade-in and float without conflict */
 .animate-fade-in-up.hero-float-delayed {
   /* Combine both animations - fade-in first, then float starts after 2s */
-  /* Using slower, more subtle float animation for professional look */
+  /* Ultra-subtle, classy float animation - very refined and elegant */
   animation: 
     fadeInUp 0.8s ease-out forwards,
-    floatSubtle 5s ease-in-out 2s infinite;
+    floatSubtle 7s cubic-bezier(0.4, 0, 0.6, 1) 2s infinite;
   /* Keep the initial opacity: 0 for fade-in to work */
   opacity: 0;
 }
