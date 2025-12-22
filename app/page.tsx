@@ -129,25 +129,25 @@ function HomeContent() {
             {/* Center Content */}
             <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-4 md:py-12 lg:py-20 -mt-16 sm:-mt-8 md:mt-0 w-full">
               {/* Subtitle */}
-              <p className="font-body text-charcoal/70 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.5rem)', animationDelay: '0.1s', animationDuration: '0.8s' }}>
+              <p className="font-body text-charcoal/70 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.5rem)', '--fade-delay': '0.1s', animationDelay: '0.1s', animationDuration: '0.8s' }}>
                 Together with our families
               </p>
               
               {/* Main Names - Large Impactful Typography */}
               <div className="flex flex-col items-center space-y-4 md:space-y-6">
-                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(5.5rem, 18vw, 9rem)', animationDelay: '0.2s', animationDuration: '0.8s' }}>
+                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(5.5rem, 18vw, 9rem)', '--fade-delay': '0.2s', animationDelay: '0.2s', animationDuration: '0.8s' }}>
                   <span className="block sm:inline" style={{ fontSize: 'inherit !important' }}>Kevin</span> <span className="block sm:inline" style={{ fontSize: 'inherit !important' }}>Koko</span>
                 </h1>
-                <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(2.25rem, 6vw, 3rem)', animationDelay: '0.35s', animationDuration: '0.8s' }}>
+                <p className="font-script text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-charcoal dark:text-dark-text mt-4 sm:mt-6 md:mt-8 lg:mt-10 xl:mt-12 relative z-20 animate-fade-in-up hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(2.25rem, 6vw, 3rem)', '--fade-delay': '0.35s', animationDelay: '0.35s', animationDuration: '0.8s' }}>
                   And
                 </p>
-                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(5.5rem, 18vw, 9rem)', animationDelay: '0.5s', animationDuration: '0.8s' }}>
+                <h1 className="font-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl text-charcoal dark:text-dark-text leading-[0.9] tracking-tight animate-fade-in-up hover:scale-105 transition-transform duration-500 hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(5.5rem, 18vw, 9rem)', '--fade-delay': '0.5s', animationDelay: '0.5s', animationDuration: '0.8s' }}>
                   <span className="block sm:inline" style={{ fontSize: 'inherit !important' }}>Tiffany</span> <span className="block sm:inline" style={{ fontSize: 'inherit !important' }}>Min</span>
                 </h1>
               </div>
               
               {/* Invitation Line */}
-              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(1.875rem, 5.5vw, 2.5rem)', animationDelay: '0.65s', animationDuration: '0.8s' }}>
+              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-4 md:mt-8 animate-fade-in-up scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(1.875rem, 5.5vw, 2.5rem)', '--fade-delay': '0.65s', animationDelay: '0.65s', animationDuration: '0.8s' }}>
                 Invite you to celebrate with us
               </p>
               
@@ -155,7 +155,7 @@ function HomeContent() {
               {/* Event information is only shown on personalized slug pages */}
               
               {/* Hashtag - Subtle bottom placement, balanced size */}
-              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)', animationDelay: '0.8s', animationDuration: '0.8s' }}>
+              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)', '--fade-delay': '0.8s', animationDelay: '0.8s', animationDuration: '0.8s' }}>
                 #tiffandko
               </p>
             </div>

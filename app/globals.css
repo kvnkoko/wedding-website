@@ -489,14 +489,17 @@ button, a, input, textarea, select {
   animation: float 3s ease-in-out infinite;
 }
 
-/* Hero float animation - starts after all fade-ins complete (1.6s delay) */
+/* Hero float animation - starts after all fade-ins complete */
 /* Buttery smooth animation with hardware acceleration - perfectly synchronized */
 .animate-fade-in-up.hero-float-delayed {
-  /* Use single combined animation for smoothness - fade in first, then float */
-  /* Float starts at 1.6s (0.8s delay + 0.8s duration = all fade-ins complete) */
-  animation: 
-    heroFadeInAndFloat 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
-    heroFloatSmooth 8s cubic-bezier(0.4, 0, 0.2, 1) 1.6s infinite;
+  /* Use fadeInUp for the initial fade-in (respects inline animationDelay) */
+  /* Then float starts after fade-in completes */
+  animation-name: fadeInUp, heroFloatSmooth;
+  animation-duration: 0.8s, 8s;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94), cubic-bezier(0.4, 0, 0.2, 1);
+  animation-delay: var(--fade-delay, 0s), calc(var(--fade-delay, 0s) + 0.8s);
+  animation-fill-mode: forwards, both;
+  animation-iteration-count: 1, infinite;
   /* Initial state for fade-in */
   opacity: 0;
   /* Hardware acceleration for buttery smooth animation */
