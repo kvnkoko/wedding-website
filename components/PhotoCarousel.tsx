@@ -162,7 +162,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }
 
   return (
-    <section className="relative w-full h-[70vh] md:h-[600px] lg:h-[700px] overflow-hidden bg-cream dark:bg-dark-bg">
+    <section className="relative w-full h-[75vh] md:h-[80vh] lg:h-[85vh] overflow-hidden bg-cream dark:bg-dark-bg">
       {/* Main Carousel Container */}
       <div 
         className="relative w-full h-full flex items-center justify-center gap-0 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12"
@@ -212,7 +212,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     marginRight: index < sortedPhotos.length - 1 ? `${gapSize}px` : '0',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-none md:rounded-sm overflow-hidden shadow-none md:shadow-lg dark:md:shadow-2xl flex items-center justify-center bg-cream dark:bg-dark-card transition-all duration-500">
+                  <div className="relative w-full h-full rounded-none md:rounded-sm overflow-hidden shadow-none md:shadow-lg dark:md:shadow-2xl flex items-center justify-center bg-cream dark:bg-dark-card transition-all duration-500" style={{ aspectRatio: '2/3' }}>
                     {photo.url && (
                       <>
                         {/* Low-quality blurred placeholder - shows immediately while loading */}
@@ -223,10 +223,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                             aria-hidden="true"
                             className="absolute inset-0"
                             style={{
+                              width: '100%',
                               height: '100%',
-                              width: 'auto',
-                              maxWidth: '100%',
-                              objectFit: 'contain',
+                              objectFit: 'cover',
                               objectPosition: 'center',
                               filter: 'blur(20px)',
                               transform: 'scale(1.05)',
@@ -235,7 +234,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                             loading="eager"
                           />
                         )}
-                        {/* Full-quality image with fade-in */}
+                        {/* Full-quality image with fade-in - optimized for portrait */}
                         <img
                           src={photo.url}
                           alt={photo.alt || `Photo ${index + 1}`}
@@ -243,16 +242,11 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                             loadedImages.has(photo.id)
                               ? 'opacity-100 loaded'
                               : 'opacity-0'
-                          } ${
-                            imageAspectRatios.get(photo.id) && imageAspectRatios.get(photo.id)! > 1.3 && isVisible
-                              ? 'pan-zoom-horizontal'
-                              : ''
                           }`}
                           style={{
+                            width: '100%',
                             height: '100%',
-                            width: 'auto',
-                            maxWidth: '100%',
-                            objectFit: 'contain',
+                            objectFit: 'cover',
                             objectPosition: 'center',
                           }}
                           loading={isVisible && position === 0 ? 'eager' : 'lazy'}

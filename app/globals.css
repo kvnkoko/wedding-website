@@ -435,7 +435,7 @@ button, a, input, textarea, select {
     transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translate3d(0, -1.5px, 0);
+    transform: translate3d(0, -0.8px, 0);
   }
 }
 
@@ -495,8 +495,8 @@ button, a, input, textarea, select {
   /* Use fadeInUp for the initial fade-in (respects inline animationDelay) */
   /* Then float starts after fade-in completes */
   animation-name: fadeInUp, heroFloatSmooth;
-  animation-duration: 0.8s, 8s;
-  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94), cubic-bezier(0.4, 0, 0.2, 1);
+  animation-duration: 0.8s, 10s;
+  animation-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94), cubic-bezier(0.5, 0, 0.5, 1);
   animation-delay: var(--fade-delay, 0s), calc(var(--fade-delay, 0s) + 0.8s);
   animation-fill-mode: forwards, both;
   animation-iteration-count: 1, infinite;
@@ -1728,7 +1728,7 @@ button, a, input, textarea, select {
     /* Buttery smooth mobile animation - synchronized with desktop */
     animation: 
       heroFadeInAndFloat 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
-      heroFloatSmooth 8s cubic-bezier(0.4, 0, 0.2, 1) 1.6s infinite;
+      heroFloatSmooth 10s cubic-bezier(0.5, 0, 0.5, 1) 1.6s infinite;
     will-change: transform, opacity;
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
