@@ -129,7 +129,7 @@ function HomeContent() {
             {/* Center Content */}
             <div className="flex flex-col items-center justify-center text-center space-y-6 sm:space-y-8 md:space-y-12 py-4 sm:py-4 md:py-12 lg:py-20 -mt-16 sm:-mt-8 md:mt-0 w-full">
               {/* Subtitle */}
-              <p className="font-body text-charcoal/70 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.5rem)', animationDelay: '0.1s', animationDuration: '0.8s', '--fade-delay': '0.1s' } as React.CSSProperties}>
+              <p className="font-body text-charcoal/70 dark:text-dark-text-secondary tracking-[0.2em] uppercase mb-4 animate-fade-in-up scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2.5vw, 1.5rem)', animationDelay: '0.1s', animationDuration: '0.8s', '--fade-delay': '0.1s', fontFamily: 'var(--font-artica), system-ui, sans-serif' } as React.CSSProperties}>
                 Together with our families
               </p>
               
