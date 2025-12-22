@@ -212,7 +212,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     marginRight: index < sortedPhotos.length - 1 ? `${gapSize}px` : '0',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-none md:rounded-sm overflow-hidden shadow-none md:shadow-lg dark:md:shadow-2xl flex items-center justify-center bg-cream dark:bg-dark-card transition-all duration-500" style={{ aspectRatio: '2/3' }}>
+                  <div className="relative w-full h-full rounded-none md:rounded-sm overflow-hidden shadow-none md:shadow-lg dark:md:shadow-2xl flex items-center justify-center bg-cream dark:bg-dark-card transition-all duration-500">
                     {photo.url && (
                       <>
                         {/* Low-quality blurred placeholder - shows immediately while loading */}
