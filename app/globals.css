@@ -109,9 +109,9 @@ html.dark-mode-initialized select {
 .admin-portal .font-title {
   font-family: var(--font-elgraine) !important;
 }
-
-.font-script {
-  font-family: var(--font-script);
+  
+  .font-script {
+    font-family: var(--font-script);
 }
 
 @layer utilities {
@@ -412,10 +412,30 @@ button, a, input, textarea, select {
 
 @keyframes floatSubtle {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    transform: translateY(-1.5px);
+    transform: translate3d(0, -1.5px, 0);
+  }
+}
+
+@keyframes heroFadeInAndFloat {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes heroFloatSmooth {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -1.5px, 0);
   }
 }
 
@@ -470,15 +490,19 @@ button, a, input, textarea, select {
 }
 
 /* Hero float animation - starts after all fade-ins complete (2s delay) */
-/* Combined animation that handles both fade-in and float without conflict */
+/* Buttery smooth animation with hardware acceleration */
 .animate-fade-in-up.hero-float-delayed {
-  /* Combine both animations - fade-in first, then float starts after 2s */
-  /* Ultra-subtle, classy float animation - very refined and elegant */
+  /* Use single combined animation for smoothness - fade in first, then float */
   animation: 
-    fadeInUp 0.8s ease-out forwards,
-    floatSubtle 7s cubic-bezier(0.4, 0, 0.6, 1) 2s infinite;
-  /* Keep the initial opacity: 0 for fade-in to work */
+    heroFadeInAndFloat 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+    heroFloatSmooth 8s cubic-bezier(0.4, 0, 0.2, 1) 2s infinite;
+  /* Initial state for fade-in */
   opacity: 0;
+  /* Hardware acceleration for buttery smooth animation */
+  will-change: transform, opacity;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  perspective: 1000px;
 }
 
 /* Enhanced button effects */
