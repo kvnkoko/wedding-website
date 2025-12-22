@@ -22,9 +22,17 @@ export default function AdminPhotosPage() {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [isDragging, setIsDragging] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [photoToDelete, setPhotoToDelete] = useState<string | null>(null)
+  const [dontShowAgain, setDontShowAgain] = useState(false)
 
   useEffect(() => {
     fetchPhotos()
+    // Check if user has disabled delete confirmation
+    const skipConfirm = localStorage.getItem('skipPhotoDeleteConfirm')
+    if (skipConfirm === 'true') {
+      setDontShowAgain(true)
+    }
   }, [])
 
   const fetchPhotos = async () => {
@@ -280,11 +288,39 @@ export default function AdminPhotosPage() {
     }
   }
 
-  const handleDeletePhoto = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this photo?')) {
-      return
+  const handleDeleteClick = (id: string) => {
+    const skipConfirm = localStorage.getItem('skipPhotoDeleteConfirm')
+    if (skipConfirm === 'true') {
+      // Skip confirmation and delete directly
+      handleDeletePhoto(id)
+    } else {
+      // Show confirmation dialog
+      setPhotoToDelete(id)
+      setShowDeleteConfirm(true)
     }
+  }
 
+  const handleDeleteConfirm = async () => {
+    if (dontShowAgain) {
+      localStorage.setItem('skipPhotoDeleteConfirm', 'true')
+    }
+    
+    if (photoToDelete) {
+      await handleDeletePhoto(photoToDelete)
+    }
+    
+    setShowDeleteConfirm(false)
+    setPhotoToDelete(null)
+    setDontShowAgain(false)
+  }
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false)
+    setPhotoToDelete(null)
+    setDontShowAgain(false)
+  }
+
+  const handleDeletePhoto = async (id: string) => {
     try {
       const res = await fetch(`/api/photos?id=${id}`, {
         method: 'DELETE',
@@ -561,7 +597,7 @@ export default function AdminPhotosPage() {
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <span className="text-charcoal/60 dark:text-dark-text-secondary">⋮⋮</span>
                   <button
-                    onClick={() => handleDeletePhoto(photo.id)}
+                    onClick={() => handleDeleteClick(photo.id)}
                     className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 dark:hover:bg-red-900/50 transition-all border border-red-200 dark:border-red-800 w-full sm:w-auto"
                   >
                     Delete
@@ -572,6 +608,47 @@ export default function AdminPhotosPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-card rounded-sm shadow-lg max-w-md w-full p-6 border border-taupe/20 dark:border-dark-border">
+            <h3 className="font-serif text-2xl text-charcoal dark:text-dark-text mb-4">
+              Delete Photo?
+            </h3>
+            <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary mb-6">
+              Are you sure you want to delete this photo? This action cannot be undone.
+            </p>
+            <div className="mb-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={dontShowAgain}
+                  onChange={(e) => setDontShowAgain(e.target.checked)}
+                  className="w-4 h-4 text-sage border-taupe/30 dark:border-dark-border rounded focus:ring-sage dark:bg-dark-surface"
+                />
+                <span className="font-sans text-sm text-charcoal dark:text-dark-text">
+                  Don't show this again
+                </span>
+              </label>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={handleDeleteCancel}
+                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-2 rounded-sm font-sans text-sm hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteConfirm}
+                className="bg-red-600 dark:bg-red-700 text-white px-6 py-2 rounded-sm font-sans text-sm hover:bg-red-700 dark:hover:bg-red-800 transition-all"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
