@@ -1721,11 +1721,14 @@ button, a, input, textarea, select {
 
 @media (max-width: 768px) {
   .hero-float-delayed {
+    /* Buttery smooth mobile animation with hardware acceleration */
     animation: 
-      fadeInUp 0.8s ease-out forwards,
-      mobileFloat 4s ease-in-out 2s infinite;
-    will-change: transform;
+      heroFadeInAndFloat 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards,
+      heroFloatSmooth 8s cubic-bezier(0.4, 0, 0.2, 1) 2s infinite;
+    will-change: transform, opacity;
+    transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
+    perspective: 1000px;
   }
 }
 
