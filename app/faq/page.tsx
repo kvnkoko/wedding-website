@@ -200,35 +200,35 @@ export default function FAQPage() {
                       
                       {/* Color swatches with premium design - mobile optimized */}
                       {faq.colorHexCodes && faq.colorHexCodes.length > 0 && (
-                        <div className="mt-4 sm:mt-6 md:mt-8 pt-4 sm:pt-6 md:pt-8 border-t border-taupe/20 dark:border-dark-border">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 md:gap-6 flex-wrap">
-                          <h3 className="text-xs sm:text-sm font-semibold text-charcoal/60 dark:text-dark-text-secondary uppercase tracking-widest flex items-center gap-2" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                        <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-taupe/20 dark:border-dark-border">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-wrap">
+                          <h3 className="text-xs font-semibold text-charcoal/60 dark:text-dark-text-secondary uppercase tracking-widest flex items-center gap-2" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                             <span className="w-1 h-1 rounded-full bg-sage"></span>
                             Colors to Wear
                           </h3>
-                            <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-wrap">
+                            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                               {faq.colorHexCodes.map((hex, colorIndex) => (
                                 <div
                                   key={colorIndex}
                                   className="relative group/color"
                                 >
                                   <div
-                                    className="relative w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex-shrink-0 cursor-pointer transition-all duration-500 hover:scale-125 hover:z-10 hover:shadow-2xl"
+                                    className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full flex-shrink-0 cursor-pointer transition-all duration-500 sm:hover:scale-125 hover:z-10 hover:shadow-2xl"
                                     style={{
                                       backgroundColor: hex,
                                       boxShadow: `
-                                        0 4px 12px rgba(0, 0, 0, 0.15),
-                                        inset 0 2px 4px rgba(255, 255, 255, 0.2),
-                                        inset 0 -2px 4px rgba(0, 0, 0, 0.1)
+                                        0 2px 6px rgba(0, 0, 0, 0.15),
+                                        inset 0 1px 2px rgba(255, 255, 255, 0.2),
+                                        inset 0 -1px 2px rgba(0, 0, 0, 0.1)
                                       `,
                                     }}
                                     title={hex}
                                   >
                                     <div className="absolute inset-0 rounded-full bg-white/0 group-hover/color:bg-white/20 transition-all duration-300"></div>
-                                    <div className="absolute -inset-1 rounded-full border-2 border-transparent group-hover/color:border-sage/30 transition-all duration-300"></div>
+                                    <div className="absolute -inset-0.5 rounded-full border border-transparent sm:group-hover/color:border-sage/30 transition-all duration-300"></div>
                                   </div>
                                   {/* Tooltip on hover */}
-                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-charcoal text-white text-xs rounded opacity-0 group-hover/color:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
+                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-charcoal text-white text-xs rounded opacity-0 group-hover/color:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap hidden sm:block">
                                     {hex}
                                   </div>
                                 </div>

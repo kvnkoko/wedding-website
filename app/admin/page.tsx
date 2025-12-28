@@ -77,25 +77,25 @@ export default function AdminDashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="font-title text-4xl sm:text-5xl text-charcoal dark:text-dark-text mb-2">Dashboard</h1>
-        <p className="font-sans text-base text-charcoal/60 dark:text-dark-text-secondary">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="font-title text-3xl sm:text-4xl lg:text-5xl text-charcoal dark:text-dark-text mb-2">Dashboard</h1>
+        <p className="font-sans text-sm sm:text-base text-charcoal/60 dark:text-dark-text-secondary">
           Overview of your wedding RSVPs and event statistics
         </p>
       </div>
 
       {/* Summary Cards */}
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-taupe/20 dark:border-dark-border group">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sage to-sage/70 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-              <Users className="w-6 h-6 text-white" weight="duotone" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <div className="bg-white dark:bg-dark-card p-4 sm:p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-taupe/20 dark:border-dark-border group">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-sage to-sage/70 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white" weight="duotone" />
             </div>
             <div className="text-right">
               <p className="font-sans text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">
                 Total RSVPs
               </p>
-              <p className="font-title text-4xl text-sage dark:text-sage/90">{stats.totals.totalRsvps}</p>
+              <p className="font-title text-3xl sm:text-4xl text-sage dark:text-sage/90">{stats.totals.totalRsvps}</p>
             </div>
           </div>
           <div className="h-1 bg-taupe/20 dark:bg-dark-border rounded-full overflow-hidden">
@@ -106,16 +106,16 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-taupe/20 dark:border-dark-border group">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sage/80 to-sage/60 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-              <UserPlus className="w-6 h-6 text-white" weight="duotone" />
+        <div className="bg-white dark:bg-dark-card p-4 sm:p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-taupe/20 dark:border-dark-border group">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-sage/80 to-sage/60 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+              <UserPlus className="w-5 h-5 sm:w-6 sm:h-6 text-white" weight="duotone" />
             </div>
             <div className="text-right">
               <p className="font-sans text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">
                 Total Plus-Ones
               </p>
-              <p className="font-title text-4xl text-sage dark:text-sage/90">{stats.totals.totalPlusOnes}</p>
+              <p className="font-title text-3xl sm:text-4xl text-sage dark:text-sage/90">{stats.totals.totalPlusOnes}</p>
             </div>
           </div>
           <div className="h-1 bg-taupe/20 dark:bg-dark-border rounded-full overflow-hidden">
@@ -129,11 +129,11 @@ export default function AdminDashboard() {
 
       {/* Event Statistics */}
       <div className="mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="font-title text-2xl sm:text-3xl text-charcoal dark:text-dark-text">Event Statistics</h2>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <h2 className="font-title text-xl sm:text-2xl lg:text-3xl text-charcoal dark:text-dark-text">Event Statistics</h2>
           <Link
             href="/admin/events"
-            className="flex items-center gap-2 text-sage hover:text-sage/80 font-sans text-sm font-medium transition-colors duration-200"
+            className="flex items-center gap-2 text-sage hover:text-sage/80 font-sans text-sm font-medium transition-colors duration-200 min-h-[44px]"
           >
             Manage Events
             <ArrowRight className="w-4 h-4" />
@@ -152,16 +152,16 @@ export default function AdminDashboard() {
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 {/* Event Header */}
-                <div className="bg-gradient-to-r from-sage/10 to-sage/5 dark:from-sage/20 dark:to-sage/10 px-6 py-4 border-b border-taupe/20 dark:border-dark-border">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-lg bg-sage/20 dark:bg-sage/30 flex items-center justify-center">
-                        <Calendar className="w-5 h-5 text-sage dark:text-sage/90" weight="duotone" />
+                <div className="bg-gradient-to-r from-sage/10 to-sage/5 dark:from-sage/20 dark:to-sage/10 px-4 sm:px-6 py-3 sm:py-4 border-b border-taupe/20 dark:border-dark-border">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-sage/20 dark:bg-sage/30 flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-sage dark:text-sage/90" weight="duotone" />
                       </div>
-                      <h3 className="font-title text-xl sm:text-2xl text-charcoal dark:text-dark-text">{stat.eventName}</h3>
+                      <h3 className="font-title text-lg sm:text-xl lg:text-2xl text-charcoal dark:text-dark-text truncate">{stat.eventName}</h3>
                     </div>
                     {isNearCapacity && (
-                      <span className="px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-xs font-sans font-medium">
+                      <span className="px-3 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full text-xs font-sans font-medium flex-shrink-0">
                         {capacityPercent.toFixed(0)}% Full
                       </span>
                     )}
@@ -169,27 +169,27 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Stats Grid */}
-                <div className="p-6">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <div className="text-center p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
-                      <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400 mx-auto mb-2" weight="duotone" />
+                <div className="p-4 sm:p-6">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6">
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800">
+                      <CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 dark:text-green-400 mx-auto mb-1.5 sm:mb-2" weight="duotone" />
                       <p className="font-sans text-xs text-charcoal/60 dark:text-dark-text-secondary mb-1">Attending</p>
-                      <p className="font-title text-2xl text-green-600 dark:text-green-400">{stat.yes}</p>
+                      <p className="font-title text-xl sm:text-2xl text-green-600 dark:text-green-400">{stat.yes}</p>
                     </div>
-                    <div className="text-center p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                      <XCircle className="w-6 h-6 text-red-600 dark:text-red-400 mx-auto mb-2" weight="duotone" />
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
+                      <XCircle className="w-5 h-5 sm:w-6 sm:h-6 text-red-600 dark:text-red-400 mx-auto mb-1.5 sm:mb-2" weight="duotone" />
                       <p className="font-sans text-xs text-charcoal/60 dark:text-dark-text-secondary mb-1">Declined</p>
-                      <p className="font-title text-2xl text-red-600 dark:text-red-400">{stat.no}</p>
+                      <p className="font-title text-xl sm:text-2xl text-red-600 dark:text-red-400">{stat.no}</p>
                     </div>
-                    <div className="text-center p-4 rounded-lg bg-sage/10 dark:bg-sage/20 border border-sage/30 dark:border-sage/40">
-                      <UserPlus className="w-6 h-6 text-sage dark:text-sage/90 mx-auto mb-2" weight="duotone" />
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-sage/10 dark:bg-sage/20 border border-sage/30 dark:border-sage/40">
+                      <UserPlus className="w-5 h-5 sm:w-6 sm:h-6 text-sage dark:text-sage/90 mx-auto mb-1.5 sm:mb-2" weight="duotone" />
                       <p className="font-sans text-xs text-charcoal/60 dark:text-dark-text-secondary mb-1">Plus-Ones</p>
-                      <p className="font-title text-2xl text-sage dark:text-sage/90">{stat.plusOnes}</p>
+                      <p className="font-title text-xl sm:text-2xl text-sage dark:text-sage/90">{stat.plusOnes}</p>
                     </div>
-                    <div className="text-center p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-                      <ChartLineUp className="w-6 h-6 text-blue-600 dark:text-blue-400 mx-auto mb-2" weight="duotone" />
+                    <div className="text-center p-3 sm:p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                      <ChartLineUp className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 dark:text-blue-400 mx-auto mb-1.5 sm:mb-2" weight="duotone" />
                       <p className="font-sans text-xs text-charcoal/60 dark:text-dark-text-secondary mb-1">Total</p>
-                      <p className="font-title text-2xl text-blue-600 dark:text-blue-400">{stat.totalAttendees}</p>
+                      <p className="font-title text-xl sm:text-2xl text-blue-600 dark:text-blue-400">{stat.totalAttendees}</p>
                     </div>
                   </div>
 
@@ -223,51 +223,51 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         <Link
           href="/admin/rsvps"
-          className="group bg-white dark:bg-dark-card p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-taupe/20 dark:border-dark-border flex items-center justify-between"
+          className="group bg-white dark:bg-dark-card p-4 sm:p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-taupe/20 dark:border-dark-border flex items-center justify-between min-h-[44px]"
         >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-charcoal to-charcoal/80 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-              <Users className="w-6 h-6 text-white" weight="duotone" />
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-charcoal to-charcoal/80 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+              <Users className="w-5 h-5 sm:w-6 sm:h-6 text-white" weight="duotone" />
             </div>
-            <div>
-              <h3 className="font-title text-lg text-charcoal dark:text-dark-text mb-1">View All RSVPs</h3>
-              <p className="font-sans text-sm text-charcoal/60 dark:text-dark-text-secondary">
+            <div className="min-w-0">
+              <h3 className="font-title text-base sm:text-lg text-charcoal dark:text-dark-text mb-1">View All RSVPs</h3>
+              <p className="font-sans text-xs sm:text-sm text-charcoal/60 dark:text-dark-text-secondary">
                 Manage and review all guest responses
               </p>
             </div>
           </div>
-          <ArrowRight className="w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary group-hover:text-sage transition-colors duration-200" />
+          <ArrowRight className="w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary group-hover:text-sage transition-colors duration-200 flex-shrink-0 ml-2" />
         </Link>
 
         <Link
           href="/admin/photos"
-          className="group bg-white dark:bg-dark-card p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-taupe/20 dark:border-dark-border flex items-center justify-between"
+          className="group bg-white dark:bg-dark-card p-4 sm:p-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-taupe/20 dark:border-dark-border flex items-center justify-between min-h-[44px]"
         >
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-sage to-sage/70 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300">
-              <ChartLineUp className="w-6 h-6 text-white" weight="duotone" />
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-sage to-sage/70 flex items-center justify-center shadow-md group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+              <ChartLineUp className="w-5 h-5 sm:w-6 sm:h-6 text-white" weight="duotone" />
             </div>
-            <div>
-              <h3 className="font-title text-lg text-charcoal dark:text-dark-text mb-1">Manage Photos</h3>
-              <p className="font-sans text-sm text-charcoal/60 dark:text-dark-text-secondary">
+            <div className="min-w-0">
+              <h3 className="font-title text-base sm:text-lg text-charcoal dark:text-dark-text mb-1">Manage Photos</h3>
+              <p className="font-sans text-xs sm:text-sm text-charcoal/60 dark:text-dark-text-secondary">
                 Update your photo gallery
               </p>
             </div>
           </div>
-          <ArrowRight className="w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary group-hover:text-sage transition-colors duration-200" />
+          <ArrowRight className="w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary group-hover:text-sage transition-colors duration-200 flex-shrink-0 ml-2" />
         </Link>
       </div>
 
       {/* Change Password Section */}
-      <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-md border border-taupe/20 dark:border-dark-border">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-10 h-10 rounded-lg bg-charcoal/10 dark:bg-dark-border flex items-center justify-center">
+      <div className="bg-white dark:bg-dark-card p-4 sm:p-6 rounded-xl shadow-md border border-taupe/20 dark:border-dark-border">
+        <div className="flex items-center gap-3 mb-4 sm:mb-6">
+          <div className="w-10 h-10 rounded-lg bg-charcoal/10 dark:bg-dark-border flex items-center justify-center flex-shrink-0">
             <Lock className="w-5 h-5 text-charcoal dark:text-dark-text" weight="duotone" />
           </div>
-          <h2 className="font-title text-xl text-charcoal dark:text-dark-text">Change Password</h2>
+          <h2 className="font-title text-lg sm:text-xl text-charcoal dark:text-dark-text">Change Password</h2>
         </div>
         <ChangePasswordForm />
       </div>
@@ -323,7 +323,7 @@ function ChangePasswordForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>
           <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
             Current Password <span className="text-red-500">*</span>
@@ -380,7 +380,7 @@ function ChangePasswordForm() {
       <button
         type="submit"
         disabled={loading}
-        className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-lg font-sans text-sm font-medium hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+        className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-lg font-sans text-sm font-medium hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg w-full sm:w-auto min-h-[44px]"
       >
         {loading ? 'Changing...' : 'Change Password'}
       </button>

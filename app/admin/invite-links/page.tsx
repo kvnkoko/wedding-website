@@ -112,26 +112,26 @@ export default function AdminInviteLinksPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <h1 className="font-serif text-5xl text-charcoal dark:text-dark-text">Invite Links</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+        <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal dark:text-dark-text">Invite Links</h1>
         <button
           onClick={() => {
             setEditing(null)
             setShowForm(true)
           }}
-          className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all w-full sm:w-auto"
+          className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all w-full sm:w-auto min-h-[44px]"
         >
           Create Link
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-sm shadow-sm mb-8 border border-taupe/20 dark:border-dark-border" key={editing?.id || 'new'}>
-          <h2 className="font-serif text-2xl text-charcoal dark:text-dark-text mb-6">
+        <div className="bg-white dark:bg-dark-card p-4 sm:p-6 lg:p-8 rounded-sm shadow-sm mb-6 sm:mb-8 border border-taupe/20 dark:border-dark-border" key={editing?.id || 'new'}>
+          <h2 className="font-serif text-xl sm:text-2xl text-charcoal dark:text-dark-text mb-4 sm:mb-6">
             {editing ? 'Edit Invite Link' : 'Create Invite Link'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                   Slug
@@ -178,7 +178,7 @@ export default function AdminInviteLinksPage() {
               <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                 Events
               </label>
-              <div className="grid md:grid-cols-3 gap-3 border border-taupe/30 dark:border-dark-border rounded-sm p-4 bg-taupe/5 dark:bg-dark-surface">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 border border-taupe/30 dark:border-dark-border rounded-sm p-4 bg-taupe/5 dark:bg-dark-surface">
                 {events.map((event) => (
                   <label key={event.id} className="flex items-center cursor-pointer">
                     <input
@@ -196,10 +196,10 @@ export default function AdminInviteLinksPage() {
                 ))}
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 type="submit"
-                className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all w-full sm:w-auto"
+                className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all w-full sm:w-auto min-h-[44px]"
               >
                 {editing ? 'Update' : 'Create'}
               </button>
@@ -209,7 +209,7 @@ export default function AdminInviteLinksPage() {
                   setShowForm(false)
                   setEditing(null)
                 }}
-                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all w-full sm:w-auto"
+                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all w-full sm:w-auto min-h-[44px]"
               >
                 Cancel
               </button>
@@ -220,11 +220,11 @@ export default function AdminInviteLinksPage() {
 
       <div className="space-y-4">
         {configs.map((config) => (
-          <div key={config.id} className="bg-white dark:bg-dark-card p-6 rounded-sm shadow-sm border border-taupe/20 dark:border-dark-border">
+          <div key={config.id} className="bg-white dark:bg-dark-card p-4 sm:p-6 rounded-sm shadow-sm border border-taupe/20 dark:border-dark-border">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-              <div className="flex-1">
-                <h3 className="font-serif text-2xl text-charcoal dark:text-dark-text mb-2">{config.label.replace(/\s+Only\s*$/i, '')}</h3>
-                <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary mb-2">
+              <div className="flex-1 min-w-0">
+                <h3 className="font-serif text-xl sm:text-2xl text-charcoal dark:text-dark-text mb-2">{config.label.replace(/\s+Only\s*$/i, '')}</h3>
+                <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary mb-2 break-all">
                   Slug: <span className="font-mono text-sage dark:text-sage/90">{config.slug}</span>
                 </p>
                 {config.notes && (
@@ -236,7 +236,7 @@ export default function AdminInviteLinksPage() {
                   setEditing(config)
                   setShowForm(true)
                 }}
-                className="bg-sage text-white px-4 py-2 rounded-sm font-sans text-xs tracking-wider uppercase hover:bg-sage/90 transition-all w-full sm:w-auto"
+                className="bg-sage text-white px-4 py-2.5 rounded-sm font-sans text-xs tracking-wider uppercase hover:bg-sage/90 transition-all w-full sm:w-auto min-h-[44px]"
               >
                 Edit
               </button>
@@ -254,10 +254,10 @@ export default function AdminInviteLinksPage() {
                 ))}
               </div>
             </div>
-            <div className="bg-beige dark:bg-dark-surface p-4 rounded-sm border border-taupe/20 dark:border-dark-border">
+            <div className="bg-beige dark:bg-dark-surface p-3 sm:p-4 rounded-sm border border-taupe/20 dark:border-dark-border">
               <p className="font-sans text-xs text-charcoal/70 dark:text-dark-text-secondary mb-2">RSVP URL:</p>
-              <div className="flex items-center gap-2 mb-2">
-                <p className="font-mono text-sm text-sage dark:text-sage/90 break-all flex-1">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 mb-2">
+                <p className="font-mono text-xs sm:text-sm text-sage dark:text-sage/90 break-all flex-1 min-w-0">
                   {typeof window !== 'undefined' &&
                     (() => {
                       // Use production URL if available, otherwise use current origin
@@ -275,7 +275,7 @@ export default function AdminInviteLinksPage() {
                       const url = `${productionUrl}/rsvp/${config.slug}`
                       copyToClipboard(url, config.id)
                     }}
-                    className="bg-sage text-white p-2 rounded-sm hover:bg-sage/90 transition-all flex-shrink-0 flex items-center justify-center"
+                    className="bg-sage text-white p-2.5 rounded-sm hover:bg-sage/90 transition-all flex-shrink-0 flex items-center justify-center min-w-[44px] min-h-[44px]"
                     title={copiedUrl === config.id ? 'Copied!' : 'Copy URL'}
                   >
                     {copiedUrl === config.id ? (

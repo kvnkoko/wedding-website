@@ -6,7 +6,7 @@ Think of it like this:
 - **DNS** = The phone book that tells people where to find your website
 
 We need to tell GoDaddy: "Hey, when someone types tiffandko.com, send them to Vercel!"
-
+on m
 ---
 
 ## 🎯 What You're Doing (In Plain English)

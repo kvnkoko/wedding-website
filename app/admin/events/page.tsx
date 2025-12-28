@@ -94,26 +94,26 @@ export default function AdminEventsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <h1 className="font-serif text-5xl text-charcoal dark:text-dark-text">Events</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+        <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal dark:text-dark-text">Events</h1>
         <button
           onClick={() => {
             setEditing(null)
             setShowForm(true)
           }}
-          className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all w-full sm:w-auto"
+          className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all w-full sm:w-auto min-h-[44px]"
         >
           Add Event
         </button>
       </div>
 
       {showForm && (
-        <div className="bg-white dark:bg-dark-card p-6 sm:p-8 rounded-sm shadow-sm mb-8 border border-taupe/20 dark:border-dark-border">
-          <h2 className="font-serif text-2xl text-charcoal dark:text-dark-text mb-6">
+        <div className="bg-white dark:bg-dark-card p-4 sm:p-6 lg:p-8 rounded-sm shadow-sm mb-6 sm:mb-8 border border-taupe/20 dark:border-dark-border">
+          <h2 className="font-serif text-xl sm:text-2xl text-charcoal dark:text-dark-text mb-4 sm:mb-6">
             {editing ? 'Edit Event' : 'Create Event'}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                   Name
@@ -192,10 +192,10 @@ export default function AdminEventsPage() {
                 />
               </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 type="submit"
-                className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all w-full sm:w-auto"
+                className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all w-full sm:w-auto min-h-[44px]"
               >
                 {editing ? 'Update' : 'Create'}
               </button>
@@ -205,7 +205,7 @@ export default function AdminEventsPage() {
                   setShowForm(false)
                   setEditing(null)
                 }}
-                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all w-full sm:w-auto"
+                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all w-full sm:w-auto min-h-[44px]"
               >
                 Cancel
               </button>
@@ -216,10 +216,10 @@ export default function AdminEventsPage() {
 
       <div className="space-y-4">
         {events.map((event) => (
-          <div key={event.id} className="bg-white dark:bg-dark-card p-6 rounded-sm shadow-sm border border-taupe/20 dark:border-dark-border">
+          <div key={event.id} className="bg-white dark:bg-dark-card p-4 sm:p-6 rounded-sm shadow-sm border border-taupe/20 dark:border-dark-border">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="flex-1">
-                <h3 className="font-serif text-2xl text-charcoal dark:text-dark-text mb-2">{event.name}</h3>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-serif text-xl sm:text-2xl text-charcoal dark:text-dark-text mb-2">{event.name}</h3>
                 <div className="space-y-1 font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary">
                   <p>{formatDateTime(event.dateTime)}</p>
                   <p>{event.venueName}, {event.city}</p>
@@ -232,7 +232,7 @@ export default function AdminEventsPage() {
                   setEditing(event)
                   setShowForm(true)
                 }}
-                className="bg-sage text-white px-4 py-2 rounded-sm font-sans text-xs tracking-wider uppercase hover:bg-sage/90 transition-all w-full sm:w-auto"
+                className="bg-sage text-white px-4 py-2.5 rounded-sm font-sans text-xs tracking-wider uppercase hover:bg-sage/90 transition-all w-full sm:w-auto min-h-[44px]"
               >
                 Edit
               </button>

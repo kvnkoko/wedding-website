@@ -282,16 +282,16 @@ export default function AdminRSVPsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="font-title text-4xl sm:text-5xl text-charcoal dark:text-dark-text mb-2">RSVPs</h1>
-          <p className="font-sans text-base text-charcoal/60 dark:text-dark-text-secondary">
+          <h1 className="font-title text-3xl sm:text-4xl lg:text-5xl text-charcoal dark:text-dark-text mb-2">RSVPs</h1>
+          <p className="font-sans text-sm sm:text-base text-charcoal/60 dark:text-dark-text-secondary">
             Manage and review all guest responses
           </p>
         </div>
         <button
           onClick={handleExport}
-          className="flex items-center gap-2 bg-sage text-white px-6 py-3 rounded-lg font-sans text-sm font-medium hover:bg-sage/90 transition-all duration-200 shadow-md hover:shadow-lg"
+          className="flex items-center gap-2 bg-sage text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-sans text-sm font-medium hover:bg-sage/90 transition-all duration-200 shadow-md hover:shadow-lg w-full sm:w-auto justify-center min-h-[44px]"
         >
           <Download className="w-4 h-4" weight="duotone" />
           Export CSV
@@ -299,12 +299,12 @@ export default function AdminRSVPsPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white dark:bg-dark-card p-6 rounded-xl shadow-md border border-taupe/20 dark:border-dark-border mb-6">
+      <div className="bg-white dark:bg-dark-card p-4 sm:p-6 rounded-xl shadow-md border border-taupe/20 dark:border-dark-border mb-6">
         <div className="flex items-center gap-2 mb-4">
           <Funnel className="w-5 h-5 text-charcoal dark:text-dark-text" weight="duotone" />
-          <h2 className="font-title text-lg text-charcoal dark:text-dark-text">Filters</h2>
+          <h2 className="font-title text-base sm:text-lg text-charcoal dark:text-dark-text">Filters</h2>
         </div>
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
               Search
@@ -368,21 +368,21 @@ export default function AdminRSVPsPage() {
 
       {/* Edit Form */}
       {showForm && editing && (
-        <div className="bg-white dark:bg-dark-card p-8 rounded-xl shadow-lg border border-taupe/20 dark:border-dark-border mb-8" key={editing.id}>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="font-title text-2xl text-charcoal dark:text-dark-text">Edit RSVP</h2>
+        <div className="bg-white dark:bg-dark-card p-4 sm:p-6 lg:p-8 rounded-xl shadow-lg border border-taupe/20 dark:border-dark-border mb-6 sm:mb-8" key={editing.id}>
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h2 className="font-title text-xl sm:text-2xl text-charcoal dark:text-dark-text">Edit RSVP</h2>
             <button
               onClick={() => {
                 setShowForm(false)
                 setEditing(null)
               }}
-              className="p-2 hover:bg-taupe/10 dark:hover:bg-dark-border rounded-lg transition-colors duration-200"
+              className="p-2 hover:bg-taupe/10 dark:hover:bg-dark-border rounded-lg transition-colors duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center"
             >
               <X className="w-5 h-5 text-charcoal dark:text-dark-text" />
             </button>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-4">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
                   Name <span className="text-red-500">*</span>
@@ -449,9 +449,9 @@ export default function AdminRSVPsPage() {
                   <div key={er.event.id} className="border-b border-taupe/20 dark:border-dark-border pb-4 last:border-b-0 last:pb-0">
                     <div className="mb-3">
                       <h4 className="font-sans text-sm font-semibold text-charcoal dark:text-dark-text mb-2">{er.event.name}</h4>
-                      <div className="flex items-center gap-3 mb-3">
-                        <span className="font-sans text-sm text-charcoal dark:text-dark-text w-24 flex-shrink-0">Status:</span>
-                        <div className="relative flex-1">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 mb-3">
+                        <span className="font-sans text-sm text-charcoal dark:text-dark-text w-full sm:w-24 flex-shrink-0">Status:</span>
+                        <div className="relative flex-1 w-full sm:w-auto">
                           <select
                             name={`event-${er.event.id}`}
                             defaultValue={er.status}
@@ -521,10 +521,10 @@ export default function AdminRSVPsPage() {
                 className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
               />
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 type="submit"
-                className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-lg font-sans text-sm font-medium hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all duration-200 shadow-md hover:shadow-lg"
+                className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-lg font-sans text-sm font-medium hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all duration-200 shadow-md hover:shadow-lg w-full sm:w-auto min-h-[44px]"
               >
                 Update RSVP
               </button>
@@ -534,7 +534,7 @@ export default function AdminRSVPsPage() {
                   setShowForm(false)
                   setEditing(null)
                 }}
-                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-3 rounded-lg font-sans text-sm font-medium hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all duration-200"
+                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-3 rounded-lg font-sans text-sm font-medium hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all duration-200 w-full sm:w-auto min-h-[44px]"
               >
                 Cancel
               </button>
@@ -562,33 +562,33 @@ export default function AdminRSVPsPage() {
               className="bg-white dark:bg-dark-card rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-taupe/20 dark:border-dark-border overflow-hidden"
             >
               {/* RSVP Header */}
-              <div className="bg-gradient-to-r from-sage/10 to-sage/5 dark:from-sage/20 dark:to-sage/10 px-6 py-4 border-b border-taupe/20 dark:border-dark-border">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-sage to-sage/70 flex items-center justify-center text-white font-bold text-lg shadow-md">
+              <div className="bg-gradient-to-r from-sage/10 to-sage/5 dark:from-sage/20 dark:to-sage/10 px-4 sm:px-6 py-3 sm:py-4 border-b border-taupe/20 dark:border-dark-border">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-sage to-sage/70 flex items-center justify-center text-white font-bold text-base sm:text-lg shadow-md flex-shrink-0">
                       {rsvp.name.charAt(0).toUpperCase()}
                     </div>
-                    <div>
-                      <h3 className="font-title text-xl text-charcoal dark:text-dark-text">{rsvp.name}</h3>
-                      <p className="font-sans text-sm text-charcoal/60 dark:text-dark-text-secondary">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="font-title text-lg sm:text-xl text-charcoal dark:text-dark-text truncate">{rsvp.name}</h3>
+                      <p className="font-sans text-xs sm:text-sm text-charcoal/60 dark:text-dark-text-secondary truncate">
                         {rsvp.inviteLinkConfig.label} • {new Date(rsvp.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <button
                       onClick={() => {
                         setEditing(rsvp)
                         setShowForm(true)
                       }}
-                      className="flex items-center gap-2 bg-sage text-white px-4 py-2 rounded-lg font-sans text-sm font-medium hover:bg-sage/90 transition-all duration-200 shadow-md hover:shadow-lg"
+                      className="flex items-center justify-center gap-2 bg-sage text-white px-4 py-2.5 rounded-lg font-sans text-sm font-medium hover:bg-sage/90 transition-all duration-200 shadow-md hover:shadow-lg min-h-[44px] w-full sm:w-auto"
                     >
                       <Pencil className="w-4 h-4" weight="duotone" />
                       Edit
                     </button>
                     <button
                       onClick={() => handleDelete(rsvp.id)}
-                      className="flex items-center gap-2 bg-red-500 text-white px-4 py-2 rounded-lg font-sans text-sm font-medium hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg"
+                      className="flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2.5 rounded-lg font-sans text-sm font-medium hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg min-h-[44px] w-full sm:w-auto"
                     >
                       <Trash className="w-4 h-4" weight="duotone" />
                       Delete
@@ -598,8 +598,8 @@ export default function AdminRSVPsPage() {
               </div>
 
               {/* RSVP Content */}
-              <div className="p-6">
-                <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div className="p-4 sm:p-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                   {/* Contact Info */}
                   <div>
                     <h4 className="font-sans text-sm font-semibold text-charcoal dark:text-dark-text mb-3 flex items-center gap-2">

@@ -106,18 +106,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <header className="bg-white dark:bg-dark-surface border-b border-taupe/30 dark:border-dark-border shadow-sm sticky top-0 z-50 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <Link href="/admin" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-sage to-sage/70 flex items-center justify-center text-white font-bold text-lg shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105">
+            <Link href="/admin" className="flex items-center gap-2 sm:gap-3 group min-w-0 flex-shrink">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-sage to-sage/70 flex items-center justify-center text-white font-bold text-sm sm:text-lg shadow-md group-hover:shadow-lg transition-all duration-300 group-hover:scale-105 flex-shrink-0">
                 K&T
               </div>
-              <span className="font-title text-xl text-charcoal dark:text-dark-text group-hover:text-sage transition-colors duration-300">
+              <span className="font-title text-base sm:text-xl text-charcoal dark:text-dark-text group-hover:text-sage transition-colors duration-300 truncate">
                 Admin Portal
               </span>
             </Link>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
               <button
                 onClick={toggleDarkMode}
-                className="p-2 rounded-lg hover:bg-taupe/20 dark:hover:bg-dark-border transition-colors duration-200"
+                className="p-2 sm:p-2.5 rounded-lg hover:bg-taupe/20 dark:hover:bg-dark-border transition-colors duration-200 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Toggle dark mode"
               >
                 {isDark ? (
@@ -128,10 +128,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </button>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary hover:text-charcoal dark:hover:text-dark-text hover:bg-taupe/10 dark:hover:bg-dark-border transition-all duration-200"
+                className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg font-sans text-xs sm:text-sm text-charcoal/70 dark:text-dark-text-secondary hover:text-charcoal dark:hover:text-dark-text hover:bg-taupe/10 dark:hover:bg-dark-border transition-all duration-200 min-h-[44px]"
               >
-                <SignOut className="w-4 h-4" weight="duotone" />
-                <span>Logout</span>
+                <SignOut className="w-4 h-4 flex-shrink-0" weight="duotone" />
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Navigation Bar */}
       <nav className="bg-white/80 dark:bg-dark-surface/80 backdrop-blur-sm border-b border-taupe/20 dark:border-dark-border sticky top-16 z-40 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-1 overflow-x-auto scrollbar-hide">
+          <div className="flex space-x-1 overflow-x-auto scrollbar-hide pb-1 -mb-1">
             {navItems.map((item) => {
               const Icon = item.icon
               const isActive = pathname === item.href
@@ -149,13 +149,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-2 px-4 py-3 font-sans text-sm font-medium transition-all duration-200 whitespace-nowrap ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-3 font-sans text-xs sm:text-sm font-medium transition-all duration-200 whitespace-nowrap min-h-[44px] ${
                     isActive
                       ? 'text-sage border-b-2 border-sage bg-sage/5 dark:bg-sage/10'
                       : 'text-charcoal/70 dark:text-dark-text-secondary hover:text-charcoal dark:hover:text-dark-text hover:bg-taupe/10 dark:hover:bg-dark-border'
                   }`}
                 >
-                  <Icon className="w-4 h-4" weight={isActive ? 'duotone' : 'regular'} />
+                  <Icon className="w-4 h-4 flex-shrink-0" weight={isActive ? 'duotone' : 'regular'} />
                   <span>{item.label}</span>
                 </Link>
               )
@@ -165,7 +165,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </nav>
 
       {/* Main Content */}
-      <main className="py-8 transition-colors duration-300">
+      <main className="py-4 sm:py-8 transition-colors duration-300">
         {children}
       </main>
     </div>

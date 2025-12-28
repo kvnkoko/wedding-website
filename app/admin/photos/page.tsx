@@ -347,22 +347,22 @@ export default function AdminPhotosPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-        <h1 className="font-serif text-5xl text-charcoal dark:text-dark-text">Photo Gallery</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+        <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal dark:text-dark-text">Photo Gallery</h1>
         <button
           onClick={() => setShowAddForm(!showAddForm)}
-          className="bg-sage text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-sage/90 transition-all w-full sm:w-auto"
+          className="bg-sage text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-sage/90 transition-all w-full sm:w-auto min-h-[44px]"
         >
           {showAddForm ? 'Cancel' : 'Add Photo'}
         </button>
       </div>
 
       {showAddForm && (
-        <div className="bg-white dark:bg-dark-card p-6 rounded-sm shadow-sm mb-6 border border-taupe/20 dark:border-dark-border">
-          <h2 className="font-serif text-2xl text-charcoal dark:text-dark-text mb-4">Add New Photo</h2>
+        <div className="bg-white dark:bg-dark-card p-4 sm:p-6 rounded-sm shadow-sm mb-6 border border-taupe/20 dark:border-dark-border">
+          <h2 className="font-serif text-xl sm:text-2xl text-charcoal dark:text-dark-text mb-4">Add New Photo</h2>
           
           {/* Upload Method Toggle */}
-          <div className="flex gap-4 mb-6 border-b border-taupe/30 dark:border-dark-border pb-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4 sm:mb-6 border-b border-taupe/30 dark:border-dark-border pb-4">
             <button
               type="button"
               onClick={() => {
@@ -371,7 +371,7 @@ export default function AdminPhotosPage() {
                 setSelectedFiles([])
                 setPreviewUrls([])
               }}
-              className={`px-4 py-2 rounded-sm font-sans text-sm transition-all ${
+              className={`px-4 py-2.5 rounded-sm font-sans text-sm transition-all min-h-[44px] ${
                 uploadMethod === 'upload'
                   ? 'bg-sage text-white'
                   : 'bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text hover:bg-taupe/30 dark:hover:bg-dark-border/80'
@@ -386,7 +386,7 @@ export default function AdminPhotosPage() {
                 setSelectedFiles([])
                 setPreviewUrls([])
               }}
-              className={`px-4 py-2 rounded-sm font-sans text-sm transition-all ${
+              className={`px-4 py-2.5 rounded-sm font-sans text-sm transition-all min-h-[44px] ${
                 uploadMethod === 'url'
                   ? 'bg-sage text-white'
                   : 'bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text hover:bg-taupe/30 dark:hover:bg-dark-border/80'
@@ -426,7 +426,7 @@ export default function AdminPhotosPage() {
                   >
                     {selectedFiles.length > 0 ? (
                       <div className="space-y-4">
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                           {selectedFiles.map((file, index) => (
                             <div key={index} className="relative group">
                               <div className="relative w-full aspect-square rounded-sm overflow-hidden bg-taupe/20 dark:bg-dark-surface">
@@ -535,7 +535,7 @@ export default function AdminPhotosPage() {
             <button
               type="submit"
               disabled={uploading || (uploadMethod === 'upload' && selectedFiles.length === 0)}
-              className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+              className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto min-h-[44px]"
             >
               {uploading 
                 ? `Uploading ${selectedFiles.length > 0 ? `${selectedFiles.length} ` : ''}photo${selectedFiles.length > 1 ? 's' : ''}...` 
@@ -564,14 +564,14 @@ export default function AdminPhotosPage() {
                 onDragStart={() => handleDragStart(index)}
                 onDragOver={(e) => handleDragOver(e, index)}
                 onDragEnd={handleDragEnd}
-                className={`flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 border-2 rounded-sm cursor-move transition-all ${
+                className={`flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 border-2 rounded-sm cursor-move transition-all ${
                   draggedIndex === index
                     ? 'border-sage bg-sage/10 dark:bg-sage/20 opacity-50'
                     : 'border-taupe/30 dark:border-dark-border hover:border-sage/50'
                 }`}
               >
                 <div className="flex-shrink-0">
-                  <div className="w-16 h-16 md:w-24 md:h-24 relative rounded-sm overflow-hidden bg-taupe/20 dark:bg-dark-surface">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 relative rounded-sm overflow-hidden bg-taupe/20 dark:bg-dark-surface">
                     <Image
                       src={photo.url}
                       alt={photo.alt || `Photo ${index + 1}`}
@@ -595,10 +595,10 @@ export default function AdminPhotosPage() {
                   )}
                 </div>
                 <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <span className="text-charcoal/60 dark:text-dark-text-secondary">⋮⋮</span>
+                  <span className="text-charcoal/60 dark:text-dark-text-secondary hidden sm:inline">⋮⋮</span>
                   <button
                     onClick={() => handleDeleteClick(photo.id)}
-                    className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 dark:hover:bg-red-900/50 transition-all border border-red-200 dark:border-red-800 w-full sm:w-auto"
+                    className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2.5 rounded-sm font-sans text-xs hover:bg-red-200 dark:hover:bg-red-900/50 transition-all border border-red-200 dark:border-red-800 w-full sm:w-auto min-h-[44px]"
                   >
                     Delete
                   </button>
@@ -612,8 +612,8 @@ export default function AdminPhotosPage() {
       {/* Delete Confirmation Dialog */}
       {showDeleteConfirm && (
         <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-dark-card rounded-sm shadow-lg max-w-md w-full p-6 border border-taupe/20 dark:border-dark-border">
-            <h3 className="font-serif text-2xl text-charcoal dark:text-dark-text mb-4">
+          <div className="bg-white dark:bg-dark-card rounded-sm shadow-lg max-w-md w-full p-4 sm:p-6 border border-taupe/20 dark:border-dark-border">
+            <h3 className="font-serif text-xl sm:text-2xl text-charcoal dark:text-dark-text mb-4">
               Delete Photo?
             </h3>
             <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary mb-6">
@@ -625,23 +625,23 @@ export default function AdminPhotosPage() {
                   type="checkbox"
                   checked={dontShowAgain}
                   onChange={(e) => setDontShowAgain(e.target.checked)}
-                  className="w-4 h-4 text-sage border-taupe/30 dark:border-dark-border rounded focus:ring-sage dark:bg-dark-surface"
+                  className="w-4 h-4 text-sage border-taupe/30 dark:border-dark-border rounded focus:ring-sage dark:bg-dark-surface min-w-[44px] min-h-[44px]"
                 />
                 <span className="font-sans text-sm text-charcoal dark:text-dark-text">
                   Don't show this again
                 </span>
               </label>
             </div>
-            <div className="flex gap-3 justify-end">
+            <div className="flex flex-col sm:flex-row gap-3 justify-end">
               <button
                 onClick={handleDeleteCancel}
-                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-2 rounded-sm font-sans text-sm hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all"
+                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-2.5 rounded-sm font-sans text-sm hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all min-h-[44px] w-full sm:w-auto"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteConfirm}
-                className="bg-red-600 dark:bg-red-700 text-white px-6 py-2 rounded-sm font-sans text-sm hover:bg-red-700 dark:hover:bg-red-800 transition-all"
+                className="bg-red-600 dark:bg-red-700 text-white px-6 py-2.5 rounded-sm font-sans text-sm hover:bg-red-700 dark:hover:bg-red-800 transition-all min-h-[44px] w-full sm:w-auto"
               >
                 Delete
               </button>

@@ -42,17 +42,17 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white p-10 rounded-sm shadow-sm">
-        <h1 className="font-serif text-4xl text-charcoal mb-8 text-center">Admin Login</h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
+    <div className="min-h-screen bg-cream dark:bg-dark-bg flex items-center justify-center px-4 py-8 transition-colors duration-300">
+      <div className="max-w-md w-full bg-white dark:bg-dark-card p-6 sm:p-8 lg:p-10 rounded-sm shadow-sm border border-taupe/20 dark:border-dark-border">
+        <h1 className="font-serif text-3xl sm:text-4xl text-charcoal dark:text-dark-text mb-6 sm:mb-8 text-center">Admin Login</h1>
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-sm text-sm">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 rounded-sm text-sm">
               {error}
             </div>
           )}
           <div>
-            <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+            <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
               Email
             </label>
             <input
@@ -60,11 +60,11 @@ export default function AdminLoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+              className="w-full px-4 py-3 border border-taupe/30 dark:border-dark-border rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 min-h-[44px]"
             />
           </div>
           <div>
-            <label className="block font-sans text-sm font-medium text-charcoal mb-2">
+            <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
               Password
             </label>
             <input
@@ -72,13 +72,13 @@ export default function AdminLoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 border border-taupe/30 rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage"
+              className="w-full px-4 py-3 border border-taupe/30 dark:border-dark-border rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 min-h-[44px]"
             />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-charcoal text-white px-8 py-4 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 transition-all disabled:opacity-50"
+            className="w-full bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-8 py-3 sm:py-4 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all disabled:opacity-50 min-h-[44px]"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>

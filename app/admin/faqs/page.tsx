@@ -368,8 +368,8 @@ export default function AdminFAQsPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="font-serif text-5xl text-charcoal dark:text-dark-text">FAQs</h1>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
+        <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-charcoal dark:text-dark-text">FAQs</h1>
         <button
           onClick={() => {
             setShowAddForm(true)
@@ -377,15 +377,15 @@ export default function AdminFAQsPage() {
             setFormData({ question: '', answer: '', colorHexCodes: [], selectedEventIds: [], isGlobal: false })
             setNewColorHex('')
           }}
-          className="bg-sage text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-sage/90 transition-all"
+          className="bg-sage text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-sage/90 transition-all w-full sm:w-auto min-h-[44px]"
         >
           {showAddForm ? 'Cancel' : 'Add FAQ'}
         </button>
       </div>
 
       {showAddForm && (
-        <div className="bg-white dark:bg-dark-card p-6 rounded-sm shadow-sm mb-6 border border-taupe/20 dark:border-dark-border">
-          <h2 className="font-serif text-2xl text-charcoal dark:text-dark-text mb-4">
+        <div className="bg-white dark:bg-dark-card p-4 sm:p-6 rounded-sm shadow-sm mb-6 border border-taupe/20 dark:border-dark-border">
+          <h2 className="font-serif text-xl sm:text-2xl text-charcoal dark:text-dark-text mb-4">
             {editingFAQ ? 'Edit FAQ' : 'Add New FAQ'}
           </h2>
           
@@ -423,13 +423,13 @@ export default function AdminFAQsPage() {
                 Color Hex Codes (Optional)
               </label>
               <div className="space-y-3">
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="text"
                     value={newColorHex}
                     onChange={(e) => setNewColorHex(e.target.value)}
                     placeholder="#A8D5BA"
-                    className="flex-1 px-4 py-2 border border-taupe/30 dark:border-dark-border rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                    className="flex-1 px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-sm font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 min-h-[44px]"
                     onKeyPress={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault()
@@ -440,7 +440,7 @@ export default function AdminFAQsPage() {
                   <button
                     type="button"
                     onClick={handleAddColor}
-                    className="bg-sage/20 dark:bg-sage/30 text-sage dark:text-sage/90 px-4 py-2 rounded-sm font-sans text-sm hover:bg-sage/30 dark:hover:bg-sage/40 transition-all"
+                    className="bg-sage/20 dark:bg-sage/30 text-sage dark:text-sage/90 px-4 py-2.5 rounded-sm font-sans text-sm hover:bg-sage/30 dark:hover:bg-sage/40 transition-all min-h-[44px] w-full sm:w-auto"
                   >
                     Add Color
                   </button>
@@ -559,11 +559,11 @@ export default function AdminFAQsPage() {
               </p>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <button
                 type="submit"
                 disabled={submitting}
-                className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-charcoal/90 dark:hover:bg-dark-text/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto min-h-[44px]"
               >
                 {submitting ? 'Saving...' : editingFAQ ? 'Update FAQ' : 'Add FAQ'}
               </button>
@@ -571,7 +571,7 @@ export default function AdminFAQsPage() {
                 type="button"
                 onClick={handleCancel}
                 disabled={submitting}
-                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-taupe/20 dark:bg-dark-border text-charcoal dark:text-dark-text px-6 py-3 rounded-sm font-sans text-sm tracking-wider uppercase hover:bg-taupe/30 dark:hover:bg-dark-border/80 transition-all disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto min-h-[44px]"
               >
                 Cancel
               </button>
@@ -605,7 +605,7 @@ export default function AdminFAQsPage() {
                 }}
                 onDragOver={(e) => handleDragOver(e, index)}
                 onDragEnd={handleDragEnd}
-                className={`flex items-start gap-4 p-4 border-2 rounded-sm cursor-move transition-all ${
+                className={`flex flex-col sm:flex-row items-start gap-3 sm:gap-4 p-3 sm:p-4 border-2 rounded-sm cursor-move transition-all ${
                   draggedIndex === index
                     ? 'border-sage bg-sage/10 dark:bg-sage/20 opacity-50'
                     : 'border-taupe/30 dark:border-dark-border hover:border-sage/50'
@@ -647,8 +647,8 @@ export default function AdminFAQsPage() {
                     </div>
                   )}
                 </div>
-                <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                  <span className="text-charcoal/60 dark:text-dark-text-secondary">⋮⋮</span>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                  <span className="text-charcoal/60 dark:text-dark-text-secondary hidden sm:inline">⋮⋮</span>
                   <button
                     type="button"
                     onClick={(e) => {
@@ -657,7 +657,7 @@ export default function AdminFAQsPage() {
                       console.log('Edit button clicked for FAQ:', faq.id)
                       handleEdit(faq)
                     }}
-                    className="bg-sage/20 dark:bg-sage/30 text-sage dark:text-sage/90 px-4 py-2 rounded-sm font-sans text-xs hover:bg-sage/30 dark:hover:bg-sage/40 transition-all"
+                    className="bg-sage/20 dark:bg-sage/30 text-sage dark:text-sage/90 px-4 py-2.5 rounded-sm font-sans text-xs hover:bg-sage/30 dark:hover:bg-sage/40 transition-all min-h-[44px] w-full sm:w-auto"
                   >
                     Edit
                   </button>
@@ -685,7 +685,7 @@ export default function AdminFAQsPage() {
                       e.stopPropagation()
                     }}
                     draggable={false}
-                    className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2 rounded-sm font-sans text-xs hover:bg-red-200 dark:hover:bg-red-900/50 transition-all cursor-pointer border border-red-200 dark:border-red-800"
+                    className="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 px-4 py-2.5 rounded-sm font-sans text-xs hover:bg-red-200 dark:hover:bg-red-900/50 transition-all cursor-pointer border border-red-200 dark:border-red-800 min-h-[44px] w-full sm:w-auto"
                     style={{ pointerEvents: 'auto', position: 'relative', zIndex: 1000 }}
                   >
                     Delete
