@@ -162,7 +162,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }
 
   return (
-    <section className="relative w-full h-[85vh] md:h-[80vh] lg:h-[85vh] overflow-hidden bg-cream dark:bg-dark-bg">
+    <section className="relative w-full h-[85vh] md:h-[80vh] lg:h-[90vh] xl:h-[92vh] overflow-hidden bg-cream dark:bg-dark-bg">
       {/* Main Carousel Container */}
       <div 
         className="relative w-full h-full flex items-center justify-center gap-0 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12"
@@ -215,67 +215,78 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                   <div className="relative w-full h-full rounded-none md:rounded-sm overflow-hidden shadow-none md:shadow-lg dark:md:shadow-2xl flex items-center justify-center bg-cream dark:bg-dark-card transition-all duration-500">
                     {photo.url && (
                       <>
-                        {/* Low-quality blurred placeholder - shows immediately while loading */}
-                        {!loadedImages.has(photo.id) && !imageErrors.has(photo.id) && (
-                          <img
-                            src={photo.url}
-                            alt=""
-                            aria-hidden="true"
-                            className="absolute inset-0"
-                            style={{
-                              width: '100%',
-                              height: '100%',
-                              objectFit: 'cover',
-                              objectPosition: 'center',
-                              filter: 'blur(20px)',
-                              transform: 'scale(1.05)',
-                              opacity: 0.6,
-                            }}
-                            loading="eager"
-                          />
-                        )}
-                        {/* Full-quality image with fade-in - optimized for portrait */}
-                        <img
-                          src={photo.url}
-                          alt={photo.alt || `Photo ${index + 1}`}
-                          className={`relative transition-all duration-700 ease-in-out image-reveal ${
-                            loadedImages.has(photo.id)
-                              ? 'opacity-100 loaded'
-                              : 'opacity-0'
-                          }`}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            objectFit: 'cover',
-                            objectPosition: 'center',
-                          }}
-                          loading={isVisible && position === 0 ? 'eager' : 'lazy'}
-                          fetchPriority={isVisible && position === 0 ? 'high' : isVisible ? 'auto' : 'low'}
-                          decoding={isVisible && position === 0 ? 'sync' : 'async'}
-                          onError={(e) => {
-                            console.error('Error loading image:', photo.url)
-                            setImageErrors(prev => new Set(prev).add(photo.id))
-                            const target = e.target as HTMLImageElement
-                            if (target) {
-                              target.style.display = 'none'
-                            }
-                          }}
-                          onLoad={(e) => {
-                            // Mark as loaded
-                            setLoadedImages(prev => new Set(prev).add(photo.id))
-                            
-                            // Calculate and store aspect ratio
-                            const img = e.target as HTMLImageElement
-                            if (img.naturalWidth && img.naturalHeight) {
-                              const aspectRatio = img.naturalWidth / img.naturalHeight
-                              setImageAspectRatios(prev => {
-                                const newMap = new Map(prev)
-                                newMap.set(photo.id, aspectRatio)
-                                return newMap
-                              })
-                            }
-                          }}
-                        />
+                        {/* Determine if image is portrait based on aspect ratio */}
+                        {(() => {
+                          const aspectRatio = imageAspectRatios.get(photo.id)
+                          const isPortrait = aspectRatio ? aspectRatio < 1 : false
+                          const objectFitStyle = isPortrait ? 'contain' : 'cover'
+                          
+                          return (
+                            <>
+                              {/* Low-quality blurred placeholder - shows immediately while loading */}
+                              {!loadedImages.has(photo.id) && !imageErrors.has(photo.id) && (
+                                <img
+                                  src={photo.url}
+                                  alt=""
+                                  aria-hidden="true"
+                                  className="absolute inset-0"
+                                  style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: objectFitStyle,
+                                    objectPosition: 'center',
+                                    filter: 'blur(20px)',
+                                    transform: 'scale(1.05)',
+                                    opacity: 0.6,
+                                  }}
+                                  loading="eager"
+                                />
+                              )}
+                              {/* Full-quality image with fade-in - optimized for portrait */}
+                              <img
+                                src={photo.url}
+                                alt={photo.alt || `Photo ${index + 1}`}
+                                className={`relative transition-all duration-700 ease-in-out image-reveal ${
+                                  loadedImages.has(photo.id)
+                                    ? 'opacity-100 loaded'
+                                    : 'opacity-0'
+                                }`}
+                                style={{
+                                  width: '100%',
+                                  height: '100%',
+                                  objectFit: objectFitStyle,
+                                  objectPosition: 'center',
+                                }}
+                                loading={isVisible && position === 0 ? 'eager' : 'lazy'}
+                                fetchPriority={isVisible && position === 0 ? 'high' : isVisible ? 'auto' : 'low'}
+                                decoding={isVisible && position === 0 ? 'sync' : 'async'}
+                                onError={(e) => {
+                                  console.error('Error loading image:', photo.url)
+                                  setImageErrors(prev => new Set(prev).add(photo.id))
+                                  const target = e.target as HTMLImageElement
+                                  if (target) {
+                                    target.style.display = 'none'
+                                  }
+                                }}
+                                onLoad={(e) => {
+                                  // Mark as loaded
+                                  setLoadedImages(prev => new Set(prev).add(photo.id))
+                                  
+                                  // Calculate and store aspect ratio
+                                  const img = e.target as HTMLImageElement
+                                  if (img.naturalWidth && img.naturalHeight) {
+                                    const aspectRatio = img.naturalWidth / img.naturalHeight
+                                    setImageAspectRatios(prev => {
+                                      const newMap = new Map(prev)
+                                      newMap.set(photo.id, aspectRatio)
+                                      return newMap
+                                    })
+                                  }
+                                }}
+                              />
+                            </>
+                          )
+                        })()}
                       </>
                     )}
                   </div>
