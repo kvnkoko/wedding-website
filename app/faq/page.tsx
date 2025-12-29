@@ -206,14 +206,14 @@ export default function FAQPage() {
                             <span className="w-1 h-1 rounded-full bg-sage"></span>
                             Colors to Wear
                           </h3>
-                            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                            <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
                               {faq.colorHexCodes.map((hex, colorIndex) => (
                                 <div
                                   key={colorIndex}
                                   className="relative group/color"
                                 >
                                   <div
-                                    className="relative w-6 h-6 sm:w-7 sm:h-7 rounded-full flex-shrink-0 cursor-pointer transition-all duration-500 sm:hover:scale-125 hover:z-10 hover:shadow-2xl"
+                                    className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full flex-shrink-0 cursor-pointer transition-all duration-500 sm:hover:scale-125 hover:z-10 hover:shadow-2xl"
                                     style={{
                                       backgroundColor: hex,
                                       boxShadow: `
