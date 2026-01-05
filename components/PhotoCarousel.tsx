@@ -162,20 +162,20 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }
 
   return (
-    <section className="relative w-full h-[85vh] md:h-[80vh] lg:h-[90vh] xl:h-[92vh] overflow-hidden bg-cream dark:bg-dark-bg">
+    <section className="relative w-full h-[85vh] md:h-[80vh] lg:h-[90vh] xl:h-[92vh] overflow-hidden bg-gradient-to-b from-cream via-cream to-cream/95 dark:from-dark-bg dark:via-dark-bg dark:to-dark-bg/95">
       {/* Main Carousel Container */}
       <div 
-        className="relative w-full h-full flex items-start justify-center gap-0 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12 pt-0"
+        className="relative w-full h-full flex items-center justify-center gap-0 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
         {/* Photo Slides - Multiple Visible with Smooth Transitions */}
         <div 
-          className="relative w-full h-full overflow-hidden"
+          className="relative w-full h-full overflow-hidden flex items-center justify-center"
         >
           <div 
-            className="relative h-full flex items-stretch md:px-0"
+            className="relative h-full flex items-center md:px-0"
             style={{
               transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}vw - ${currentIndex * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px))`,
               transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -200,94 +200,87 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
               // Container width - each photo takes up 1/photosToShow of the viewport width
               const gapSize = photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16
               const containerWidth = `calc(${100 / photosToShow}vw - ${gapSize * (photosToShow - 1) / photosToShow}px)`
-
+              
+              // Standard portrait aspect ratio (3:4) for consistent sizing across all photos
+              // All photos will have identical dimensions regardless of their original aspect ratio
+              const portraitAspectRatio = 3 / 4
+              
               return (
                 <div
                   key={photo.id}
-                  className="relative"
+                  className="relative flex items-center justify-center"
                   style={{
                     width: containerWidth,
-                    height: '100%',
+                    aspectRatio: '3 / 4',
+                    maxHeight: '85vh',
                     flexShrink: 0,
                     marginRight: index < sortedPhotos.length - 1 ? `${gapSize}px` : '0',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-none md:rounded-sm overflow-hidden shadow-none md:shadow-lg dark:md:shadow-2xl flex items-start justify-center bg-cream dark:bg-dark-card transition-all duration-500">
+                  <div className="relative w-full h-full rounded-none md:rounded-lg overflow-hidden shadow-xl md:shadow-2xl dark:shadow-3xl flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 transition-all duration-500 hover:shadow-3xl dark:hover:shadow-4xl group">
                     {photo.url && (
                       <>
-                        {/* Determine if image is portrait based on aspect ratio */}
-                        {(() => {
-                          const aspectRatio = imageAspectRatios.get(photo.id)
-                          const isPortrait = aspectRatio ? aspectRatio < 1 : false
-                          const objectFitStyle = isPortrait ? 'contain' : 'cover'
-                          const objectPosition = isPortrait ? 'top center' : 'center'
-                          
-                          return (
-                            <>
-                              {/* Low-quality blurred placeholder - shows immediately while loading */}
-                              {!loadedImages.has(photo.id) && !imageErrors.has(photo.id) && (
-                                <img
-                                  src={photo.url}
-                                  alt=""
-                                  aria-hidden="true"
-                                  className="absolute inset-0"
-                                  style={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: objectFitStyle,
-                                    objectPosition: objectPosition,
-                                    filter: 'blur(20px)',
-                                    transform: 'scale(1.05)',
-                                    opacity: 0.6,
-                                  }}
-                                  loading="eager"
-                                />
-                              )}
-                              {/* Full-quality image with fade-in - optimized for portrait */}
-                              <img
-                                src={photo.url}
-                                alt={photo.alt || `Photo ${index + 1}`}
-                                className={`relative transition-all duration-700 ease-in-out image-reveal ${
-                                  loadedImages.has(photo.id)
-                                    ? 'opacity-100 loaded'
-                                    : 'opacity-0'
-                                }`}
-                                style={{
-                                  width: '100%',
-                                  height: '100%',
-                                  objectFit: objectFitStyle,
-                                  objectPosition: objectPosition,
-                                }}
-                                loading={isVisible && position === 0 ? 'eager' : 'lazy'}
-                                fetchPriority={isVisible && position === 0 ? 'high' : isVisible ? 'auto' : 'low'}
-                                decoding={isVisible && position === 0 ? 'sync' : 'async'}
-                                onError={(e) => {
-                                  console.error('Error loading image:', photo.url)
-                                  setImageErrors(prev => new Set(prev).add(photo.id))
-                                  const target = e.target as HTMLImageElement
-                                  if (target) {
-                                    target.style.display = 'none'
-                                  }
-                                }}
-                                onLoad={(e) => {
-                                  // Mark as loaded
-                                  setLoadedImages(prev => new Set(prev).add(photo.id))
-                                  
-                                  // Calculate and store aspect ratio
-                                  const img = e.target as HTMLImageElement
-                                  if (img.naturalWidth && img.naturalHeight) {
-                                    const aspectRatio = img.naturalWidth / img.naturalHeight
-                                    setImageAspectRatios(prev => {
-                                      const newMap = new Map(prev)
-                                      newMap.set(photo.id, aspectRatio)
-                                      return newMap
-                                    })
-                                  }
-                                }}
-                              />
-                            </>
-                          )
-                        })()}
+                        {/* Low-quality blurred placeholder - shows immediately while loading */}
+                        {!loadedImages.has(photo.id) && !imageErrors.has(photo.id) && (
+                          <img
+                            src={photo.url}
+                            alt=""
+                            aria-hidden="true"
+                            className="absolute inset-0"
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                              objectPosition: 'center',
+                              filter: 'blur(20px)',
+                              transform: 'scale(1.05)',
+                              opacity: 0.5,
+                            }}
+                            loading="eager"
+                          />
+                        )}
+                        {/* Full-quality image with fade-in - all portraits use cover for consistent sizing */}
+                        <img
+                          src={photo.url}
+                          alt={photo.alt || `Photo ${index + 1}`}
+                          className={`absolute inset-0 w-full h-full transition-all duration-700 ease-in-out ${
+                            loadedImages.has(photo.id)
+                              ? 'opacity-100 scale-100'
+                              : 'opacity-0 scale-105'
+                          } group-hover:scale-[1.02]`}
+                          style={{
+                            objectFit: 'cover',
+                            objectPosition: 'center',
+                          }}
+                          loading={isVisible && position === 0 ? 'eager' : 'lazy'}
+                          fetchPriority={isVisible && position === 0 ? 'high' : isVisible ? 'auto' : 'low'}
+                          decoding={isVisible && position === 0 ? 'sync' : 'async'}
+                          onError={(e) => {
+                            console.error('Error loading image:', photo.url)
+                            setImageErrors(prev => new Set(prev).add(photo.id))
+                            const target = e.target as HTMLImageElement
+                            if (target) {
+                              target.style.display = 'none'
+                            }
+                          }}
+                          onLoad={(e) => {
+                            // Mark as loaded
+                            setLoadedImages(prev => new Set(prev).add(photo.id))
+                            
+                            // Calculate and store aspect ratio (for potential future use)
+                            const img = e.target as HTMLImageElement
+                            if (img.naturalWidth && img.naturalHeight) {
+                              const aspectRatio = img.naturalWidth / img.naturalHeight
+                              setImageAspectRatios(prev => {
+                                const newMap = new Map(prev)
+                                newMap.set(photo.id, aspectRatio)
+                                return newMap
+                              })
+                            }
+                          }}
+                        />
+                        {/* Subtle gradient overlay for depth and polish */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
                       </>
                     )}
                   </div>
@@ -299,15 +292,15 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
 
         {/* Navigation Dots - Hidden on mobile, shown on desktop */}
         {sortedPhotos.length > photosToShow && (
-          <div className="hidden md:flex absolute bottom-8 left-1/2 -translate-x-1/2 z-20 space-x-3">
+          <div className="hidden md:flex absolute bottom-10 left-1/2 -translate-x-1/2 z-20 space-x-3 px-4 py-2 rounded-full bg-black/20 dark:bg-white/10 backdrop-blur-md">
             {Array.from({ length: Math.max(1, sortedPhotos.length - photosToShow + 1) }).map((_, index) => (
               <button
                 key={index}
                 onClick={() => goToSlide(index)}
                 className={`transition-all duration-500 ease-out rounded-full ${
                   index === currentIndex
-                    ? 'w-3 h-3 bg-white dark:bg-dark-text shadow-lg dark:shadow-2xl scale-110'
-                    : 'w-2 h-2 bg-white/50 dark:bg-dark-text/50 hover:bg-white/75 dark:hover:bg-dark-text/75 hover:scale-110'
+                    ? 'w-3 h-3 bg-white dark:bg-dark-text shadow-lg dark:shadow-2xl scale-110 ring-2 ring-white/50'
+                    : 'w-2 h-2 bg-white/60 dark:bg-dark-text/60 hover:bg-white/90 dark:hover:bg-dark-text/90 hover:scale-110'
                 }`}
                 style={{
                   minWidth: '0 !important',
@@ -366,9 +359,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
 
         {/* Progress Bar - Hidden on mobile, shown on desktop */}
         {isAutoPlaying && sortedPhotos.length > photosToShow && (
-          <div className="hidden md:block absolute bottom-0 left-0 right-0 h-1 bg-white/20 dark:bg-dark-text/20 z-20">
+          <div className="hidden md:block absolute bottom-0 left-0 right-0 h-0.5 bg-black/10 dark:bg-white/10 z-20">
             <div
-              className="h-full bg-white dark:bg-dark-text transition-all duration-5000 ease-linear"
+              className="h-full bg-gradient-to-r from-transparent via-white/80 to-transparent dark:via-dark-text/80 transition-all duration-5000 ease-linear"
               style={{
                 width: '100%',
                 animation: 'progress 5s linear infinite',
