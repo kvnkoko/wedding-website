@@ -165,7 +165,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     <section className="relative w-full h-[85vh] md:h-[80vh] lg:h-[90vh] xl:h-[92vh] overflow-hidden bg-cream dark:bg-dark-bg">
       {/* Main Carousel Container */}
       <div 
-        className="relative w-full h-full flex items-center justify-center gap-0 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12"
+        className="relative w-full h-full flex items-start justify-center gap-0 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12 pt-0"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -212,7 +212,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     marginRight: index < sortedPhotos.length - 1 ? `${gapSize}px` : '0',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-none md:rounded-sm overflow-hidden shadow-none md:shadow-lg dark:md:shadow-2xl flex items-center justify-center bg-cream dark:bg-dark-card transition-all duration-500">
+                  <div className="relative w-full h-full rounded-none md:rounded-sm overflow-hidden shadow-none md:shadow-lg dark:md:shadow-2xl flex items-start justify-center bg-cream dark:bg-dark-card transition-all duration-500">
                     {photo.url && (
                       <>
                         {/* Determine if image is portrait based on aspect ratio */}
@@ -220,6 +220,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                           const aspectRatio = imageAspectRatios.get(photo.id)
                           const isPortrait = aspectRatio ? aspectRatio < 1 : false
                           const objectFitStyle = isPortrait ? 'contain' : 'cover'
+                          const objectPosition = isPortrait ? 'top center' : 'center'
                           
                           return (
                             <>
@@ -234,7 +235,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                                     width: '100%',
                                     height: '100%',
                                     objectFit: objectFitStyle,
-                                    objectPosition: 'center',
+                                    objectPosition: objectPosition,
                                     filter: 'blur(20px)',
                                     transform: 'scale(1.05)',
                                     opacity: 0.6,
@@ -255,7 +256,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                                   width: '100%',
                                   height: '100%',
                                   objectFit: objectFitStyle,
-                                  objectPosition: 'center',
+                                  objectPosition: objectPosition,
                                 }}
                                 loading={isVisible && position === 0 ? 'eager' : 'lazy'}
                                 fetchPriority={isVisible && position === 0 ? 'high' : isVisible ? 'auto' : 'low'}
