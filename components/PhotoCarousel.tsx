@@ -38,7 +38,11 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     const updatePhotosToShow = () => {
       if (typeof window !== 'undefined') {
         // Desktop: always show 3 photos
-        setPhotosToShow(window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1)
+        const newValue = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1
+        // #region agent log
+        fetch('http://127.0.0.1:7243/ingest/0bb370c7-5bb9-4cf0-8f5e-3c198578dfc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PhotoCarousel.tsx:41',message:'updatePhotosToShow called',data:{windowWidth:window.innerWidth,newValue,currentPhotosToShow:photosToShow},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+        // #endregion
+        setPhotosToShow(newValue)
       }
     }
     
@@ -85,23 +89,28 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
       intervalRef.current = setInterval(() => {
         const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
         setCurrentIndex((prev) => {
-          const willLoop = prev >= maxIndex
+          // First, ensure we're clamped to valid range
+          const clampedPrev = Math.min(prev, maxIndex)
           
-          if (willLoop) {
+          // If we're at the final position, loop back to start
+          if (clampedPrev >= maxIndex) {
             // At boundary - loop immediately without transition to prevent empty space
             skipTransitionRef.current = true
             setIsTransitioning(false)
-            setTimeout(() => {
+            // Use requestAnimationFrame for immediate jump
+            requestAnimationFrame(() => {
               setCurrentIndex(0)
-              skipTransitionRef.current = false
-            }, 10)
-            return prev
+              requestAnimationFrame(() => {
+                skipTransitionRef.current = false
+              })
+            })
+            return clampedPrev // Return clamped value to prevent going beyond maxIndex
           } else {
-            // Normal transition
+            // Normal transition - advance to next position
             skipTransitionRef.current = false
             setIsTransitioning(true)
             setTimeout(() => setIsTransitioning(false), 1300)
-            return prev + 1
+            return clampedPrev + 1
           }
         })
       }, 4000) // Change photos every 4 seconds for smoother experience
@@ -114,13 +123,23 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     }
   }, [isAutoPlaying, sortedPhotos.length, photosToShow, isTransitioning])
 
-  // Reset index if photos change
+  // Reset index if photos change or clamp to prevent empty space
   useEffect(() => {
     const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
     if (sortedPhotos.length > 0 && currentIndex > maxIndex) {
-      setCurrentIndex(0)
+      // Immediately clamp to maxIndex to prevent showing empty space
+      setCurrentIndex(maxIndex)
     }
   }, [sortedPhotos.length, currentIndex, photosToShow])
+
+  // Track boundary conditions and state
+  useEffect(() => {
+    const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
+    const isAtMax = currentIndex >= maxIndex
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/0bb370c7-5bb9-4cf0-8f5e-3c198578dfc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PhotoCarousel.tsx:123',message:'State change tracking',data:{currentIndex,sortedPhotosLength:sortedPhotos.length,photosToShow,maxIndex,isAtMax,isTransitioning,skipTransition:skipTransitionRef.current},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'I'})}).catch(()=>{});
+    // #endregion
+  }, [currentIndex, sortedPhotos.length, photosToShow, isTransitioning])
 
   const goToSlide = (index: number) => {
     setIsTransitioning(true)
@@ -137,24 +156,29 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
     
     setCurrentIndex((prev) => {
+      // First, ensure we're clamped to valid range
+      const clampedPrev = Math.max(0, Math.min(prev, maxIndex))
+      
       const willLoop = direction === 'next' 
-        ? prev >= maxIndex 
-        : prev <= 0
+        ? clampedPrev >= maxIndex 
+        : clampedPrev <= 0
       
       if (willLoop) {
-        // At boundary - mark to skip transition and loop immediately
+        // At boundary - loop immediately without any delay to prevent empty space
         skipTransitionRef.current = true
         setIsTransitioning(false)
-        // Jump immediately in next frame
-        setTimeout(() => {
+        // Use requestAnimationFrame for immediate jump without visible delay
+        requestAnimationFrame(() => {
           if (direction === 'next') {
             setCurrentIndex(0)
           } else {
             setCurrentIndex(maxIndex)
           }
-          skipTransitionRef.current = false
-        }, 10)
-        return prev
+          requestAnimationFrame(() => {
+            skipTransitionRef.current = false
+          })
+        })
+        return clampedPrev // Return clamped value to prevent going beyond boundaries
       } else {
         // Normal transition
         skipTransitionRef.current = false
@@ -162,9 +186,9 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
         setTimeout(() => setIsTransitioning(false), 1300)
         
         if (direction === 'next') {
-          return prev + 1
+          return clampedPrev + 1
         } else {
-          return prev - 1
+          return clampedPrev - 1
         }
       }
     })
@@ -212,21 +236,45 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
       >
         {/* Photo Slides - Multiple Visible with Smooth Transitions */}
         <div 
-          className="relative w-full h-full overflow-hidden flex items-center justify-center"
+          className="relative w-full h-full overflow-hidden"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: photosToShow === 1 ? 'center' : 'flex-start',
+          }}
         >
           <div 
             ref={containerRef}
             className="relative h-full flex items-start md:px-0"
             style={{
-              transform: photosToShow === 1
-                ? `translateX(calc(-${currentIndex * 100}vw + ${currentIndex * 2}rem))`
-                : `translateX(calc(-${currentIndex * (100 / photosToShow)}vw - ${currentIndex * (photosToShow === 2 ? 12 : 16)}px))`,
+              justifyContent: photosToShow === 1 ? 'flex-start' : 'flex-start',
+              transform: (() => {
+                // For mobile (photosToShow === 1), ensure proper centering
+                // Each image is calc(100vw - 2rem) wide, and we move by exactly that amount
+                const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
+                // Clamp currentIndex to prevent going beyond maxIndex (which causes empty space)
+                const clampedIndex = Math.min(currentIndex, maxIndex)
+                const transformValue = photosToShow === 1
+                  ? `translateX(calc(-${clampedIndex * 100}vw + ${clampedIndex * 2}rem))`
+                  : `translateX(calc(-${clampedIndex * (100 / photosToShow)}vw - ${clampedIndex * (photosToShow === 2 ? 12 : 16)}px))`
+                // #region agent log
+                fetch('http://127.0.0.1:7243/ingest/0bb370c7-5bb9-4cf0-8f5e-3c198578dfc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PhotoCarousel.tsx:252',message:'Transform calculation with clamp',data:{photosToShow,currentIndex,clampedIndex,sortedPhotosLength:sortedPhotos.length,maxIndex,transformValue,isTransitioning,skipTransition:skipTransitionRef.current},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'B'})}).catch(()=>{});
+                // #endregion
+                return transformValue
+              })(),
               transition: (isTransitioning && !skipTransitionRef.current)
                 ? 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)' 
                 : 'none',
-              width: photosToShow === 1
-                ? `calc(${sortedPhotos.length * 100}vw - ${sortedPhotos.length * 2}rem)`
-                : `calc(${sortedPhotos.length * (100 / photosToShow)}vw + ${sortedPhotos.length * (photosToShow === 2 ? 12 : 16)}px)`,
+              width: (() => {
+                // Container width should exactly match the content - no extra space
+                const widthValue = photosToShow === 1
+                  ? `calc(${sortedPhotos.length * 100}vw - ${sortedPhotos.length * 2}rem)`
+                  : `calc(${sortedPhotos.length * (100 / photosToShow)}vw + ${sortedPhotos.length * (photosToShow === 2 ? 12 : 16)}px)`
+                // #region agent log
+                fetch('http://127.0.0.1:7243/ingest/0bb370c7-5bb9-4cf0-8f5e-3c198578dfc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PhotoCarousel.tsx:261',message:'Container width calculation',data:{photosToShow,currentIndex,sortedPhotosLength:sortedPhotos.length,widthValue},timestamp:Date.now(),sessionId:'debug-session',runId:'post-fix',hypothesisId:'G'})}).catch(()=>{});
+                // #endregion
+                return widthValue
+              })(),
               willChange: 'transform',
             }}
           >
@@ -250,6 +298,11 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
               const containerWidth = photosToShow === 1
                 ? `calc(100vw - 2rem)`
                 : `calc(${100 / photosToShow}vw - ${gapSize * (photosToShow - 1) / photosToShow}px)`
+              // #region agent log
+              if (photosToShow === 1) {
+                fetch('http://127.0.0.1:7243/ingest/0bb370c7-5bb9-4cf0-8f5e-3c198578dfc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PhotoCarousel.tsx:250',message:'Mobile image width calculation',data:{photosToShow,containerWidth,index,currentIndex},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+              }
+              // #endregion
               
               // Standard portrait aspect ratio (3:4) for consistent sizing across all photos
               // All photos will have identical dimensions regardless of their original aspect ratio
@@ -265,6 +318,15 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     maxHeight: '85vh',
                     flexShrink: 0,
                     marginRight: index < sortedPhotos.length - 1 ? `${gapSize}px` : '0',
+                  }}
+                  ref={(el) => {
+                    if (el && photosToShow === 1 && index === currentIndex && typeof window !== 'undefined') {
+                      // #region agent log
+                      const rect = el.getBoundingClientRect()
+                      const parentRect = el.parentElement?.getBoundingClientRect()
+                      fetch('http://127.0.0.1:7243/ingest/0bb370c7-5bb9-4cf0-8f5e-3c198578dfc6',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'PhotoCarousel.tsx:262',message:'Active mobile image dimensions',data:{index,currentIndex,imageWidth:rect.width,imageLeft:rect.left,parentLeft:parentRect?.left,windowWidth:window.innerWidth,containerWidth,expectedCenter:window.innerWidth/2},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+                      // #endregion
+                    }
                   }}
                 >
                   <div className="relative w-full h-full rounded-none md:rounded-lg overflow-hidden shadow-xl md:shadow-2xl dark:shadow-3xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 transition-all duration-500 hover:shadow-3xl dark:hover:shadow-4xl group">
