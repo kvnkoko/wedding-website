@@ -24,6 +24,8 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   const [loadedImages, setLoadedImages] = useState<Set<string>>(new Set())
   const [imageErrors, setImageErrors] = useState<Set<string>>(new Set())
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const skipTransitionRef = useRef(false)
 
   // Safely sort photos
   const sortedPhotos = photos && Array.isArray(photos) 
@@ -81,13 +83,26 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     if (isAutoPlaying && sortedPhotos.length > photosToShow && !isTransitioning) {
       // Smooth scroll every 4 seconds
       intervalRef.current = setInterval(() => {
-        setIsTransitioning(true)
+        const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
         setCurrentIndex((prev) => {
-          const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
-          const next = prev >= maxIndex ? 0 : prev + 1
-          // Reset transition after animation completes
-          setTimeout(() => setIsTransitioning(false), 1300) // Slightly longer than transition duration
-          return next
+          const willLoop = prev >= maxIndex
+          
+          if (willLoop) {
+            // At boundary - loop immediately without transition to prevent empty space
+            skipTransitionRef.current = true
+            setIsTransitioning(false)
+            setTimeout(() => {
+              setCurrentIndex(0)
+              skipTransitionRef.current = false
+            }, 10)
+            return prev
+          } else {
+            // Normal transition
+            skipTransitionRef.current = false
+            setIsTransitioning(true)
+            setTimeout(() => setIsTransitioning(false), 1300)
+            return prev + 1
+          }
         })
       }, 4000) // Change photos every 4 seconds for smoother experience
     }
@@ -119,19 +134,40 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }
 
   const navigatePhotos = (direction: 'next' | 'prev') => {
-    setIsTransitioning(true)
     const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
     
-    setTimeout(() => {
-      setCurrentIndex((prev) => {
+    setCurrentIndex((prev) => {
+      const willLoop = direction === 'next' 
+        ? prev >= maxIndex 
+        : prev <= 0
+      
+      if (willLoop) {
+        // At boundary - mark to skip transition and loop immediately
+        skipTransitionRef.current = true
+        setIsTransitioning(false)
+        // Jump immediately in next frame
+        setTimeout(() => {
+          if (direction === 'next') {
+            setCurrentIndex(0)
+          } else {
+            setCurrentIndex(maxIndex)
+          }
+          skipTransitionRef.current = false
+        }, 10)
+        return prev
+      } else {
+        // Normal transition
+        skipTransitionRef.current = false
+        setIsTransitioning(true)
+        setTimeout(() => setIsTransitioning(false), 1300)
+        
         if (direction === 'next') {
-          return prev >= maxIndex ? 0 : prev + 1
+          return prev + 1
         } else {
-          return prev <= 0 ? maxIndex : prev - 1
+          return prev - 1
         }
-      })
-      setTimeout(() => setIsTransitioning(false), 1300) // Reset after transition completes
-    }, 50)
+      }
+    })
     
     setIsAutoPlaying(false)
     setTimeout(() => setIsAutoPlaying(true), 10000)
@@ -179,12 +215,13 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           className="relative w-full h-full overflow-hidden flex items-center justify-center"
         >
           <div 
+            ref={containerRef}
             className="relative h-full flex items-start md:px-0"
             style={{
               transform: photosToShow === 1
                 ? `translateX(calc(-${currentIndex * 100}vw + ${currentIndex * 2}rem))`
                 : `translateX(calc(-${currentIndex * (100 / photosToShow)}vw - ${currentIndex * (photosToShow === 2 ? 12 : 16)}px))`,
-              transition: isTransitioning 
+              transition: (isTransitioning && !skipTransitionRef.current)
                 ? 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)' 
                 : 'none',
               width: photosToShow === 1
@@ -208,7 +245,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
               }
 
               // Container width - each photo takes up 1/photosToShow of the viewport width
-              // On mobile, account for padding (1rem on each side = 2rem total) to properly center images
+              // On mobile, each image is exactly viewport width minus padding (1rem on each side = 2rem total)
               const gapSize = photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16
               const containerWidth = photosToShow === 1
                 ? `calc(100vw - 2rem)`
