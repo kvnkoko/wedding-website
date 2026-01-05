@@ -165,7 +165,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     <section className="relative w-full h-[85vh] md:h-[80vh] lg:h-[90vh] xl:h-[92vh] overflow-hidden bg-gradient-to-b from-cream via-cream to-cream/95 dark:from-dark-bg dark:via-dark-bg dark:to-dark-bg/95">
       {/* Main Carousel Container */}
       <div 
-        className="relative w-full h-full flex items-center justify-center gap-0 md:gap-6 lg:gap-8 px-0 md:px-8 lg:px-12"
+        className="relative w-full h-full flex items-center justify-center gap-0 md:gap-6 lg:gap-8 px-4 md:px-8 lg:px-12"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -177,9 +177,13 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           <div 
             className="relative h-full flex items-start md:px-0"
             style={{
-              transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}vw - ${currentIndex * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px))`,
+              transform: photosToShow === 1
+                ? `translateX(calc(-${currentIndex * 100}vw + ${currentIndex * 2}rem + 1rem))`
+                : `translateX(calc(-${currentIndex * (100 / photosToShow)}vw - ${currentIndex * (photosToShow === 2 ? 12 : 16)}px))`,
               transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-              width: `calc(${sortedPhotos.length * (100 / photosToShow)}vw + ${sortedPhotos.length * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px)`,
+              width: photosToShow === 1
+                ? `calc(${sortedPhotos.length * 100}vw - ${sortedPhotos.length * 2}rem)`
+                : `calc(${sortedPhotos.length * (100 / photosToShow)}vw + ${sortedPhotos.length * (photosToShow === 2 ? 12 : 16)}px)`,
               willChange: 'transform',
             }}
           >
@@ -198,8 +202,11 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
               }
 
               // Container width - each photo takes up 1/photosToShow of the viewport width
+              // On mobile, account for padding to center the photo
               const gapSize = photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16
-              const containerWidth = `calc(${100 / photosToShow}vw - ${gapSize * (photosToShow - 1) / photosToShow}px)`
+              const containerWidth = photosToShow === 1
+                ? `calc(${100 / photosToShow}vw - 2rem)`
+                : `calc(${100 / photosToShow}vw - ${gapSize * (photosToShow - 1) / photosToShow}px)`
               
               // Standard portrait aspect ratio (3:4) for consistent sizing across all photos
               // All photos will have identical dimensions regardless of their original aspect ratio
