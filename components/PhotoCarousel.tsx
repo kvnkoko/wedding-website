@@ -175,7 +175,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
           className="relative w-full h-full overflow-hidden flex items-center justify-center"
         >
           <div 
-            className="relative h-full flex items-center md:px-0"
+            className="relative h-full flex items-start md:px-0"
             style={{
               transform: `translateX(calc(-${currentIndex * (100 / photosToShow)}vw - ${currentIndex * (photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16)}px))`,
               transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
@@ -208,7 +208,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
               return (
                 <div
                   key={photo.id}
-                  className="relative flex items-center justify-center"
+                  className="relative"
                   style={{
                     width: containerWidth,
                     aspectRatio: '3 / 4',
@@ -217,7 +217,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                     marginRight: index < sortedPhotos.length - 1 ? `${gapSize}px` : '0',
                   }}
                 >
-                  <div className="relative w-full h-full rounded-none md:rounded-lg overflow-hidden shadow-xl md:shadow-2xl dark:shadow-3xl flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 transition-all duration-500 hover:shadow-3xl dark:hover:shadow-4xl group">
+                  <div className="relative w-full h-full rounded-none md:rounded-lg overflow-hidden shadow-xl md:shadow-2xl dark:shadow-3xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 transition-all duration-500 hover:shadow-3xl dark:hover:shadow-4xl group">
                     {photo.url && (
                       <>
                         {/* Low-quality blurred placeholder - shows immediately while loading */}
@@ -250,7 +250,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                           } group-hover:scale-[1.02]`}
                           style={{
                             objectFit: 'cover',
-                            objectPosition: 'center',
+                            objectPosition: 'center center',
                           }}
                           loading={isVisible && position === 0 ? 'eager' : 'lazy'}
                           fetchPriority={isVisible && position === 0 ? 'high' : isVisible ? 'auto' : 'low'}
