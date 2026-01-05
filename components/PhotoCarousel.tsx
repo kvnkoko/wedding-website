@@ -76,19 +76,19 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
     }
   }, [currentIndex, sortedPhotos, photosToShow])
 
-  // Continuous smooth scrolling animation
+  // Continuous smooth scrolling animation with seamless looping
   useEffect(() => {
     if (isAutoPlaying && sortedPhotos.length > photosToShow && !isTransitioning) {
       // Smooth scroll every 4 seconds
       intervalRef.current = setInterval(() => {
         setIsTransitioning(true)
-        setTimeout(() => {
-          setCurrentIndex((prev) => {
-            const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
-            return prev >= maxIndex ? 0 : prev + 1
-          })
-          setTimeout(() => setIsTransitioning(false), 100)
-        }, 300)
+        setCurrentIndex((prev) => {
+          const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
+          const next = prev >= maxIndex ? 0 : prev + 1
+          // Reset transition after animation completes
+          setTimeout(() => setIsTransitioning(false), 1300) // Slightly longer than transition duration
+          return next
+        })
       }, 4000) // Change photos every 4 seconds for smoother experience
     }
 
@@ -120,15 +120,19 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
 
   const navigatePhotos = (direction: 'next' | 'prev') => {
     setIsTransitioning(true)
+    const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
+    
     setTimeout(() => {
-      const maxIndex = Math.max(0, sortedPhotos.length - photosToShow)
-      if (direction === 'next') {
-        setCurrentIndex((prev) => prev >= maxIndex ? 0 : prev + 1)
-      } else {
-        setCurrentIndex((prev) => prev <= 0 ? maxIndex : prev - 1)
-      }
-      setTimeout(() => setIsTransitioning(false), 50)
-    }, 300)
+      setCurrentIndex((prev) => {
+        if (direction === 'next') {
+          return prev >= maxIndex ? 0 : prev + 1
+        } else {
+          return prev <= 0 ? maxIndex : prev - 1
+        }
+      })
+      setTimeout(() => setIsTransitioning(false), 1300) // Reset after transition completes
+    }, 50)
+    
     setIsAutoPlaying(false)
     setTimeout(() => setIsAutoPlaying(true), 10000)
   }
@@ -178,9 +182,11 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
             className="relative h-full flex items-start md:px-0"
             style={{
               transform: photosToShow === 1
-                ? `translateX(calc(-${currentIndex * 100}vw + ${currentIndex * 2}rem + 1rem))`
+                ? `translateX(calc(-${currentIndex * 100}vw + ${currentIndex * 2}rem))`
                 : `translateX(calc(-${currentIndex * (100 / photosToShow)}vw - ${currentIndex * (photosToShow === 2 ? 12 : 16)}px))`,
-              transition: 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+              transition: isTransitioning 
+                ? 'transform 1200ms cubic-bezier(0.25, 0.46, 0.45, 0.94)' 
+                : 'none',
               width: photosToShow === 1
                 ? `calc(${sortedPhotos.length * 100}vw - ${sortedPhotos.length * 2}rem)`
                 : `calc(${sortedPhotos.length * (100 / photosToShow)}vw + ${sortedPhotos.length * (photosToShow === 2 ? 12 : 16)}px)`,
@@ -202,10 +208,10 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
               }
 
               // Container width - each photo takes up 1/photosToShow of the viewport width
-              // On mobile, account for padding to center the photo
+              // On mobile, account for padding (1rem on each side = 2rem total) to properly center images
               const gapSize = photosToShow === 1 ? 0 : photosToShow === 2 ? 12 : 16
               const containerWidth = photosToShow === 1
-                ? `calc(${100 / photosToShow}vw - 2rem)`
+                ? `calc(100vw - 2rem)`
                 : `calc(${100 / photosToShow}vw - ${gapSize * (photosToShow - 1) / photosToShow}px)`
               
               // Standard portrait aspect ratio (3:4) for consistent sizing across all photos
