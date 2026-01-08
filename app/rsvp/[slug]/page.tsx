@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 import { formatDate, formatDateRange } from '@/lib/utils'
 import PhotoCarouselSection from '@/components/PhotoCarouselSection'
-import { User, Calendar, Note, CheckCircle, EnvelopeSimple, Phone, X, Copy, Check, UserPlus } from 'phosphor-react'
+import { User, Calendar, Note, CheckCircle, Phone, X, Copy, Check, UserPlus } from 'phosphor-react'
 
 // Parallax scroll effect
 function useParallax() {
@@ -43,7 +43,6 @@ interface InviteLinkConfig {
 interface FormData {
   name: string
   phone: string
-  email: string
   side: string
   dietaryRequirements: string
   notes: string
@@ -347,7 +346,7 @@ export default function RSVPFormPage() {
         body: JSON.stringify({
           name: data.name,
           phone: data.phone,
-          email: data.email,
+          email: null,
           side: data.side,
           dietaryRequirements: data.dietaryRequirements,
           notes: data.notes,
@@ -497,12 +496,6 @@ export default function RSVPFormPage() {
                       <p className="text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">Phone</p>
                       <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.phone}</p>
                     </div>
-                    {submissionData.email && (
-                      <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
-                        <p className="text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">Email</p>
-                        <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.email}</p>
-                      </div>
-                    )}
                     <div className="bg-taupe/5 dark:bg-dark-surface p-4 rounded-xl">
                       <p className="text-xs uppercase tracking-wider text-charcoal/70 dark:text-dark-text-secondary mb-1">Side</p>
                       <p className="text-base text-charcoal dark:text-dark-text font-semibold" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>{submissionData.side}</p>
@@ -810,16 +803,6 @@ export default function RSVPFormPage() {
                   {errors.phone && (
                     <p className="error-message mobile-shake">{errors.phone.message}</p>
                   )}
-                </div>
-
-                <div className="form-input-wrapper">
-                  <label className="form-label">Email</label>
-                  <input
-                    {...register('email')}
-                    type="email"
-                    className="form-input touch-ripple"
-                    placeholder="your.email@example.com"
-                  />
                 </div>
 
                 <div className="form-input-wrapper md:col-span-2">

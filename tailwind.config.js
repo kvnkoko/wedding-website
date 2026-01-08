@@ -20,7 +20,7 @@ module.exports = {
         cream: '#FAF8F3',
         beige: '#F5F1E8',
         taupe: '#E8E3D8',
-        sage: '#6B9B9A', // Muted earthy Tiffany blue - subtle cyan-teal with gray undertones
+        sage: '#6CBCB8', // Vibrant teal-turquoise accent color
         charcoal: '#2C2C2C',
         mint: '#B8E6B8',
         tan: '#D2B48C',

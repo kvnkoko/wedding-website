@@ -14,7 +14,8 @@ import {
   Sun,
   Moon,
   List,
-  X
+  X,
+  UserCircle
 } from 'phosphor-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -129,6 +130,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/invite-links', label: 'Invite Links', icon: LinkIcon },
     { href: '/admin/faqs', label: 'FAQs', icon: Question },
     { href: '/admin/photos', label: 'Photos', icon: Images },
+    { href: '/admin/users', label: 'Users', icon: UserCircle },
   ]
 
   return (
