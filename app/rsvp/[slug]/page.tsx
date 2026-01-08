@@ -792,7 +792,7 @@ export default function RSVPFormPage() {
                   )}
                 </div>
 
-                <div className="form-input-wrapper">
+                <div className="form-input-wrapper md:col-span-2">
                   <label className="form-label form-label-required">Phone</label>
                   <input
                     {...register('phone', { required: 'Phone is required' })}
