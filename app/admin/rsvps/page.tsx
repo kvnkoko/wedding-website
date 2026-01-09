@@ -198,32 +198,44 @@ export default function AdminRSVPsPage() {
         return
       }
 
-      if (res.ok && data.success) {
-        console.log(`[Admin Frontend] Successfully deleted RSVP ${id}`)
-        
-        // Remove the deleted RSVP from the list immediately for better UX
-        setRsvps(prev => {
-          const filtered = prev.filter(rsvp => rsvp.id !== id)
-          console.log(`[Admin Frontend] Updated RSVPs list, removed ${id}, ${filtered.length} remaining`)
-          return filtered
-        })
-        
-        // Refresh the list to ensure consistency
-        const params = new URLSearchParams()
-        if (search) params.set('search', search)
-        if (eventFilter) params.set('eventId', eventFilter)
-        if (statusFilter) params.set('status', statusFilter)
+      if (res.ok) {
+        // Check for success flag or just assume success if status is 200
+        if (data.success !== false) {
+          console.log(`[Admin Frontend] Successfully deleted RSVP ${id}`)
+          
+          // Remove the deleted RSVP from the list immediately for better UX
+          setRsvps(prev => {
+            const filtered = prev.filter(rsvp => rsvp.id !== id)
+            console.log(`[Admin Frontend] Updated RSVPs list, removed ${id}, ${filtered.length} remaining`)
+            return filtered
+          })
+          
+          // Refresh the list to ensure consistency
+          const params = new URLSearchParams()
+          if (search) params.set('search', search)
+          if (eventFilter) params.set('eventId', eventFilter)
+          if (statusFilter) params.set('status', statusFilter)
 
-        const fetchRes = await fetch(`/api/admin/rsvps?${params.toString()}`, {
-          credentials: 'include',
-        })
-        if (fetchRes.ok) {
-          const refreshedData = await fetchRes.json()
-          setRsvps(refreshedData)
-          console.log(`[Admin Frontend] Refreshed RSVPs list, ${refreshedData.length} total`)
+          try {
+            const fetchRes = await fetch(`/api/admin/rsvps?${params.toString()}`, {
+              credentials: 'include',
+            })
+            if (fetchRes.ok) {
+              const refreshedData = await fetchRes.json()
+              setRsvps(refreshedData)
+              console.log(`[Admin Frontend] Refreshed RSVPs list, ${refreshedData.length} total`)
+            }
+          } catch (refreshError) {
+            console.error('[Admin Frontend] Error refreshing list:', refreshError)
+            // Don't show error to user - deletion was successful
+          }
+        } else {
+          const errorMessage = data?.error || 'Failed to delete RSVP'
+          alert(`Error: ${errorMessage}`)
+          console.error('[Admin Frontend] Delete failed:', data)
         }
       } else {
-        const errorMessage = data?.error || `Failed to delete RSVP (Status: ${res.status})`
+        const errorMessage = data?.error || data?.details || `Failed to delete RSVP (Status: ${res.status})`
         alert(`Error: ${errorMessage}`)
         console.error('[Admin Frontend] Delete error:', {
           status: res.status,
@@ -351,7 +363,12 @@ export default function AdminRSVPsPage() {
           </p>
         </div>
         <button
-          onClick={handleExport}
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            handleExport()
+          }}
           className="flex items-center gap-2 bg-sage text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-sans text-sm font-medium hover:bg-sage/90 transition-all duration-200 shadow-md hover:shadow-lg w-full sm:w-auto justify-center min-h-[44px]"
         >
           <Download className="w-4 h-4" weight="duotone" />
@@ -638,7 +655,10 @@ export default function AdminRSVPsPage() {
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <button
-                      onClick={() => {
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
                         setEditing(rsvp)
                         setShowForm(true)
                       }}
@@ -648,7 +668,12 @@ export default function AdminRSVPsPage() {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(rsvp.id)}
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        handleDelete(rsvp.id)
+                      }}
                       className="flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2.5 rounded-lg font-sans text-sm font-medium hover:bg-red-600 transition-all duration-200 shadow-md hover:shadow-lg min-h-[44px] w-full sm:w-auto"
                     >
                       <Trash className="w-4 h-4" weight="duotone" />

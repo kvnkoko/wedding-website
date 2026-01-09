@@ -650,53 +650,20 @@ export async function DELETE(request: NextRequest) {
 
     console.log(`[Admin RSVPs DELETE] RSVP ${id} found, proceeding with deletion`)
 
-    // Delete event responses first (cascade) - use raw SQL to avoid schema issues
-    try {
-      // Get actual column names
-      const columns = await prisma.$queryRaw<Array<{ column_name: string }>>`
-        SELECT column_name 
-        FROM information_schema.columns 
-        WHERE table_name = 'rsvp_event_responses'
-        ORDER BY ordinal_position
-      `
-      
-      const rsvpIdCol = columns.find(c => 
-        c.column_name === 'rsvpId' || 
-        c.column_name.toLowerCase() === 'rsvpid' || 
-        c.column_name.toLowerCase() === 'rsvp_id'
-      )?.column_name || 'rsvpId'
-      
-      console.log(`[Admin RSVPs DELETE] Deleting event responses using column: ${rsvpIdCol}`)
-      
-      // Delete using raw SQL
-      const deleteResult = await prisma.$executeRawUnsafe(
-        `DELETE FROM rsvp_event_responses WHERE "${rsvpIdCol}" = $1`,
-        id
-      )
-      
-      console.log(`[Admin RSVPs DELETE] Deleted ${deleteResult} event response(s)`)
-    } catch (error: any) {
-      console.error('[Admin RSVPs DELETE] Error deleting event responses with raw SQL, trying Prisma:', error)
-      // Fallback to Prisma
-      try {
-        const deleteResult = await prisma.rsvpEventResponse.deleteMany({
-          where: { rsvpId: id },
-        })
-        console.log(`[Admin RSVPs DELETE] Deleted ${deleteResult.count} event response(s) using Prisma`)
-      } catch (prismaError: any) {
-        console.error('[Admin RSVPs DELETE] Prisma delete also failed:', prismaError)
-        // Continue anyway - cascade might handle it, or RSVP might not have event responses
-      }
-    }
-
-    // Delete RSVP
+    // Delete RSVP - Prisma will automatically cascade delete event responses
+    // due to onDelete: Cascade in the schema
     try {
       await prisma.rsvp.delete({
         where: { id },
       })
-      console.log(`[Admin RSVPs DELETE] Successfully deleted RSVP ${id}`)
+      console.log(`[Admin RSVPs DELETE] Successfully deleted RSVP ${id} and its event responses`)
     } catch (deleteError: any) {
       console.error(`[Admin RSVPs DELETE] Error deleting RSVP ${id}:`, deleteError)
+      console.error(`[Admin RSVPs DELETE] Error details:`, {
+        code: deleteError?.code,
+        message: deleteError?.message,
+        meta: deleteError?.meta,
+      })
       throw deleteError
     }
 
