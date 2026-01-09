@@ -633,6 +633,23 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'RSVP ID required' }, { status: 400 })
     }
 
+    console.log(`[Admin RSVPs DELETE] Attempting to delete RSVP ${id}`)
+
+    // Check if RSVP exists before attempting to delete
+    const existingRsvp = await prisma.rsvp.findUnique({
+      where: { id },
+    })
+
+    if (!existingRsvp) {
+      console.log(`[Admin RSVPs DELETE] RSVP ${id} not found`)
+      return NextResponse.json(
+        { error: 'RSVP not found' },
+        { status: 404 }
+      )
+    }
+
+    console.log(`[Admin RSVPs DELETE] RSVP ${id} found, proceeding with deletion`)
+
     // Delete event responses first (cascade) - use raw SQL to avoid schema issues
     try {
       // Get actual column names
@@ -649,40 +666,39 @@ export async function DELETE(request: NextRequest) {
         c.column_name.toLowerCase() === 'rsvp_id'
       )?.column_name || 'rsvpId'
       
+      console.log(`[Admin RSVPs DELETE] Deleting event responses using column: ${rsvpIdCol}`)
+      
       // Delete using raw SQL
-      await prisma.$executeRawUnsafe(
+      const deleteResult = await prisma.$executeRawUnsafe(
         `DELETE FROM rsvp_event_responses WHERE "${rsvpIdCol}" = $1`,
         id
       )
+      
+      console.log(`[Admin RSVPs DELETE] Deleted ${deleteResult} event response(s)`)
     } catch (error: any) {
-      console.error('Error deleting event responses with raw SQL, trying Prisma:', error)
+      console.error('[Admin RSVPs DELETE] Error deleting event responses with raw SQL, trying Prisma:', error)
       // Fallback to Prisma
       try {
-        await prisma.rsvpEventResponse.deleteMany({
+        const deleteResult = await prisma.rsvpEventResponse.deleteMany({
           where: { rsvpId: id },
         })
+        console.log(`[Admin RSVPs DELETE] Deleted ${deleteResult.count} event response(s) using Prisma`)
       } catch (prismaError: any) {
-        console.error('Prisma delete also failed:', prismaError)
-        // Continue anyway - cascade might handle it
+        console.error('[Admin RSVPs DELETE] Prisma delete also failed:', prismaError)
+        // Continue anyway - cascade might handle it, or RSVP might not have event responses
       }
     }
 
-    // Check if RSVP exists before attempting to delete
-    const existingRsvp = await prisma.rsvp.findUnique({
-      where: { id },
-    })
-
-    if (!existingRsvp) {
-      return NextResponse.json(
-        { error: 'RSVP not found' },
-        { status: 404 }
-      )
-    }
-
     // Delete RSVP
-    await prisma.rsvp.delete({
-      where: { id },
-    })
+    try {
+      await prisma.rsvp.delete({
+        where: { id },
+      })
+      console.log(`[Admin RSVPs DELETE] Successfully deleted RSVP ${id}`)
+    } catch (deleteError: any) {
+      console.error(`[Admin RSVPs DELETE] Error deleting RSVP ${id}:`, deleteError)
+      throw deleteError
+    }
 
     console.log(`[Admin RSVPs] Successfully deleted RSVP ${id}`)
     return NextResponse.json({ success: true })

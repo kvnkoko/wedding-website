@@ -174,18 +174,41 @@ export default function AdminRSVPsPage() {
     }
 
     try {
+      console.log(`[Admin Frontend] Attempting to delete RSVP ${id}`)
+      
       const res = await fetch(`/api/admin/rsvps?id=${id}`, {
         method: 'DELETE',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       })
 
-      const data = await res.json()
+      console.log(`[Admin Frontend] Delete response status: ${res.status}`)
+
+      let data
+      try {
+        data = await res.json()
+        console.log(`[Admin Frontend] Delete response data:`, data)
+      } catch (jsonError) {
+        console.error('[Admin Frontend] Failed to parse JSON response:', jsonError)
+        const text = await res.text()
+        console.error('[Admin Frontend] Response text:', text)
+        alert('Error: Invalid response from server')
+        return
+      }
 
       if (res.ok && data.success) {
-        // Remove the deleted RSVP from the list immediately for better UX
-        setRsvps(prev => prev.filter(rsvp => rsvp.id !== id))
+        console.log(`[Admin Frontend] Successfully deleted RSVP ${id}`)
         
-        // Optionally refresh the list to ensure consistency
+        // Remove the deleted RSVP from the list immediately for better UX
+        setRsvps(prev => {
+          const filtered = prev.filter(rsvp => rsvp.id !== id)
+          console.log(`[Admin Frontend] Updated RSVPs list, removed ${id}, ${filtered.length} remaining`)
+          return filtered
+        })
+        
+        // Refresh the list to ensure consistency
         const params = new URLSearchParams()
         if (search) params.set('search', search)
         if (eventFilter) params.set('eventId', eventFilter)
@@ -197,15 +220,20 @@ export default function AdminRSVPsPage() {
         if (fetchRes.ok) {
           const refreshedData = await fetchRes.json()
           setRsvps(refreshedData)
+          console.log(`[Admin Frontend] Refreshed RSVPs list, ${refreshedData.length} total`)
         }
       } else {
-        const errorMessage = data.error || 'Failed to delete RSVP'
+        const errorMessage = data?.error || `Failed to delete RSVP (Status: ${res.status})`
         alert(`Error: ${errorMessage}`)
-        console.error('Delete error:', data)
+        console.error('[Admin Frontend] Delete error:', {
+          status: res.status,
+          statusText: res.statusText,
+          data,
+        })
       }
-    } catch (error) {
-      console.error('Error deleting RSVP:', error)
-      alert('Error deleting RSVP. Please try again.')
+    } catch (error: any) {
+      console.error('[Admin Frontend] Error deleting RSVP:', error)
+      alert(`Error deleting RSVP: ${error?.message || 'Unknown error'}. Please try again.`)
     }
   }
 
