@@ -147,9 +147,9 @@ export default function FAQPage() {
   return (
     <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-20 animate-fade-in-up">
+        <div className="text-center mb-16 sm:mb-20 md:mb-24 animate-fade-in-up">
           <h1 className="font-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-charcoal dark:text-dark-text mb-4 tracking-tight">Frequently Asked Questions</h1>
-          <div className="w-24 h-1 bg-sage dark:bg-sage/80 mx-auto mt-6 rounded-full"></div>
+          <div className="w-20 sm:w-24 h-0.5 sm:h-1 bg-sage dark:bg-sage/80 mx-auto mt-5 sm:mt-6 rounded-full"></div>
         </div>
         
         {faqs.length === 0 ? (
@@ -163,13 +163,13 @@ export default function FAQPage() {
           </div>
         ) : (
           <>
-            <div className="space-y-8">
+            <div className="space-y-5 sm:space-y-6">
               {faqs.map((faq, index) => (
                 <div 
                   key={faq.id} 
                   data-faq-item
                   data-index={index}
-                  className={`group relative bg-white/95 dark:bg-dark-card backdrop-blur-sm rounded-2xl shadow-lg dark:shadow-2xl border border-taupe/10 dark:border-dark-border overflow-hidden transition-all duration-700 ease-out card-hover ${
+                  className={`group relative bg-white/95 dark:bg-dark-card backdrop-blur-sm rounded-xl sm:rounded-2xl shadow-lg dark:shadow-2xl border border-taupe/10 dark:border-dark-border overflow-hidden transition-all duration-700 ease-out card-hover ${
                     visibleItems.has(index) 
                       ? 'opacity-100 translate-y-0 scale-100' 
                       : 'opacity-0 translate-y-12 scale-95'
@@ -177,58 +177,59 @@ export default function FAQPage() {
                   style={{ transitionDelay: `${index * 0.08}s` }}
                 >
                   {/* Elegant top accent line */}
-                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sage via-sage/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-sage via-sage/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   
-                  <div className="p-4 sm:p-6 md:p-8 lg:p-12">
-                    {/* Question with elegant styling - mobile optimized */}
-                    <div className="flex items-start gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 md:mb-6">
-                      <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-sage/10 dark:bg-sage/20 flex items-center justify-center mt-0.5 sm:mt-1 group-hover:bg-sage/20 dark:group-hover:bg-sage/30 transition-colors duration-300">
-                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="p-5 sm:p-6 md:p-7">
+                    {/* Question with elegant styling - optimized for readability */}
+                    <div className="flex items-start gap-3 sm:gap-3.5 mb-3 sm:mb-3.5">
+                      <div className="flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-sage/10 dark:bg-sage/20 flex items-center justify-center mt-0.5 group-hover:bg-sage/20 dark:group-hover:bg-sage/30 transition-all duration-300 group-hover:scale-105">
+                        <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-sage" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <h2 className="font-title text-lg sm:text-xl md:text-2xl lg:text-3xl text-charcoal dark:text-dark-text leading-tight group-hover:text-sage transition-colors duration-300 flex-1">
+                      <h2 className="font-title text-base sm:text-lg md:text-xl lg:text-2xl text-charcoal dark:text-dark-text leading-[1.3] sm:leading-[1.35] group-hover:text-sage transition-colors duration-300 flex-1">
                         {faq.question}
                       </h2>
                     </div>
                     
-                    {/* Answer with beautiful typography - mobile optimized */}
-                    <div className="ml-0 sm:ml-10 md:ml-14">
-                      <p className="text-sm sm:text-base md:text-lg text-charcoal/75 dark:text-dark-text leading-relaxed whitespace-pre-line mb-4 sm:mb-6 md:mb-8 transition-colors duration-600" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                    {/* Answer with beautiful typography - optimized line height */}
+                    <div className="ml-0 sm:ml-10 md:ml-11">
+                      <p className="text-sm sm:text-base md:text-[15px] text-charcoal/80 dark:text-dark-text/90 leading-[1.7] sm:leading-[1.75] whitespace-pre-line mb-3.5 sm:mb-4 transition-colors duration-600" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                         {faq.answer}
                       </p>
                       
-                      {/* Color swatches with premium design - mobile optimized */}
+                      {/* Color swatches with premium recessed design */}
                       {faq.colorHexCodes && faq.colorHexCodes.length > 0 && (
                         <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-taupe/20 dark:border-dark-border">
-                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 flex-wrap">
-                          <h3 className="text-xs font-semibold text-charcoal/60 dark:text-dark-text-secondary uppercase tracking-widest flex items-center gap-2" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2.5 sm:gap-3 flex-wrap">
+                          <h3 className="text-xs font-semibold text-charcoal/60 dark:text-dark-text-secondary uppercase tracking-widest flex items-center gap-1.5 mb-1 sm:mb-0" style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}>
                             <span className="w-1 h-1 rounded-full bg-sage"></span>
                             Colors to Wear
                           </h3>
-                            <div className="flex items-center gap-2 sm:gap-2.5 flex-wrap">
+                            <div className="flex items-center gap-2.5 sm:gap-3 flex-wrap">
                               {faq.colorHexCodes.map((hex, colorIndex) => (
                                 <div
                                   key={colorIndex}
                                   className="relative group/color"
                                 >
                                   <div
-                                    className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full flex-shrink-0 cursor-pointer transition-all duration-500 sm:hover:scale-125 hover:z-10 hover:shadow-2xl"
+                                    className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-full flex-shrink-0 cursor-pointer transition-all duration-500 sm:hover:scale-110 hover:z-10"
                                     style={{
                                       backgroundColor: hex,
                                       boxShadow: `
-                                        0 2px 6px rgba(0, 0, 0, 0.15),
-                                        inset 0 1px 2px rgba(255, 255, 255, 0.2),
-                                        inset 0 -1px 2px rgba(0, 0, 0, 0.1)
+                                        inset 0 3px 6px rgba(0, 0, 0, 0.25),
+                                        inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+                                        inset 0 0 1px rgba(0, 0, 0, 0.3),
+                                        0 1px 2px rgba(0, 0, 0, 0.08)
                                       `,
                                     }}
                                     title={hex}
                                   >
-                                    <div className="absolute inset-0 rounded-full bg-white/0 group-hover/color:bg-white/20 transition-all duration-300"></div>
-                                    <div className="absolute -inset-0.5 rounded-full border border-transparent sm:group-hover/color:border-sage/30 transition-all duration-300"></div>
+                                    <div className="absolute inset-0 rounded-full bg-white/0 group-hover/color:bg-white/15 transition-all duration-300"></div>
+                                    <div className="absolute -inset-0.5 rounded-full border border-transparent sm:group-hover/color:border-sage/40 transition-all duration-300"></div>
                                   </div>
                                   {/* Tooltip on hover */}
-                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-charcoal text-white text-xs rounded opacity-0 group-hover/color:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap hidden sm:block">
+                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-charcoal/95 backdrop-blur-sm text-white text-xs rounded-md opacity-0 group-hover/color:opacity-100 transition-all duration-300 pointer-events-none whitespace-nowrap hidden sm:block shadow-lg">
                                     {hex}
                                   </div>
                                 </div>
@@ -241,7 +242,7 @@ export default function FAQPage() {
                   </div>
                   
                   {/* Hover glow effect */}
-                  <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-sage/0 via-sage/0 to-sage/0 group-hover:from-sage/5 group-hover:via-sage/0 group-hover:to-sage/5 transition-all duration-700 pointer-events-none"></div>
+                  <div className="absolute inset-0 rounded-xl sm:rounded-2xl bg-gradient-to-br from-sage/0 via-sage/0 to-sage/0 group-hover:from-sage/5 group-hover:via-sage/0 group-hover:to-sage/5 transition-all duration-700 pointer-events-none"></div>
                 </div>
               ))}
             </div>
