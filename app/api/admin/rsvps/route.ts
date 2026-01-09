@@ -667,16 +667,42 @@ export async function DELETE(request: NextRequest) {
       }
     }
 
+    // Check if RSVP exists before attempting to delete
+    const existingRsvp = await prisma.rsvp.findUnique({
+      where: { id },
+    })
+
+    if (!existingRsvp) {
+      return NextResponse.json(
+        { error: 'RSVP not found' },
+        { status: 404 }
+      )
+    }
+
     // Delete RSVP
     await prisma.rsvp.delete({
       where: { id },
     })
 
+    console.log(`[Admin RSVPs] Successfully deleted RSVP ${id}`)
     return NextResponse.json({ success: true })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error deleting RSVP:', error)
+    
+    // Provide more specific error messages
+    if (error?.code === 'P2025') {
+      return NextResponse.json(
+        { error: 'RSVP not found' },
+        { status: 404 }
+      )
+    }
+    
+    const errorMessage = error?.message || 'Failed to delete RSVP'
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+      },
       { status: 500 }
     )
   }

@@ -61,8 +61,8 @@ export default function AdminRSVPsPage() {
     async function fetchData() {
       try {
         const [rsvpsRes, eventsRes] = await Promise.all([
-          fetch('/api/admin/rsvps'),
-          fetch('/api/admin/events'),
+          fetch('/api/admin/rsvps', { credentials: 'include' }),
+          fetch('/api/admin/events', { credentials: 'include' }),
         ])
 
         if (rsvpsRes.ok) {
@@ -120,7 +120,9 @@ export default function AdminRSVPsPage() {
         if (eventFilter) params.set('eventId', eventFilter)
         if (statusFilter) params.set('status', statusFilter)
 
-        const res = await fetch(`/api/admin/rsvps?${params.toString()}`)
+        const res = await fetch(`/api/admin/rsvps?${params.toString()}`, {
+          credentials: 'include',
+        })
         if (res.ok) {
           const data = await res.json()
           setRsvps(data)
@@ -135,51 +137,75 @@ export default function AdminRSVPsPage() {
   }, [search, eventFilter, statusFilter])
 
   const handleExport = async () => {
-    const params = new URLSearchParams()
-    if (eventFilter) params.set('eventId', eventFilter)
-    if (statusFilter) params.set('status', statusFilter)
+    try {
+      const params = new URLSearchParams()
+      if (eventFilter) params.set('eventId', eventFilter)
+      if (statusFilter) params.set('status', statusFilter)
 
-    const res = await fetch(`/api/admin/export?${params.toString()}`)
-    if (res.ok) {
-      const blob = await res.blob()
-      const url = window.URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `rsvps-${new Date().toISOString().split('T')[0]}.csv`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      document.body.removeChild(a)
+      const res = await fetch(`/api/admin/export?${params.toString()}`, {
+        credentials: 'include',
+      })
+      
+      if (res.ok) {
+        const blob = await res.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `rsvps-${new Date().toISOString().split('T')[0]}.csv`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+      } else {
+        const errorData = await res.json().catch(() => ({}))
+        const errorMessage = errorData.error || 'Failed to export RSVPs'
+        alert(`Error: ${errorMessage}`)
+        console.error('Export error:', errorData)
+      }
+    } catch (error) {
+      console.error('Error exporting RSVPs:', error)
+      alert('Error exporting RSVPs. Please try again.')
     }
   }
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this RSVP?')) {
+    if (!confirm('Are you sure you want to delete this RSVP? This action cannot be undone.')) {
       return
     }
 
     try {
       const res = await fetch(`/api/admin/rsvps?id=${id}`, {
         method: 'DELETE',
+        credentials: 'include',
       })
 
-      if (res.ok) {
+      const data = await res.json()
+
+      if (res.ok && data.success) {
+        // Remove the deleted RSVP from the list immediately for better UX
+        setRsvps(prev => prev.filter(rsvp => rsvp.id !== id))
+        
+        // Optionally refresh the list to ensure consistency
         const params = new URLSearchParams()
         if (search) params.set('search', search)
         if (eventFilter) params.set('eventId', eventFilter)
         if (statusFilter) params.set('status', statusFilter)
 
-        const fetchRes = await fetch(`/api/admin/rsvps?${params.toString()}`)
+        const fetchRes = await fetch(`/api/admin/rsvps?${params.toString()}`, {
+          credentials: 'include',
+        })
         if (fetchRes.ok) {
-          const data = await fetchRes.json()
-          setRsvps(data)
+          const refreshedData = await fetchRes.json()
+          setRsvps(refreshedData)
         }
       } else {
-        alert('Error deleting RSVP')
+        const errorMessage = data.error || 'Failed to delete RSVP'
+        alert(`Error: ${errorMessage}`)
+        console.error('Delete error:', data)
       }
     } catch (error) {
       console.error('Error deleting RSVP:', error)
-      alert('Error deleting RSVP')
+      alert('Error deleting RSVP. Please try again.')
     }
   }
 
@@ -215,11 +241,14 @@ export default function AdminRSVPsPage() {
     }
 
     try {
-      const res = await fetch('/api/admin/rsvps', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
-      })
+    const res = await fetch('/api/admin/rsvps', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+      credentials: 'include',
+    })
+
+      const responseData = await res.json()
 
       if (res.ok) {
         setShowForm(false)
@@ -229,17 +258,21 @@ export default function AdminRSVPsPage() {
         if (eventFilter) params.set('eventId', eventFilter)
         if (statusFilter) params.set('status', statusFilter)
 
-        const fetchRes = await fetch(`/api/admin/rsvps?${params.toString()}`)
+        const fetchRes = await fetch(`/api/admin/rsvps?${params.toString()}`, {
+          credentials: 'include',
+        })
         if (fetchRes.ok) {
           const data = await fetchRes.json()
           setRsvps(data)
         }
       } else {
-        alert('Error updating RSVP')
+        const errorMessage = responseData.error || 'Failed to update RSVP'
+        alert(`Error: ${errorMessage}`)
+        console.error('Update error:', responseData)
       }
     } catch (error) {
       console.error('Error updating RSVP:', error)
-      alert('Error updating RSVP')
+      alert('Error updating RSVP. Please try again.')
     }
   }
 
