@@ -163,10 +163,10 @@ function HomeContent() {
         </div>
       </section>
 
-      {/* FAQ Information Section - Elegant & Compact */}
-      <section className="relative py-12 md:py-16 bg-cream dark:bg-dark-bg">
+      {/* FAQ Information Section - Elegant & Compact - Overlaps hero to show graphics */}
+      <section className="relative -mt-32 md:-mt-40 lg:-mt-48 py-12 md:py-16 bg-transparent pointer-events-none">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-visible">
             {/* Subtle background decoration */}
             <div className="absolute inset-0 opacity-5 dark:opacity-10 pointer-events-none">
               <div className="absolute top-0 left-1/4 w-64 h-64 bg-sage rounded-full blur-3xl"></div>
@@ -174,7 +174,7 @@ function HomeContent() {
             </div>
             
             {/* Main Content Card */}
-            <div className="relative bg-white/60 dark:bg-dark-card/60 backdrop-blur-sm border border-taupe/20 dark:border-dark-border rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 overflow-hidden group">
+            <div className="relative bg-white/70 dark:bg-dark-card/70 backdrop-blur-md border border-taupe/30 dark:border-dark-border rounded-2xl shadow-lg hover:shadow-xl transition-all duration-500 overflow-hidden group pointer-events-auto">
               {/* Elegant top accent line */}
               <div className="h-0.5 bg-gradient-to-r from-transparent via-sage/40 to-transparent"></div>
               
