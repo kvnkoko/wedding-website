@@ -45,85 +45,86 @@ function HomeContent() {
 
   // Server component content moved to client for simplicity
   return (
-    <div className="min-h-screen relative">
-      {/* Background Calla Lilies - Positioned to extend behind all sections */}
-      {/* Mobile: Single large calla lily filling entire background */}
-      <div 
-        className="lg:hidden fixed inset-0 z-0 pointer-events-none flex items-center justify-center"
-        style={{ 
-          opacity: 0,
-          animation: 'fadeInToQuarter 0.8s ease-out 0.1s forwards',
-        }}
-      >
-        <img
-          src="/calla lily 1.png"
-          alt=""
-          className="object-contain w-full h-full"
-          style={{ 
-            minWidth: '100%',
-            minHeight: '100%',
-          }}
-          onError={(e) => {
-            const target = e.target as HTMLImageElement
-            if (target) {
-              target.style.display = 'none'
-            }
-          }}
-        />
-      </div>
-
-      {/* Desktop: Left Calla Lily Illustration - Fixed to extend behind all content */}
-      <div 
-        className="hidden lg:block fixed left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none parallax-slow"
-        style={{ 
-          opacity: 0,
-          width: 'clamp(600px, 50vw, 900px)',
-          height: 'auto',
-          willChange: 'transform, opacity',
-          transform: `rotate(-2deg) translateY(${scrollY * 0.3}px)`,
-          animation: 'fadeInToQuarter 0.8s ease-out 0.1s forwards',
-        }}
-      >
-        <img
-          src="/calla lily 1.png"
-          alt=""
-          className="object-contain w-full h-auto"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement
-            if (target) {
-              target.style.display = 'none'
-            }
-          }}
-        />
-      </div>
-
-      {/* Right Calla Lily Illustration - Desktop only - Fixed to extend behind all content */}
-      <div 
-        className="hidden lg:block fixed right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none parallax-slow"
-        style={{ 
-          opacity: 0,
-          width: 'clamp(580px, 48vw, 880px)',
-          height: 'auto',
-          willChange: 'transform, opacity',
-          transform: `rotate(3deg) translateY(${scrollY * 0.2}px)`,
-          animation: 'fadeInToQuarter 0.8s ease-out 0.2s forwards',
-        }}
-      >
-        <img
-          src="/calla lilly 2.png"
-          alt=""
-          className="object-contain w-full h-auto"
-          onError={(e) => {
-            const target = e.target as HTMLImageElement
-            if (target) {
-              target.style.display = 'none'
-            }
-          }}
-        />
-      </div>
-
+    <div className="min-h-screen">
       {/* Hero Section - Clean Minimal Design Without Arch */}
-      <section className="relative min-h-screen flex items-center justify-center bg-cream dark:bg-dark-bg overflow-hidden px-4 sm:px-6 lg:px-8">
+      <section className="relative min-h-screen flex items-center justify-center bg-cream dark:bg-dark-bg overflow-visible px-4 sm:px-6 lg:px-8 pb-[50vh]">
+        {/* Background Calla Lilies - Filling the space with elegant botanical illustrations */}
+        {/* Mobile: Single large calla lily filling entire background */}
+        <div 
+          className="lg:hidden absolute inset-0 z-0 pointer-events-none flex items-center justify-center"
+          style={{ 
+            opacity: 0,
+            animation: 'fadeInToQuarter 0.8s ease-out 0.1s forwards',
+            height: '200vh',
+            top: '-50vh',
+          }}
+        >
+          <img
+            src="/calla lily 1.png"
+            alt=""
+            className="object-contain w-full h-full"
+            style={{ 
+              minWidth: '100%',
+              minHeight: '100%',
+            }}
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none'
+              }
+            }}
+          />
+        </div>
+
+        {/* Desktop: Left Calla Lily Illustration */}
+        <div 
+          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none parallax-slow"
+          style={{ 
+            opacity: 0,
+            width: 'clamp(600px, 50vw, 900px)',
+            height: 'auto',
+            willChange: 'transform, opacity',
+            transform: `rotate(-2deg) translateY(${scrollY * 0.3}px)`,
+            animation: 'fadeInToQuarter 0.8s ease-out 0.1s forwards',
+          }}
+        >
+          <img
+            src="/calla lily 1.png"
+            alt=""
+            className="object-contain w-full h-auto"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none'
+              }
+            }}
+          />
+        </div>
+
+        {/* Right Calla Lily Illustration - Desktop only (both would be too crowded on mobile) */}
+        <div 
+          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none parallax-slow"
+          style={{ 
+            opacity: 0,
+            width: 'clamp(580px, 48vw, 880px)',
+            height: 'auto',
+            willChange: 'transform, opacity',
+            transform: `rotate(3deg) translateY(${scrollY * 0.2}px)`,
+            animation: 'fadeInToQuarter 0.8s ease-out 0.2s forwards',
+          }}
+        >
+          <img
+            src="/calla lilly 2.png"
+            alt=""
+            className="object-contain w-full h-auto"
+            onError={(e) => {
+              const target = e.target as HTMLImageElement
+              if (target) {
+                target.style.display = 'none'
+              }
+            }}
+          />
+        </div>
 
         <div className="max-w-7xl mx-auto w-full relative z-10">
           <div className="flex flex-col items-center justify-center">
