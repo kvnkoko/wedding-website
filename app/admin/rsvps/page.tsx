@@ -388,13 +388,13 @@ export default function AdminRSVPsPage() {
               Search
             </label>
             <div className="relative">
-              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary pointer-events-none z-10" weight="duotone" />
+              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-charcoal/60 dark:text-dark-text-secondary pointer-events-none z-10" weight="duotone" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Name, email, phone..."
-                className="w-full pl-11 pr-4 py-2.5 sm:py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                className="w-full pl-10 sm:pl-11 pr-4 py-2.5 sm:py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
               />
             </div>
           </div>
