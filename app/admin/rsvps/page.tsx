@@ -394,7 +394,7 @@ export default function AdminRSVPsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Name, email, phone..."
-                className="w-full pl-10 sm:pl-11 pr-4 py-2.5 sm:py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                className="w-full pl-12 sm:pl-11 pr-4 py-2.5 sm:py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
               />
             </div>
           </div>
