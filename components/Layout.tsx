@@ -140,13 +140,20 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
             >
               <div className="relative w-8 h-8 md:w-10 md:h-10 flex-shrink-0">
                 <img
-                  src="/Monogram.png"
-                  alt=""
+                  src="/monogram-small.png"
+                  alt="Kevin & Tiffany"
                   className="w-full h-full object-contain transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
                   style={{
                     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
                   }}
                   loading="eager"
+                  onError={(e) => {
+                    // Fallback to original if small version fails
+                    const target = e.target as HTMLImageElement
+                    if (target && target.src !== '/Monogram.png') {
+                      target.src = '/Monogram.png'
+                    }
+                  }}
                 />
               </div>
               <span className="relative text-lg sm:text-xl md:text-2xl">

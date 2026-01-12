@@ -8,26 +8,10 @@ import { Suspense } from 'react'
 export const metadata: Metadata = {
   title: 'Kevin & Tiffany Wedding',
   description: 'Join us in celebrating our special day',
+  // Next.js 13+ automatically uses app/icon.png as favicon
   icons: {
-    icon: [
-      {
-        url: '/Monogram.png',
-        sizes: '32x32',
-        type: 'image/png',
-      },
-      {
-        url: '/Monogram.png',
-        sizes: '16x16',
-        type: 'image/png',
-      },
-    ],
-    apple: [
-      {
-        url: '/Monogram.png',
-        sizes: '180x180',
-        type: 'image/png',
-      },
-    ],
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
   },
 }
 
@@ -39,9 +23,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${elgraine.variable} ${laBellaAurore.variable} ${artica.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="icon" type="image/png" href="/Monogram.png" />
-        <link rel="shortcut icon" type="image/png" href="/Monogram.png" />
-        <link rel="apple-touch-icon" href="/Monogram.png" />
         <style
           dangerouslySetInnerHTML={{
             __html: `
