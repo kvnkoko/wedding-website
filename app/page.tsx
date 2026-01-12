@@ -47,7 +47,7 @@ function HomeContent() {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Clean Minimal Design Without Arch */}
-      <section className="relative min-h-screen flex items-center justify-center bg-cream dark:bg-dark-bg overflow-visible px-4 sm:px-6 lg:px-8 pb-[50vh]">
+      <section className="relative min-h-screen flex items-center justify-center bg-cream dark:bg-dark-bg overflow-visible px-4 sm:px-6 lg:px-8">
         {/* Background Calla Lilies - Filling the space with elegant botanical illustrations */}
         {/* Mobile: Single large calla lily filling entire background */}
         <div 
@@ -55,8 +55,6 @@ function HomeContent() {
           style={{ 
             opacity: 0,
             animation: 'fadeInToQuarter 0.8s ease-out 0.1s forwards',
-            height: '200vh',
-            top: '-50vh',
           }}
         >
           <img
