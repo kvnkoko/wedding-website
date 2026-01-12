@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import { formatDateRange } from '@/lib/utils'
@@ -139,13 +140,17 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
               className="flex items-center gap-3 group font-title text-2xl text-charcoal dark:text-dark-text hover:text-sage dark:hover:text-sage transition-all duration-500 ease-out"
             >
               <div className="relative w-8 h-8 md:w-10 md:h-10 flex-shrink-0">
-                <img
-                  src="/favicon.png"
+                <Image
+                  src="/Monogram.png"
                   alt=""
+                  width={40}
+                  height={40}
                   className="w-full h-full object-contain transition-all duration-500 group-hover:scale-110 group-hover:rotate-6"
                   style={{
                     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
                   }}
+                  quality={90}
+                  priority
                 />
               </div>
               <span className="relative text-lg sm:text-xl md:text-2xl">

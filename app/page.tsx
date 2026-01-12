@@ -155,7 +155,7 @@ function HomeContent() {
               {/* Event information is only shown on personalized slug pages */}
               
               {/* Hashtag - Subtle bottom placement, balanced size */}
-              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)', animationDelay: '0.8s', animationDuration: '0.8s', '--fade-delay': '0.8s' } as React.CSSProperties}>
+              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-12 md:mt-16 mb-16 md:mb-20 animate-fade-in-up scale-on-hover hero-float-delayed mobile-text-reveal" style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)', animationDelay: '0.8s', animationDuration: '0.8s', '--fade-delay': '0.8s' } as React.CSSProperties}>
                 #tiffandko
               </p>
             </div>
@@ -164,7 +164,7 @@ function HomeContent() {
       </section>
 
       {/* FAQ Information Section - Elegant & Compact - Overlaps hero to show graphics */}
-      <section className="relative -mt-24 md:-mt-32 lg:-mt-40 py-8 md:py-12 bg-transparent pointer-events-none">
+      <section className="relative -mt-12 md:-mt-16 lg:-mt-20 py-8 md:py-12 bg-transparent pointer-events-none">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-visible">
             {/* Subtle background decoration */}
