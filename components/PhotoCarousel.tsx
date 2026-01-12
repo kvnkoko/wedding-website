@@ -221,7 +221,7 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
   }
 
   return (
-    <section className="relative w-full h-[85vh] md:h-[80vh] lg:h-[90vh] xl:h-[92vh] overflow-hidden bg-gradient-to-b from-cream via-cream to-cream/95 dark:from-dark-bg dark:via-dark-bg dark:to-dark-bg/95">
+    <section className="relative w-full h-[85vh] md:h-[80vh] lg:h-[90vh] xl:h-[92vh] overflow-hidden bg-transparent">
       {/* Main Carousel Container */}
       <div 
         className="relative w-full h-full flex items-center justify-center gap-0 md:gap-6 lg:gap-8 px-4 md:px-8 lg:px-12"
