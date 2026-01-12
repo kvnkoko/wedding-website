@@ -39,6 +39,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${elgraine.variable} ${laBellaAurore.variable} ${artica.variable}`} suppressHydrationWarning>
       <head>
+        <link rel="icon" type="image/png" href="/Monogram.png" />
+        <link rel="shortcut icon" type="image/png" href="/Monogram.png" />
+        <link rel="apple-touch-icon" href="/Monogram.png" />
         <style
           dangerouslySetInnerHTML={{
             __html: `
