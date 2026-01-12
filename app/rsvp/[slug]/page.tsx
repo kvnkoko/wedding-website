@@ -187,7 +187,8 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
                 </Link>
               </div>
               
-              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-12 md:mt-16 animate-fade-in-up animate-delay-1000 scale-on-hover hero-float-delayed" style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)' }}>
+              {/* Hashtag - Subtle bottom placement, balanced size */}
+              <p className="font-script text-charcoal/70 dark:text-dark-text-secondary mt-8 md:mt-12 animate-fade-in-up animate-delay-1100 scale-on-hover hero-float-delayed" style={{ fontSize: 'clamp(0.875rem, 2vw, 1.125rem)' }}>
                 #tiffandko
               </p>
             </div>
@@ -196,7 +197,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
       </section>
 
       {/* FAQ Information Section - Elegant & Compact - Overlaps hero to show graphics */}
-      <section className="relative -mt-32 md:-mt-40 lg:-mt-48 py-12 md:py-16 bg-transparent pointer-events-none">
+      <section className="relative -mt-20 md:-mt-28 lg:-mt-36 py-8 md:py-12 bg-transparent pointer-events-none">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-visible">
             {/* Subtle background decoration */}

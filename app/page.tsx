@@ -164,7 +164,7 @@ function HomeContent() {
       </section>
 
       {/* FAQ Information Section - Elegant & Compact - Overlaps hero to show graphics */}
-      <section className="relative -mt-32 md:-mt-40 lg:-mt-48 py-12 md:py-16 bg-transparent pointer-events-none">
+      <section className="relative -mt-24 md:-mt-32 lg:-mt-40 py-8 md:py-12 bg-transparent pointer-events-none">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-visible">
             {/* Subtle background decoration */}
