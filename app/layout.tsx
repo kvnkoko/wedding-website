@@ -10,8 +10,25 @@ export const metadata: Metadata = {
   description: 'Join us in celebrating our special day',
   // Next.js 13+ automatically uses app/icon.png as favicon
   icons: {
-    icon: '/icon.png',
-    apple: '/apple-icon.png',
+    icon: [
+      {
+        url: '/icon.png',
+        sizes: '64x64',
+        type: 'image/png',
+      },
+      {
+        url: '/icon-128.png',
+        sizes: '128x128',
+        type: 'image/png',
+      },
+    ],
+    apple: [
+      {
+        url: '/apple-icon.png',
+        sizes: '180x180',
+        type: 'image/png',
+      },
+    ],
   },
 }
 
