@@ -163,6 +163,63 @@ function HomeContent() {
         </div>
       </section>
 
+      {/* FAQ Information Section - Elegant & Compact */}
+      <section className="relative py-12 md:py-16 bg-cream dark:bg-dark-bg">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="relative overflow-hidden">
+            {/* Subtle background decoration */}
+            <div className="absolute inset-0 opacity-5 dark:opacity-10 pointer-events-none">
+              <div className="absolute top-0 left-1/4 w-64 h-64 bg-sage rounded-full blur-3xl"></div>
+              <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-taupe rounded-full blur-3xl"></div>
+            </div>
+            
+            {/* Main Content Card */}
+            <div className="relative bg-white/60 dark:bg-dark-card/60 backdrop-blur-sm border border-taupe/20 dark:border-dark-border rounded-2xl shadow-sm hover:shadow-md transition-all duration-500 overflow-hidden group">
+              {/* Elegant top accent line */}
+              <div className="h-0.5 bg-gradient-to-r from-transparent via-sage/40 to-transparent"></div>
+              
+              <div className="p-6 md:p-8 lg:p-10">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
+                  {/* Icon/Visual Element */}
+                  <div className="flex-shrink-0">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-sage/10 dark:bg-sage/20 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-8 h-8 md:w-10 md:h-10 text-sage dark:text-sage/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                  </div>
+                  
+                  {/* Text Content */}
+                  <div className="flex-1 text-center md:text-left">
+                    <h3 className="font-title text-xl md:text-2xl text-charcoal dark:text-dark-text mb-2 md:mb-3 tracking-tight">
+                      Have Questions About Our Events?
+                    </h3>
+                    <p className="font-body text-sm md:text-base text-charcoal/70 dark:text-dark-text-secondary mb-4 md:mb-6 leading-relaxed">
+                      Find detailed information about venues, dates, travel, and more in our FAQ section.
+                    </p>
+                    
+                    {/* CTA Button */}
+                    <Link
+                      href="/faq"
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-charcoal dark:bg-dark-text dark:text-dark-bg text-white rounded-sm tracking-[0.1em] uppercase text-xs md:text-sm font-medium hover:bg-sage dark:hover:bg-sage transition-all duration-300 shadow-sm hover:shadow-md group/btn"
+                      style={{ fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif' }}
+                    >
+                      <span>View FAQ</span>
+                      <svg className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Subtle bottom accent line */}
+              <div className="h-0.5 bg-gradient-to-r from-transparent via-sage/40 to-transparent"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Photo Carousel Section */}
       <PhotoCarouselSection />
 
