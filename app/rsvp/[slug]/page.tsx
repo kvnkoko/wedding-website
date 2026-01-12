@@ -93,7 +93,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
 
         {/* Desktop: Left Calla Lily Illustration */}
         <div 
-          className="hidden lg:block absolute left-0 top-[20%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none parallax-slow"
+          className="hidden lg:block absolute left-0 top-[15%] -translate-y-1/2 -translate-x-[12%] z-0 pointer-events-none parallax-slow"
           style={{ 
             opacity: 0.25,
             width: 'clamp(600px, 50vw, 900px)',
@@ -117,7 +117,7 @@ function HomeScreenWithCarousel({ slug, config }: { slug: string; config: Invite
 
         {/* Right Calla Lily Illustration - Desktop only (both would be too crowded on mobile) */}
         <div 
-          className="hidden lg:block absolute right-0 top-[25%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none parallax-slow"
+          className="hidden lg:block absolute right-0 top-[20%] -translate-y-1/2 translate-x-[12%] z-0 pointer-events-none parallax-slow"
           style={{ 
             opacity: 0.25,
             width: 'clamp(580px, 48vw, 880px)',
