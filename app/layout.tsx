@@ -30,6 +30,25 @@ export const metadata: Metadata = {
       },
     ],
   },
+  openGraph: {
+    title: 'Kevin & Tiffany Wedding',
+    description: 'Join us in celebrating our special day',
+    images: [
+      {
+        url: '/header.png',
+        width: 1200,
+        height: 630,
+        alt: 'Kevin & Tiffany Wedding',
+      },
+    ],
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Kevin & Tiffany Wedding',
+    description: 'Join us in celebrating our special day',
+    images: ['/header.png'],
+  },
 }
 
 export default function RootLayout({
