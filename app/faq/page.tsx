@@ -145,11 +145,11 @@ export default function FAQPage() {
   }
 
   return (
-    <div className="min-h-screen py-20 px-4 bg-cream dark:bg-dark-bg">
+    <div className="min-h-screen py-12 sm:py-16 md:py-20 px-4 bg-cream dark:bg-dark-bg">
       <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-10 sm:mb-12 md:mb-14 animate-fade-in-up">
-          <h1 className="font-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-charcoal dark:text-dark-text mb-3 sm:mb-4 tracking-tight">Frequently Asked Questions</h1>
-          <div className="w-20 sm:w-24 h-0.5 sm:h-1 bg-sage dark:bg-sage/80 mx-auto mt-3 sm:mt-4 rounded-full"></div>
+        <div className="text-center mb-8 sm:mb-10 md:mb-12 lg:mb-14 animate-fade-in-up">
+          <h1 className="font-title text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl text-charcoal dark:text-dark-text mb-2.5 sm:mb-3 md:mb-4 tracking-tight">Frequently Asked Questions</h1>
+          <div className="w-16 sm:w-20 md:w-24 h-0.5 sm:h-1 bg-sage dark:bg-sage/80 mx-auto mt-2.5 sm:mt-3 md:mt-4 rounded-full"></div>
         </div>
         
         {faqs.length === 0 ? (

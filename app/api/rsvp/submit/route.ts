@@ -89,11 +89,12 @@ export async function POST(request: NextRequest) {
         plusOneName = rawPlusOneName != null && rawPlusOneName !== '' ? String(rawPlusOneName).trim() : null
         plusOneRelation = rawPlusOneRelation != null && rawPlusOneRelation !== '' ? String(rawPlusOneRelation).trim() : null
         
-        // Set plusOne to true if checkbox is checked OR if we have name/relation
+        // CRITICAL FIX: Only set plusOne to true if checkbox is explicitly checked
+        // Don't infer from name/relation fields - checkbox is the source of truth
         const plusOneBool = plusOneValue === true || plusOneValue === 'true' || plusOneValue === 'on' || plusOneValue === 1
         hasName = Boolean(plusOneName && plusOneName !== '')
         hasRelation = Boolean(plusOneRelation && plusOneRelation !== '')
-        plusOne = plusOneBool || hasName || hasRelation || false
+        plusOne = plusOneBool  // Only use checkbox value, don't infer from name/relation
         
         console.log(`[Submit] Processing event ${eventId}:`, {
           status,
@@ -113,20 +114,20 @@ export async function POST(request: NextRequest) {
         throw new Error(`Invalid event response format for event ${eventId}`)
       }
       
-      // ALWAYS include Plus One data - send the values we received (trimmed)
-      // Don't filter them out based on validation
-      const finalPlusOneName = plusOneName  // Already trimmed above
-      const finalPlusOneRelation = plusOneRelation  // Already trimmed above
+      // CRITICAL FIX: Only include Plus One data if checkbox is checked
+      // If checkbox isn't checked, don't save name/relation even if they exist
+      const finalPlusOneName = plusOne ? (plusOneName || null) : null
+      const finalPlusOneRelation = plusOne ? (plusOneRelation || null) : null
       
-      // Set plusOne to true if we have name or relation, even if flag wasn't set
-      const finalPlusOne = Boolean(plusOne || finalPlusOneName || finalPlusOneRelation)
+      // Use the checkbox value directly - don't infer from name/relation
+      const finalPlusOne = Boolean(plusOne)
       
       return {
         eventId,
         status: status,
         plusOne: finalPlusOne,
-        plusOneName: finalPlusOneName,  // Send the value, even if it might be empty
-        plusOneRelation: finalPlusOneRelation,  // Send the value, even if it might be empty
+        plusOneName: finalPlusOneName,  // Only send if checkbox is checked
+        plusOneRelation: finalPlusOneRelation,  // Only send if checkbox is checked
       }
     })
 
@@ -322,10 +323,13 @@ export async function POST(request: NextRequest) {
               ? String(rawPlusOneRelation).trim()
               : null
             
-            // Set plusOne to true if we have name/relation OR if the flag is set
-            const hasName = plusOneName != null && plusOneName !== ''
-            const hasRelation = plusOneRelation != null && plusOneRelation !== ''
-            const plusOne = Boolean(responseData.plusOne || hasName || hasRelation || false)
+            // CRITICAL FIX: Only set plusOne to true if checkbox is explicitly checked
+            // Don't infer from name/relation fields - checkbox is the source of truth
+            const plusOne = Boolean(responseData.plusOne)
+            
+            // Only save name/relation if checkbox is checked, otherwise save null
+            const finalPlusOneName = plusOne ? plusOneName : null
+            const finalPlusOneRelation = plusOne ? plusOneRelation : null
             
             // CRITICAL: Verify rsvpId is not null/undefined/empty before using it
             if (!newRsvp.id || typeof newRsvp.id !== 'string' || newRsvp.id.trim() === '') {
@@ -345,8 +349,8 @@ export async function POST(request: NextRequest) {
               eventId: String(responseData.eventId).trim(),  // Ensure eventId is also a string
               status: String(responseData.status).trim(),  // Ensure status is a string
               plusOne: Boolean(plusOne),
-              plusOneName: plusOneName,  // Save the value, even if it's empty
-              plusOneRelation: plusOneRelation,  // Save the value, even if it's empty
+              plusOneName: finalPlusOneName,  // Only save if checkbox is checked
+              plusOneRelation: finalPlusOneRelation,  // Only save if checkbox is checked
             }
             
             // CRITICAL: Verify all required fields are present and valid
@@ -780,25 +784,25 @@ export async function POST(request: NextRequest) {
         const plusOneRelationRaw = er.plusOneRelation !== undefined && er.plusOneRelation !== null ? er.plusOneRelation : 
                                   (er.plus_one_relation !== undefined && er.plus_one_relation !== null ? er.plus_one_relation : null)
         
-        // CRITICAL: Don't validate - just return what we have
-        // Trim if they exist, but don't filter them out based on content
-        const plusOneName = plusOneNameRaw != null && plusOneNameRaw !== '' 
+        // CRITICAL FIX: Only use checkbox value - don't infer from name/relation
+        // Check if plusOne flag is explicitly true
+        const plusOne = Boolean(plusOneRaw === true || plusOneRaw === 1 || plusOneRaw === 'true' || plusOneRaw === '1')
+        
+        // Only include name/relation if checkbox is checked, otherwise return null
+        const plusOneName = plusOne && plusOneNameRaw != null && plusOneNameRaw !== '' 
           ? String(plusOneNameRaw).trim() 
           : null
-        const plusOneRelation = plusOneRelationRaw != null && plusOneRelationRaw !== ''
+        const plusOneRelation = plusOne && plusOneRelationRaw != null && plusOneRelationRaw !== ''
           ? String(plusOneRelationRaw).trim()
           : null
-        
-        // Set plusOne to true if we have name/relation OR if the flag is true
-        const plusOne = Boolean(plusOneRaw || (plusOneName != null && plusOneName !== '') || (plusOneRelation != null && plusOneRelation !== ''))
         
         const mapped = {
           eventId: er.eventId,
           eventName: er.event?.name || 'Unknown Event',
           status: er.status,
           plusOne: plusOne,
-          plusOneName: plusOneName,  // Return the value, even if it's null
-          plusOneRelation: plusOneRelation,  // Return the value, even if it's null
+          plusOneName: plusOneName,  // Only return if checkbox is checked
+          plusOneRelation: plusOneRelation,  // Only return if checkbox is checked
         }
         
         console.log(`[Submit API Response] Mapped event response ${er.eventId}:`, {

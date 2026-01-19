@@ -359,16 +359,17 @@ export default function RSVPFormPage() {
                                  (typeof plusOneValue === 'number' && plusOneValue === 1) ||
                                  (typeof plusOneValue === 'string' && (plusOneValue === 'true' || plusOneValue === 'on' || plusOneValue === '1'))
         
-        // Set plusOne to true if checkbox is checked OR if we have name/relation
-        const plusOne = plusOneCheckbox || (plusOneName != null && plusOneName !== '') || (plusOneRelation != null && plusOneRelation !== '')
+        // CRITICAL FIX: Only set plusOne to true if checkbox is explicitly checked
+        // Don't infer from name/relation fields - checkbox is the source of truth
+        const plusOne = plusOneCheckbox
         
-        // ALWAYS send the raw values - don't filter them out
-        // The API will handle any necessary validation
+        // Only send name/relation if checkbox is checked, otherwise send null
+        // This ensures data consistency: if checkbox isn't checked, there's no plus one
         eventResponsesWithPlusOnes[eventId] = {
           status,
           plusOne: plusOne,
-          plusOneName: plusOneName,  // Send the value, even if it might be empty
-          plusOneRelation: plusOneRelation,  // Send the value, even if it might be empty
+          plusOneName: plusOne ? plusOneName : null,  // Only send if checkbox is checked
+          plusOneRelation: plusOne ? plusOneRelation : null,  // Only send if checkbox is checked
         }
         
         console.log(`[Form Submit] Processing event ${eventId}:`, {
@@ -640,72 +641,31 @@ export default function RSVPFormPage() {
                         </div>
                         {/* Show plus one info for this event if attending with plus one */}
                         {(() => {
-                          // NUCLEAR OPTION: Check if fields exist in object AT ALL, regardless of value
+                          // CRITICAL FIX: Only show plus one if checkbox was explicitly checked
+                          // Check the plusOne flag - this is the source of truth
+                          const rawPlusOneFlag = normalizedEr.plusOne
                           const rawPlusOneName = normalizedEr.plusOneName
                           const rawPlusOneRelation = normalizedEr.plusOneRelation
-                          const rawPlusOneFlag = normalizedEr.plusOne
                           
-                          // Check if fields exist in the object itself (using 'in' operator)
-                          const hasNameField = 'plusOneName' in normalizedEr
-                          const hasRelationField = 'plusOneRelation' in normalizedEr
-                          const hasFlagField = 'plusOne' in normalizedEr
+                          // Check if plusOne flag is explicitly true
+                          const hasPlusOneFlag = rawPlusOneFlag === true || rawPlusOneFlag === 1 || rawPlusOneFlag === 'true' || rawPlusOneFlag === '1'
                           
-                          // Also check if values are truthy or non-empty strings
-                          const hasNameValue = rawPlusOneName != null && rawPlusOneName !== undefined && String(rawPlusOneName).trim() !== ''
-                          const hasRelationValue = rawPlusOneRelation != null && rawPlusOneRelation !== undefined && String(rawPlusOneRelation).trim() !== ''
-                          const hasFlagValue = rawPlusOneFlag === true || rawPlusOneFlag === 1 || rawPlusOneFlag === 'true' || rawPlusOneFlag === '1'
+                          // Only show if status is YES AND checkbox was checked
+                          const shouldShow = normalizedEr.status === 'YES' && hasPlusOneFlag
                           
-                          // Show if status is YES and (field exists OR value exists)
-                          // This is the most permissive check possible
-                          const shouldShow = normalizedEr.status === 'YES' && (
-                            hasNameField || hasRelationField || hasFlagField || 
-                            hasNameValue || hasRelationValue || hasFlagValue
-                          )
-                          
-                          // Debug: log even when not showing to help diagnose
-                          if (normalizedEr.status === 'YES' && !shouldShow) {
-                            console.warn(`[RSVP Success Page] Plus One data exists but not showing for event ${normalizedEr.eventId}:`, {
-                              status: normalizedEr.status,
-                              plusOneFlag: rawPlusOneFlag,
-                              plusOneName: rawPlusOneName,
-                              plusOneRelation: rawPlusOneRelation,
-                              hasNameField,
-                              hasRelationField,
-                              hasFlagField,
-                              hasNameValue,
-                              hasRelationValue,
-                              hasFlagValue,
-                              shouldShow,
-                              allKeys: Object.keys(normalizedEr),
-                            })
-                          }
-                          
-                          // ALWAYS log for debugging - this is critical
-                          console.log(`[RSVP Success Page] Plus One check for event ${normalizedEr.eventId} (${normalizedEr.eventName}):`, {
-                            status: normalizedEr.status,
-                            rawPlusOneFlag,
-                            rawPlusOneName,
-                            rawPlusOneRelation,
-                            hasNameField,
-                            hasRelationField,
-                            hasFlagField,
-                            hasNameValue,
-                            hasRelationValue,
-                            hasFlagValue,
-                            shouldShow,
-                            allKeys: Object.keys(normalizedEr),
-                            fullEventResponse: JSON.stringify(normalizedEr, null, 2),
-                          })
-                          
-                          // Show Plus One section - ALWAYS show if shouldShow is true
+                          // Show Plus One section - only if checkbox was checked
                           if (shouldShow) {
                             // Convert to strings for display
-                            const plusOneNameValue = rawPlusOneName != null && rawPlusOneName !== undefined ? String(rawPlusOneName).trim() : null
-                            const plusOneRelationValue = rawPlusOneRelation != null && rawPlusOneRelation !== undefined ? String(rawPlusOneRelation).trim() : null
+                            const plusOneNameValue = rawPlusOneName != null && rawPlusOneName !== undefined && String(rawPlusOneName).trim() !== '' 
+                              ? String(rawPlusOneName).trim() 
+                              : null
+                            const plusOneRelationValue = rawPlusOneRelation != null && rawPlusOneRelation !== undefined && String(rawPlusOneRelation).trim() !== ''
+                              ? String(rawPlusOneRelation).trim()
+                              : null
                             
-                            // Use the values we have - show them even if they're empty strings
-                            const displayName = hasNameValue ? plusOneNameValue : (hasNameField ? (plusOneNameValue || 'Not provided') : null)
-                            const displayRelation = hasRelationValue ? plusOneRelationValue : null
+                            // Display name and relation if they exist
+                            const displayName = plusOneNameValue || 'Not provided'
+                            const displayRelation = plusOneRelationValue
                             
                             // Always render the section if shouldShow is true
                             // Show name/relation fields even if values are empty - user submitted something
@@ -747,24 +707,7 @@ export default function RSVPFormPage() {
                             )
                           }
                           
-                          // If we get here and status is YES, log why we're not showing
-                          if (normalizedEr.status === 'YES' && !shouldShow) {
-                            console.error(`[RSVP Success Page] NOT showing Plus One for event ${normalizedEr.eventId} even though status is YES:`, {
-                              shouldShow,
-                              hasNameField,
-                              hasRelationField,
-                              hasFlagField,
-                              hasNameValue,
-                              hasRelationValue,
-                              hasFlagValue,
-                              rawPlusOneName,
-                              rawPlusOneRelation,
-                              rawPlusOneFlag,
-                              allKeys: Object.keys(normalizedEr),
-                              normalizedEr: JSON.stringify(normalizedEr, null, 2),
-                            })
-                          }
-                          
+                          // Don't show plus one section if checkbox wasn't checked
                           return null
                         })()}
                     </div>

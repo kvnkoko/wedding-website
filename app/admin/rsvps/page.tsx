@@ -749,41 +749,28 @@ export default function AdminRSVPsPage() {
                           </div>
                           {/* Per-Event Plus One */}
                           {(() => {
-                            // Check for Plus One data - handle both explicit plusOne flag and presence of name/relation
-                            // Get raw values first
+                            // CRITICAL FIX: Only show plus one if checkbox was explicitly checked
+                            // Check the plusOne flag - this is the source of truth
+                            const rawPlusOneFlag = er.plusOne
                             const rawPlusOneName = er.plusOneName
                             const rawPlusOneRelation = er.plusOneRelation
-                            const rawPlusOneFlag = er.plusOne
                             
-                            // Convert to strings and trim
-                            const plusOneNameValue = rawPlusOneName != null ? String(rawPlusOneName).trim() : null
-                            const plusOneRelationValue = rawPlusOneRelation != null ? String(rawPlusOneRelation).trim() : null
-                            
+                            // Check if plusOne flag is explicitly true
                             const hasPlusOneFlag = rawPlusOneFlag === true || 
                                                   rawPlusOneFlag === 'true' || 
                                                   rawPlusOneFlag === 1 || 
                                                   rawPlusOneFlag === '1'
-                            const hasPlusOneName = plusOneNameValue && 
-                                                  plusOneNameValue !== '' && 
-                                                  plusOneNameValue !== 'null' && 
-                                                  plusOneNameValue !== 'undefined' &&
-                                                  plusOneNameValue !== 'None' &&
-                                                  plusOneNameValue.toLowerCase() !== 'none' &&
-                                                  plusOneNameValue !== 'false'
-                            const hasPlusOneRelation = plusOneRelationValue && 
-                                                     plusOneRelationValue !== '' && 
-                                                     plusOneRelationValue !== 'null' && 
-                                                     plusOneRelationValue !== 'undefined' &&
-                                                     plusOneRelationValue !== 'None' &&
-                                                     plusOneRelationValue.toLowerCase() !== 'none' &&
-                                                     plusOneRelationValue !== 'false'
                             
-                            // Check raw values directly - bypass validation if raw data exists
-                            const hasRawPlusOneName = rawPlusOneName != null && rawPlusOneName !== '' && String(rawPlusOneName).trim() !== ''
-                            const hasRawPlusOneRelation = rawPlusOneRelation != null && rawPlusOneRelation !== '' && String(rawPlusOneRelation).trim() !== ''
+                            // Only show if checkbox was checked - don't infer from name/relation
+                            const hasPlusOne = hasPlusOneFlag
                             
-                            // Show if validated OR if raw data exists
-                            const hasPlusOne = hasPlusOneFlag || hasPlusOneName || hasPlusOneRelation || hasRawPlusOneName || hasRawPlusOneRelation
+                            // Convert to strings for display (only if checkbox is checked)
+                            const plusOneNameValue = hasPlusOne && rawPlusOneName != null && String(rawPlusOneName).trim() !== '' 
+                              ? String(rawPlusOneName).trim() 
+                              : null
+                            const plusOneRelationValue = hasPlusOne && rawPlusOneRelation != null && String(rawPlusOneRelation).trim() !== ''
+                              ? String(rawPlusOneRelation).trim()
+                              : null
                             
                             // Debug: log even when not showing to help diagnose
                             if (er.status === 'YES' && !hasPlusOne) {
