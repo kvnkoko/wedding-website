@@ -9,33 +9,51 @@ export default function PhotoCarouselSection() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/photos')
-      .then((res) => {
+    const fetchPhotos = async () => {
+      try {
+        const res = await fetch('/api/photos')
+        
         if (!res.ok) {
-          throw new Error('Failed to fetch photos')
+          const errorText = await res.text()
+          console.error('Failed to fetch photos:', res.status, res.statusText, errorText)
+          throw new Error(`Failed to fetch photos: ${res.status} ${res.statusText}`)
         }
-        return res.json()
-      })
-      .then((data) => {
+        
+        const data = await res.json()
+        console.log('Fetched photos data:', data)
+        
         if (Array.isArray(data)) {
-          setPhotos(data)
+          // Filter out any photos without a valid URL
+          const validPhotos = data.filter((photo: any) => photo && photo.url && photo.id)
+          console.log('Valid photos:', validPhotos.length, 'out of', data.length)
+          setPhotos(validPhotos)
         } else {
+          console.warn('Photos data is not an array:', data)
           setPhotos([])
         }
         setLoading(false)
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error('Error fetching photos:', err)
-        setError('Failed to load photos')
+        setError(err instanceof Error ? err.message : 'Failed to load photos')
         setLoading(false)
-      })
+      }
+    }
+
+    fetchPhotos()
   }, [])
 
-  if (loading || error) {
+  // Show nothing while loading or on error (silent fail for better UX)
+  if (loading) {
+    return null
+  }
+
+  if (error) {
+    console.error('PhotoCarouselSection error:', error)
     return null
   }
 
   if (!photos || photos.length === 0) {
+    console.log('No photos to display')
     return null
   }
 

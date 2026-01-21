@@ -331,6 +331,10 @@ export async function POST(request: NextRequest) {
             const finalPlusOneName = plusOne ? plusOneName : null
             const finalPlusOneRelation = plusOne ? plusOneRelation : null
             
+            // Check if name/relation exist
+            const hasName = finalPlusOneName != null
+            const hasRelation = finalPlusOneRelation != null
+            
             // CRITICAL: Verify rsvpId is not null/undefined/empty before using it
             if (!newRsvp.id || typeof newRsvp.id !== 'string' || newRsvp.id.trim() === '') {
               console.error(`❌ CRITICAL: newRsvp.id is invalid for event ${responseData.eventId}:`, {

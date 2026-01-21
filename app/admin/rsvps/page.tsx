@@ -772,6 +772,12 @@ export default function AdminRSVPsPage() {
                               ? String(rawPlusOneRelation).trim()
                               : null
                             
+                            // Check if name/relation exist
+                            const hasPlusOneName = plusOneNameValue != null
+                            const hasPlusOneRelation = plusOneRelationValue != null
+                            const hasRawPlusOneName = rawPlusOneName != null && String(rawPlusOneName).trim() !== ''
+                            const hasRawPlusOneRelation = rawPlusOneRelation != null && String(rawPlusOneRelation).trim() !== ''
+                            
                             // Debug: log even when not showing to help diagnose
                             if (er.status === 'YES' && !hasPlusOne) {
                               console.warn(`[Admin Frontend] Event ${er.event?.name} has status YES but no Plus One data:`, {
