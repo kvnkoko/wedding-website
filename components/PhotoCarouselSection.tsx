@@ -29,6 +29,7 @@ export default function PhotoCarouselSection() {
             .map((photo: any) => ({
               ...photo,
               // Use proxy route for Vercel Blob Storage URLs
+              // This helps bypass Cloudflare/CORS issues
               url: photo.url.includes('blob.vercel-storage.com')
                 ? `/api/photos/proxy?url=${encodeURIComponent(photo.url)}`
                 : photo.url
