@@ -23,8 +23,16 @@ export default function PhotoCarouselSection() {
         console.log('Fetched photos data:', data)
         
         if (Array.isArray(data)) {
-          // Filter out any photos without a valid URL
-          const validPhotos = data.filter((photo: any) => photo && photo.url && photo.id)
+          // Filter out any photos without a valid URL and transform URLs to use proxy
+          const validPhotos = data
+            .filter((photo: any) => photo && photo.url && photo.id)
+            .map((photo: any) => ({
+              ...photo,
+              // Use proxy route for Vercel Blob Storage URLs
+              url: photo.url.includes('blob.vercel-storage.com')
+                ? `/api/photos/proxy?url=${encodeURIComponent(photo.url)}`
+                : photo.url
+            }))
           console.log('Valid photos:', validPhotos.length, 'out of', data.length)
           setPhotos(validPhotos)
         } else {

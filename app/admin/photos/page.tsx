@@ -41,7 +41,14 @@ export default function AdminPhotosPage() {
       if (res.ok) {
         const data = await res.json()
         console.log('Fetched photos:', data)
-        setPhotos(data.sort((a: Photo, b: Photo) => a.order - b.order))
+        // Transform URLs to use proxy for Vercel Blob Storage URLs
+        const photosWithProxy = data.map((photo: Photo) => ({
+          ...photo,
+          url: photo.url.includes('blob.vercel-storage.com')
+            ? `/api/photos/proxy?url=${encodeURIComponent(photo.url)}`
+            : photo.url
+        }))
+        setPhotos(photosWithProxy.sort((a: Photo, b: Photo) => a.order - b.order))
       } else {
         console.error('Failed to fetch photos:', res.status, res.statusText)
         const errorData = await res.json().catch(() => ({}))
