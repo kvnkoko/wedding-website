@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
           .webp({ quality })
           .toBuffer()
 
-        return new NextResponse(optimized, {
+        return new NextResponse(new Uint8Array(optimized), {
           status: 200,
           headers: {
             'Content-Type': 'image/webp',
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
         })
       } catch (sharpError) {
         // Fallback: return original if sharp fails
-        return new NextResponse(imageBuffer, {
+        return new NextResponse(new Uint8Array(imageBuffer), {
           status: 200,
           headers: {
             'Content-Type': contentType,
