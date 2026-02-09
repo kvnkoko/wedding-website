@@ -14,9 +14,14 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const eventId = searchParams.get('eventId')
     const status = searchParams.get('status')
+    const side = searchParams.get('side')
     const search = searchParams.get('search')
 
     let where: any = {}
+
+    if (side) {
+      where.side = side
+    }
 
     if (eventId || status) {
       where.eventResponses = {

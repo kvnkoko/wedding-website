@@ -70,6 +70,7 @@ export default function AdminRSVPsPage() {
   const debouncedSearch = useDebouncedValue(search, 350) // Debounce search to prevent API spam on mobile
   const [eventFilter, setEventFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
+  const [sideFilter, setSideFilter] = useState('')
   const [events, setEvents] = useState<Array<{ id: string; name: string }>>([])
   const [editing, setEditing] = useState<Rsvp | null>(null)
   const [showForm, setShowForm] = useState(false)
@@ -97,6 +98,7 @@ export default function AdminRSVPsPage() {
         if (debouncedSearch.trim()) params.set('search', debouncedSearch.trim())
         if (eventFilter) params.set('eventId', eventFilter)
         if (statusFilter) params.set('status', statusFilter)
+        if (sideFilter) params.set('side', sideFilter)
 
         const res = await fetch(`/api/admin/rsvps?${params.toString()}`, {
           credentials: 'include',
@@ -118,13 +120,14 @@ export default function AdminRSVPsPage() {
 
     fetchRsvps()
     return () => controller.abort() // Cancel in-flight request when filters change
-  }, [debouncedSearch, eventFilter, statusFilter])
+  }, [debouncedSearch, eventFilter, statusFilter, sideFilter])
 
   const handleExport = async () => {
     try {
       const params = new URLSearchParams()
       if (eventFilter) params.set('eventId', eventFilter)
       if (statusFilter) params.set('status', statusFilter)
+      if (sideFilter) params.set('side', sideFilter)
 
       const res = await fetch(`/api/admin/export?${params.toString()}`, {
         credentials: 'include',
@@ -186,6 +189,7 @@ export default function AdminRSVPsPage() {
           if (search) params.set('search', search)
           if (eventFilter) params.set('eventId', eventFilter)
           if (statusFilter) params.set('status', statusFilter)
+          if (sideFilter) params.set('side', sideFilter)
 
           try {
             const fetchRes = await fetch(`/api/admin/rsvps?${params.toString()}`, {
@@ -267,6 +271,7 @@ export default function AdminRSVPsPage() {
         if (search) params.set('search', search)
         if (eventFilter) params.set('eventId', eventFilter)
         if (statusFilter) params.set('status', statusFilter)
+        if (sideFilter) params.set('side', sideFilter)
 
         const fetchRes = await fetch(`/api/admin/rsvps?${params.toString()}`, {
           credentials: 'include',
@@ -352,7 +357,7 @@ export default function AdminRSVPsPage() {
           <Funnel className="w-5 h-5 text-charcoal dark:text-dark-text" weight="duotone" />
           <h2 className="font-title text-base sm:text-lg text-charcoal dark:text-dark-text">Filters</h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
               Search
@@ -366,7 +371,7 @@ export default function AdminRSVPsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Name, email, phone..."
-                className="w-full pl-12 sm:pl-11 pr-4 py-2.5 sm:py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                className="w-full pl-12 sm:pl-11 pr-4 py-2.5 sm:py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
               />
             </div>
           </div>
@@ -378,7 +383,7 @@ export default function AdminRSVPsPage() {
               <select
                 value={eventFilter}
                 onChange={(e) => setEventFilter(e.target.value)}
-                className="w-full pl-4 pr-10 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
+                className="w-full pl-4 pr-10 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
               >
                 <option value="">All Events</option>
                 {events.map((event) => (
@@ -401,11 +406,33 @@ export default function AdminRSVPsPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full pl-4 pr-10 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
+                className="w-full pl-4 pr-10 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
               >
                 <option value="">All Statuses</option>
                 <option value="YES">Attending</option>
                 <option value="NO">Declined</option>
+              </select>
+              <CaretDown 
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
+                weight="bold"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
+              Side
+            </label>
+            <div className="relative">
+              <select
+                value={sideFilter}
+                onChange={(e) => setSideFilter(e.target.value)}
+                className="w-full pl-4 pr-10 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
+              >
+                <option value="">All Sides</option>
+                <option value="Bride">Bride</option>
+                <option value="Groom">Groom</option>
+                <option value="Both">Both</option>
+                <option value="Other">Other</option>
               </select>
               <CaretDown 
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary pointer-events-none transition-colors duration-200" 
@@ -442,7 +469,7 @@ export default function AdminRSVPsPage() {
                   name="name"
                   defaultValue={editing.name}
                   required
-                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                 />
               </div>
               <div>
@@ -454,7 +481,7 @@ export default function AdminRSVPsPage() {
                   name="phone"
                   defaultValue={editing.phone}
                   required
-                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                 />
               </div>
               <div>
@@ -465,7 +492,7 @@ export default function AdminRSVPsPage() {
                   type="email"
                   name="email"
                   defaultValue={editing.email || ''}
-                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                  className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                 />
               </div>
               <div>
@@ -476,7 +503,7 @@ export default function AdminRSVPsPage() {
                   <select
                     name="side"
                     defaultValue={editing.side}
-                    className="w-full pl-4 pr-10 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
+                    className="w-full pl-4 pr-10 py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
                   >
                     <option value="Bride">Bride</option>
                     <option value="Groom">Groom</option>
@@ -505,7 +532,7 @@ export default function AdminRSVPsPage() {
                           <select
                             name={`event-${er.event.id}`}
                             defaultValue={er.status}
-                            className="w-full pl-3 pr-8 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-bg dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
+                            className="w-full pl-3 pr-8 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-bg dark:text-dark-text transition-all duration-200 appearance-none bg-white dark:bg-dark-surface cursor-pointer hover:border-sage/50 focus:border-sage"
                           >
                             <option value="YES">Yes</option>
                             <option value="NO">No</option>
@@ -540,7 +567,7 @@ export default function AdminRSVPsPage() {
                           name={`plusOneName-${er.event.id}`}
                           defaultValue={er.plusOneName || ''}
                           placeholder="Enter plus one name"
-                          className="w-full px-3 py-2 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                          className="w-full px-3 py-2 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                         />
                       </div>
                       <div>
@@ -552,7 +579,7 @@ export default function AdminRSVPsPage() {
                           name={`plusOneRelation-${er.event.id}`}
                           defaultValue={er.plusOneRelation || ''}
                           placeholder="e.g., Spouse, Partner, Friend"
-                          className="w-full px-3 py-2 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-sm focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                          className="w-full px-3 py-2 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
                         />
                       </div>
                     </div>
@@ -568,7 +595,7 @@ export default function AdminRSVPsPage() {
                 name="notes"
                 defaultValue={editing.notes || ''}
                 rows={3}
-                className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                className="w-full px-4 py-2.5 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
               />
             </div>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -598,7 +625,7 @@ export default function AdminRSVPsPage() {
         <div className="bg-white dark:bg-dark-card p-12 rounded-xl shadow-md border border-taupe/20 dark:border-dark-border text-center">
           <Users className="w-16 h-16 text-charcoal/60 dark:text-dark-text-secondary/80 mx-auto mb-4" weight="duotone" />
           <p className="font-sans text-lg text-charcoal/70 dark:text-dark-text-secondary">No RSVPs found</p>
-          {(search || eventFilter || statusFilter) && (
+          {(search || eventFilter || statusFilter || sideFilter) && (
             <p className="font-sans text-sm text-charcoal/70 dark:text-dark-text-secondary mt-2">
               Try adjusting your filters
             </p>
