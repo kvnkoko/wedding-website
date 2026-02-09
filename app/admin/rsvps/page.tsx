@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { 
   MagnifyingGlass, 
   Funnel, 
@@ -18,6 +18,22 @@ import {
   X,
   CaretDown
 } from 'phosphor-react'
+
+/** Debounce a value - only updates after delay when source stops changing */
+function useDebouncedValue<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value)
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  useEffect(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    timeoutRef.current = setTimeout(() => setDebouncedValue(value), delay)
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [value, delay])
+
+  return debouncedValue
+}
 
 interface Rsvp {
   id: string
@@ -51,90 +67,58 @@ export default function AdminRSVPsPage() {
   const [rsvps, setRsvps] = useState<Rsvp[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const debouncedSearch = useDebouncedValue(search, 350) // Debounce search to prevent API spam on mobile
   const [eventFilter, setEventFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [events, setEvents] = useState<Array<{ id: string; name: string }>>([])
   const [editing, setEditing] = useState<Rsvp | null>(null)
   const [showForm, setShowForm] = useState(false)
+  const hasLoadedOnce = useRef(false)
 
+  // Fetch events once on mount
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const [rsvpsRes, eventsRes] = await Promise.all([
-          fetch('/api/admin/rsvps', { credentials: 'include' }),
-          fetch('/api/admin/events', { credentials: 'include' }),
-        ])
-
-        if (rsvpsRes.ok) {
-          const data = await rsvpsRes.json()
-          console.log('[Admin RSVPs Page] Fetched RSVPs:', {
-            count: data.length,
-            sampleRsvp: data[0],
-            sampleEventResponse: data[0]?.eventResponses?.[0],
-            allEventResponses: data.flatMap((r: Rsvp) => 
-              r.eventResponses.map(er => ({
-                rsvpName: r.name,
-                eventName: er.event.name,
-                status: er.status,
-                plusOne: er.plusOne,
-                plusOneName: er.plusOneName,
-                plusOneRelation: er.plusOneRelation,
-                hasPlusOneData: !!(er.plusOne || er.plusOneName),
-              }))
-            ),
-            responsesWithPlusOne: data.flatMap((r: Rsvp) => 
-              (r.eventResponses || [])
-                .filter(er => er.plusOne || er.plusOneName)
-                .map(er => ({
-                  rsvpName: r.name,
-                  eventName: er.event.name,
-                  status: er.status,
-                  plusOne: er.plusOne,
-                  plusOneName: er.plusOneName,
-                  plusOneRelation: er.plusOneRelation,
-                }))
-            ),
-          })
-          setRsvps(data)
-        }
-
-        if (eventsRes.ok) {
-          const data = await eventsRes.json()
-          setEvents(data)
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
+    fetch('/api/admin/events', { credentials: 'include' })
+      .then((res) => res.ok ? res.json() : [])
+      .then((data) => setEvents(data))
+      .catch(() => setEvents([]))
   }, [])
 
+  // Single source of truth: fetch RSVPs when filters change
+  // Uses debouncedSearch so typing doesn't trigger API on every keystroke (fixes mobile glitch)
   useEffect(() => {
-    async function fetchFiltered() {
-      setLoading(true)
+    const controller = new AbortController()
+
+    async function fetchRsvps() {
+      // Only show full-page loading on initial load; when filtering, keep previous list visible to prevent flicker
+      if (!hasLoadedOnce.current) setLoading(true)
+
       try {
         const params = new URLSearchParams()
-        if (search) params.set('search', search)
+        if (debouncedSearch.trim()) params.set('search', debouncedSearch.trim())
         if (eventFilter) params.set('eventId', eventFilter)
         if (statusFilter) params.set('status', statusFilter)
 
         const res = await fetch(`/api/admin/rsvps?${params.toString()}`, {
           credentials: 'include',
+          signal: controller.signal,
         })
         if (res.ok) {
           const data = await res.json()
           setRsvps(data)
+          hasLoadedOnce.current = true
         }
       } catch (error) {
-        console.error('Error fetching filtered RSVPs:', error)
+        if ((error as Error).name !== 'AbortError') {
+          console.error('Error fetching RSVPs:', error)
+        }
       } finally {
         setLoading(false)
       }
     }
-    fetchFiltered()
-  }, [search, eventFilter, statusFilter])
+
+    fetchRsvps()
+    return () => controller.abort() // Cancel in-flight request when filters change
+  }, [debouncedSearch, eventFilter, statusFilter])
 
   const handleExport = async () => {
     try {
@@ -174,8 +158,6 @@ export default function AdminRSVPsPage() {
     }
 
     try {
-      console.log(`[Admin Frontend] Attempting to delete RSVP ${id}`)
-      
       const res = await fetch(`/api/admin/rsvps?id=${id}`, {
         method: 'DELETE',
         credentials: 'include',
@@ -184,12 +166,9 @@ export default function AdminRSVPsPage() {
         },
       })
 
-      console.log(`[Admin Frontend] Delete response status: ${res.status}`)
-
       let data
       try {
         data = await res.json()
-        console.log(`[Admin Frontend] Delete response data:`, data)
       } catch (jsonError) {
         console.error('[Admin Frontend] Failed to parse JSON response:', jsonError)
         const text = await res.text()
@@ -199,16 +178,8 @@ export default function AdminRSVPsPage() {
       }
 
       if (res.ok) {
-        // Check for success flag or just assume success if status is 200
         if (data.success !== false) {
-          console.log(`[Admin Frontend] Successfully deleted RSVP ${id}`)
-          
-          // Remove the deleted RSVP from the list immediately for better UX
-          setRsvps(prev => {
-            const filtered = prev.filter(rsvp => rsvp.id !== id)
-            console.log(`[Admin Frontend] Updated RSVPs list, removed ${id}, ${filtered.length} remaining`)
-            return filtered
-          })
+          setRsvps(prev => prev.filter(rsvp => rsvp.id !== id))
           
           // Refresh the list to ensure consistency
           const params = new URLSearchParams()
@@ -223,7 +194,6 @@ export default function AdminRSVPsPage() {
             if (fetchRes.ok) {
               const refreshedData = await fetchRes.json()
               setRsvps(refreshedData)
-              console.log(`[Admin Frontend] Refreshed RSVPs list, ${refreshedData.length} total`)
             }
           } catch (refreshError) {
             console.error('[Admin Frontend] Error refreshing list:', refreshError)
@@ -390,7 +360,9 @@ export default function AdminRSVPsPage() {
             <div className="relative">
               <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-charcoal/60 dark:text-dark-text-secondary pointer-events-none z-10" weight="duotone" />
               <input
-                type="text"
+                type="search"
+                inputMode="search"
+                autoComplete="off"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Name, email, phone..."
@@ -719,24 +691,7 @@ export default function AdminRSVPsPage() {
                       Event Responses
                     </h4>
                     <div className="space-y-2">
-                      {(() => {
-                        console.log(`[Admin Frontend] Rendering event responses for RSVP ${rsvp.name}:`, {
-                          eventResponses: rsvp.eventResponses,
-                          count: rsvp.eventResponses?.length || 0,
-                          sample: rsvp.eventResponses?.[0],
-                        })
-                        return null
-                      })()}
-                      {(rsvp.eventResponses || []).map((er: any, idx: number) => {
-                        console.log(`[Admin Frontend] Event response ${idx} for ${rsvp.name}:`, {
-                          eventId: er.eventId,
-                          eventName: er.event?.name,
-                          status: er.status,
-                          plusOne: er.plusOne,
-                          plusOneName: er.plusOneName,
-                          plusOneRelation: er.plusOneRelation,
-                        })
-                        return (
+                      {(rsvp.eventResponses || []).map((er: any, idx: number) => (
                           <div
                             key={idx}
                             className="p-2.5 rounded-lg bg-taupe/5 dark:bg-dark-surface border border-taupe/20 dark:border-dark-border"
@@ -749,61 +704,25 @@ export default function AdminRSVPsPage() {
                           </div>
                           {/* Per-Event Plus One */}
                           {(() => {
-                            // CRITICAL FIX: Only show plus one if checkbox was explicitly checked
-                            // Check the plusOne flag - this is the source of truth
                             const rawPlusOneFlag = er.plusOne
                             const rawPlusOneName = er.plusOneName
                             const rawPlusOneRelation = er.plusOneRelation
-                            
-                            // Check if plusOne flag is explicitly true
                             const hasPlusOneFlag = rawPlusOneFlag === true || 
                                                   rawPlusOneFlag === 'true' || 
                                                   rawPlusOneFlag === 1 || 
                                                   rawPlusOneFlag === '1'
-                            
-                            // Only show if checkbox was checked - don't infer from name/relation
                             const hasPlusOne = hasPlusOneFlag
-                            
-                            // Convert to strings for display (only if checkbox is checked)
                             const plusOneNameValue = hasPlusOne && rawPlusOneName != null && String(rawPlusOneName).trim() !== '' 
                               ? String(rawPlusOneName).trim() 
                               : null
                             const plusOneRelationValue = hasPlusOne && rawPlusOneRelation != null && String(rawPlusOneRelation).trim() !== ''
                               ? String(rawPlusOneRelation).trim()
                               : null
-                            
-                            // Check if name/relation exist
                             const hasPlusOneName = plusOneNameValue != null
                             const hasPlusOneRelation = plusOneRelationValue != null
                             const hasRawPlusOneName = rawPlusOneName != null && String(rawPlusOneName).trim() !== ''
                             const hasRawPlusOneRelation = rawPlusOneRelation != null && String(rawPlusOneRelation).trim() !== ''
-                            
-                            // Debug: log even when not showing to help diagnose
-                            if (er.status === 'YES' && !hasPlusOne) {
-                              console.warn(`[Admin Frontend] Event ${er.event?.name} has status YES but no Plus One data:`, {
-                                status: er.status,
-                                plusOneFlag: er.plusOne,
-                                plusOneName: er.plusOneName,
-                                plusOneRelation: er.plusOneRelation,
-                                hasPlusOneName,
-                                hasPlusOneRelation,
-                                hasPlusOneFlag,
-                              })
-                            }
-                            
-                            console.log(`[Admin Frontend] Plus One check for event ${er.event?.name}:`, {
-                              status: er.status,
-                              plusOneFlag: er.plusOne,
-                              hasPlusOneFlag,
-                              plusOneName: er.plusOneName,
-                              plusOneNameValue,
-                              hasPlusOneName,
-                              plusOneRelation: er.plusOneRelation,
-                              plusOneRelationValue,
-                              hasPlusOneRelation,
-                              finalHasPlusOne: hasPlusOne,
-                            })
-                            
+
                             if (er.status === 'YES' && hasPlusOne) {
                               // Use the most permissive values for display
                               const displayName = hasPlusOneName ? plusOneNameValue : (hasRawPlusOneName ? String(rawPlusOneName).trim() : null)
@@ -845,26 +764,11 @@ export default function AdminRSVPsPage() {
                                 )
                               }
                             }
-                            
-                            // Log if status is YES but Plus One isn't showing
-                            if (er.status === 'YES' && !hasPlusOne) {
-                              console.error(`[Admin Frontend] NOT showing Plus One for event ${er.event?.name} even though status is YES:`, {
-                                hasPlusOne,
-                                hasPlusOneFlag,
-                                hasPlusOneName,
-                                hasPlusOneRelation,
-                                hasRawPlusOneName,
-                                hasRawPlusOneRelation,
-                                rawPlusOneName,
-                                rawPlusOneRelation,
-                              })
-                            }
-                            
                             return null
                           })()}
                           </div>
                         )
-                      })}
+                      )}
                     </div>
                   </div>
                 </div>
