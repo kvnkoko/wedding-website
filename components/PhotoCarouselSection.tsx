@@ -28,10 +28,9 @@ export default function PhotoCarouselSection() {
             .filter((photo: any) => photo && photo.url && photo.id)
             .map((photo: any) => ({
               ...photo,
-              // Use proxy route for Vercel Blob Storage URLs
-              // This helps bypass Cloudflare/CORS issues
+              // Use proxy route with optimization params for faster loading
               url: photo.url.includes('blob.vercel-storage.com')
-                ? `/api/photos/proxy?url=${encodeURIComponent(photo.url)}`
+                ? `/api/photos/proxy?url=${encodeURIComponent(photo.url)}&w=1200&q=85`
                 : photo.url
             }))
           console.log('Valid photos:', validPhotos.length, 'out of', data.length)

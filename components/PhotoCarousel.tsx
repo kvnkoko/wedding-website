@@ -314,10 +314,14 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                   <div className="relative w-full h-full rounded-none md:rounded-lg overflow-hidden shadow-xl md:shadow-2xl dark:shadow-3xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-900 dark:to-gray-800 transition-all duration-500 hover:shadow-3xl dark:hover:shadow-4xl group">
                     {photo.url && (
                       <>
-                        {/* Low-quality blurred placeholder - shows immediately while loading */}
+                        {/* Tiny placeholder loads fast for blur effect while full image loads */}
                         {!loadedImages.has(photo.id) && !imageErrors.has(photo.id) && (
                           <img
-                            src={photo.url}
+                            src={photo.url.includes('/api/photos/proxy') 
+                              ? (photo.url.includes('w=') 
+                                ? photo.url.replace(/([?&])w=\d+/g, '$1w=80').replace(/([?&])q=\d+/g, '$1q=60') 
+                                : `${photo.url}&w=80&q=60`)
+                              : photo.url}
                             alt=""
                             aria-hidden="true"
                             className="absolute inset-0"
@@ -331,9 +335,10 @@ export default function PhotoCarousel({ photos }: PhotoCarouselProps) {
                               opacity: 0.5,
                             }}
                             loading="eager"
+                            fetchPriority="high"
                           />
                         )}
-                        {/* Full-quality image with fade-in - all portraits use cover for consistent sizing */}
+                        {/* Optimized full-quality image - resized & compressed by proxy */}
                         <img
                           src={photo.url}
                           alt={photo.alt || `Photo ${index + 1}`}

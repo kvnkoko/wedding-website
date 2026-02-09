@@ -22,6 +22,8 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     let imageUrl = searchParams.get('url')
+    const width = searchParams.get('w') ? parseInt(searchParams.get('w')!, 10) : 1200
+    const quality = searchParams.get('q') ? Math.min(100, Math.max(1, parseInt(searchParams.get('q')!, 10))) : 85
 
     if (!imageUrl) {
       return NextResponse.json(
@@ -30,34 +32,24 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Decode the URL - handle both encoded and unencoded
+    // Decode the URL
     try {
-      // Try decoding, but if it fails or doesn't change, use original
       const decoded = decodeURIComponent(imageUrl)
-      if (decoded !== imageUrl) {
-        imageUrl = decoded
-      }
+      if (decoded !== imageUrl) imageUrl = decoded
     } catch {
-      // If decoding fails, URL might already be decoded, use as-is
+      // Use as-is if decoding fails
     }
 
     // Validate that the URL is from Vercel Blob Storage
     if (!imageUrl || !imageUrl.includes('blob.vercel-storage.com')) {
-      console.error('Invalid image source URL:', imageUrl?.substring(0, 100))
       return NextResponse.json(
         { error: 'Invalid image source' },
         { status: 400 }
       )
     }
 
-    console.log('Proxying image:', imageUrl.substring(0, 100) + '...')
-
-    // Try fetching the image with proper headers
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => {
-      controller.abort()
-      console.error('Request timeout for:', imageUrl.substring(0, 100))
-    }, 15000) // 15 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000)
 
     try {
       const response = await fetch(imageUrl, {
@@ -69,52 +61,58 @@ export async function GET(request: NextRequest) {
           'Referer': request.headers.get('referer') || '',
         },
         redirect: 'follow',
-        // @ts-ignore - cache option
-        cache: 'no-store',
+        cache: 'no-store' as RequestCache,
       })
 
       clearTimeout(timeoutId)
 
       if (!response.ok) {
-        const statusText = response.statusText
-        console.error(`Failed to fetch image: ${imageUrl.substring(0, 100)}... Status: ${response.status} ${statusText}`)
-        
-        // If it's a 403/404, try without proxy (redirect)
         if (response.status === 403 || response.status === 404) {
-          console.log('Attempting redirect for 403/404 response')
           return NextResponse.redirect(imageUrl, 302)
         }
-        
         return NextResponse.json(
-          { 
-            error: `Failed to fetch image: ${response.status} ${statusText}`,
-            url: imageUrl.substring(0, 100)
-          },
+          { error: `Failed to fetch image: ${response.status}` },
           { status: response.status }
         )
       }
 
-      // Get the image data
-      const imageBuffer = await response.arrayBuffer()
+      const imageBuffer = Buffer.from(await response.arrayBuffer())
       const contentType = response.headers.get('content-type') || 'image/jpeg'
-      const contentLength = response.headers.get('content-length')
 
-      console.log(`Successfully proxied image: ${contentLength} bytes, type: ${contentType}`)
+      // Optimize with Sharp: resize and compress for faster loading
+      try {
+        const sharp = (await import('sharp')).default
+        const maxWidth = Math.min(width, 1920)
+        const optimized = await sharp(imageBuffer)
+          .resize(maxWidth, null, { withoutEnlargement: true })
+          .webp({ quality })
+          .toBuffer()
 
-      // Return the image with appropriate headers
-      return new NextResponse(imageBuffer, {
-        status: 200,
-        headers: {
-          'Content-Type': contentType,
-          'Content-Length': contentLength || imageBuffer.byteLength.toString(),
-          'Cache-Control': 'public, max-age=31536000, immutable',
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type',
-          'X-Content-Type-Options': 'nosniff',
-          'X-Proxy-Time': `${Date.now() - startTime}ms`,
-        },
-      })
+        return new NextResponse(optimized, {
+          status: 200,
+          headers: {
+            'Content-Type': 'image/webp',
+            'Cache-Control': 'public, max-age=31536000, immutable',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'X-Content-Type-Options': 'nosniff',
+          },
+        })
+      } catch (sharpError) {
+        // Fallback: return original if sharp fails
+        return new NextResponse(imageBuffer, {
+          status: 200,
+          headers: {
+            'Content-Type': contentType,
+            'Cache-Control': 'public, max-age=31536000, immutable',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'X-Content-Type-Options': 'nosniff',
+          },
+        })
+      }
     } catch (fetchError: any) {
       clearTimeout(timeoutId)
       
