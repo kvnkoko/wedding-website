@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
         { name: { contains: search, mode: 'insensitive' } },
         { email: { contains: search, mode: 'insensitive' } },
         { phone: { contains: search, mode: 'insensitive' } },
+        { eventResponses: { some: { plusOneName: { contains: search, mode: 'insensitive' } } } },
       ]
     }
 
