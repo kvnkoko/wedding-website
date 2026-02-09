@@ -362,8 +362,8 @@ export default function AdminRSVPsPage() {
             <label className="block font-sans text-sm font-medium text-charcoal dark:text-dark-text mb-2">
               Search
             </label>
-            <div className="relative">
-              <MagnifyingGlass className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-charcoal/60 dark:text-dark-text-secondary pointer-events-none shrink-0" weight="duotone" />
+            <div className="flex items-center gap-3 border border-taupe/30 dark:border-dark-border rounded-lg bg-white dark:bg-dark-surface focus-within:ring-2 focus-within:ring-sage focus-within:border-transparent">
+              <MagnifyingGlass className="w-5 h-5 text-charcoal/60 dark:text-dark-text-secondary shrink-0 ml-3" weight="duotone" />
               <input
                 type="search"
                 inputMode="search"
@@ -371,7 +371,7 @@ export default function AdminRSVPsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Name, email, phone..."
-                className="w-full pl-14 sm:pl-12 pr-4 py-2.5 sm:py-3 border border-taupe/30 dark:border-dark-border rounded-lg font-sans text-base focus:outline-none focus:ring-2 focus:ring-sage dark:bg-dark-surface dark:text-dark-text transition-all duration-200"
+                className="flex-1 min-w-0 py-2.5 sm:py-3 pr-4 bg-transparent border-0 font-sans text-base focus:outline-none focus:ring-0 dark:text-dark-text placeholder:text-charcoal/50 dark:placeholder:text-dark-text-secondary"
               />
             </div>
           </div>
